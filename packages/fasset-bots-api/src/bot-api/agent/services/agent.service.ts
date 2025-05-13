@@ -650,11 +650,11 @@ export class AgentService {
                         break;
                     }
                     case AgentStatus.LIQUIDATION: {
-                        status = `Liquidating`;
+                        status = `In Liquidation`;
                         break;
                     }
                     case AgentStatus.FULL_LIQUIDATION: {
-                        status = `Liquidating`;
+                        status = `In full liquidation`;
                         break;
                     }
                     case AgentStatus.DESTROYING: {
