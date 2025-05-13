@@ -4,7 +4,7 @@ import { BotConfigFile, dataAccessLayerApiKey, loadContracts, Secrets } from '..
 import { artifacts, assertCmd, assertNotNullCmd, errorIncluded, requireNotNull, sleep } from "../utils";
 import { FspStatusResult, FtsoFeedResultWithProof } from '../utils/data-access-layer-types';
 import { logger } from "../utils/logger";
-import { loggerAsyncStorage } from '@flarelabs/simple-wallet';
+import { loggerAsyncStorage } from '@flarenetwork/simple-wallet';
 import { withSettings } from '../utils/mini-truffle-contracts/contracts';
 
 export const DEFAULT_PRICE_PUBLISHER_LOOP_DELAY_MS = 1000;

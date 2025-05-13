@@ -20,7 +20,7 @@ import { FairLock } from "../utils/FairLock";
 import { formatArgs, formatTimestamp, squashSpace } from "../utils/formatting";
 import { BN_ZERO, BNish, DAYS, MINUTES, ZERO_ADDRESS, assertNotNull, getOrCreate, maxBN, sleepUntil, toBN } from "../utils/helpers";
 import { logger } from "../utils/logger";
-import { loggerAsyncStorage } from "@flarelabs/simple-wallet";
+import { loggerAsyncStorage } from "@flarenetwork/simple-wallet";
 import { AgentNotifier } from "../utils/notifier/AgentNotifier";
 import { NotifierTransport } from "../utils/notifier/BaseNotifier";
 import { artifacts, web3 } from "../utils/web3";
@@ -673,7 +673,7 @@ export class AgentBot {
             // upper 32 bits are query topic; the rest is topic specific, e.g. query id
             const topic = Number(query.shrn(256 - 32));
             if (topic === 0) {
-                const data = JSON.stringify({ name: "flarelabs/fasset-bots", version: programVersion() });
+                const data = JSON.stringify({ name: "flarenetwork/fasset-bots", version: programVersion() });
                 await this.locks.nativeChainLock(this.owner.workAddress).lockAndRun(async () => {
                     await this.agent.agentPingResponse(query, data);
                 });

@@ -4,7 +4,7 @@ import { formatArgs } from "../formatting";
 import { systemTimestamp } from "../helpers";
 import { logger } from "../logger";
 import { BotType, NotificationLevel, NotifierTransport } from "./BaseNotifier";
-import { createAxiosConfig } from "@flarelabs/simple-wallet";
+import { createAxiosConfig } from "@flarenetwork/simple-wallet";
 import type { ApiNotifierConfig } from "../../config";
 
 export class ConsoleNotifierTransport implements NotifierTransport {

@@ -1,9 +1,9 @@
 import "dotenv/config";
 import "source-map-support/register";
 
-import { Secrets, loadConfigFile, loadContracts } from "@flarelabs/fasset-bots-core/config";
-import { FakePriceReaderInstance } from "@flarelabs/fasset-bots-core/types";
-import { artifacts, authenticatedHttpProvider, initWeb3, requireNotNull } from "@flarelabs/fasset-bots-core/utils";
+import { Secrets, loadConfigFile, loadContracts } from "@flarenetwork/fasset-bots-core/config";
+import { FakePriceReaderInstance } from "@flarenetwork/fasset-bots-core/types";
+import { artifacts, authenticatedHttpProvider, initWeb3, requireNotNull } from "@flarenetwork/fasset-bots-core/utils";
 import chalk from "chalk";
 import { programWithCommonOptions } from "../utils/program";
 import { toplevelRun } from "../utils/toplevel";

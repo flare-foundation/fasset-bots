@@ -1,12 +1,12 @@
 import "dotenv/config";
 import "source-map-support/register";
 
-import { InfoBotCommands } from "@flarelabs/fasset-bots-core";
-import { blockTimestamp, getOrCreateAsync, isBigNumber, web3DeepNormalize } from "@flarelabs/fasset-bots-core/utils";
+import { InfoBotCommands } from "@flarenetwork/fasset-bots-core";
+import { blockTimestamp, getOrCreateAsync, isBigNumber, web3DeepNormalize } from "@flarenetwork/fasset-bots-core/utils";
 import { programWithCommonOptions } from "../utils/program";
 import { toplevelRun } from "../utils/toplevel";
 import { validateInteger } from "../utils/validation";
-import { Secrets } from "@flarelabs/fasset-bots-core/config";
+import { Secrets } from "@flarenetwork/fasset-bots-core/config";
 
 const program = programWithCommonOptions("util", "single_fasset");
 

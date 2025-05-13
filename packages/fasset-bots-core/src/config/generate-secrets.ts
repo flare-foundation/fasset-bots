@@ -4,7 +4,7 @@ import { ChainId } from "../underlying-chain/ChainId";
 import { CommandLineError, requireNotNull } from "../utils";
 import { loadConfigFile } from "./config-file-loader";
 import { ChainAccount, SecretsFile } from "./config-files/SecretsFile";
-import { BtcAccountGeneration, DogeAccountGeneration, ICreateWalletResponse, WalletAccount, XrpAccountGeneration } from "@flarelabs/simple-wallet";
+import { BtcAccountGeneration, DogeAccountGeneration, ICreateWalletResponse, WalletAccount, XrpAccountGeneration } from "@flarenetwork/simple-wallet";
 
 export type SecretsUser = "user" | "agent" | "other";
 

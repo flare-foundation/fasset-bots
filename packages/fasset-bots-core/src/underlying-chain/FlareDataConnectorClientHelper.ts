@@ -16,7 +16,7 @@ import {
     FlareDataConnectorClientError, IFlareDataConnectorClient, OptionalAttestationProof
 } from "./interfaces/IFlareDataConnectorClient";
 import { blockTimestamp } from "../utils/web3helpers";
-import { createAxiosConfig, tryWithClients } from "@flarelabs/simple-wallet";
+import { createAxiosConfig, tryWithClients } from "@flarenetwork/simple-wallet";
 import { FspStatusResult } from "../utils/data-access-layer-types";
 
 export interface PrepareRequestResult {

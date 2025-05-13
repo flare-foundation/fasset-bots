@@ -1216,11 +1216,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@flarelabs/fasset-bots-api@workspace:packages/fasset-bots-api":
+"@flarenetwork/fasset-bots-api@workspace:packages/fasset-bots-api":
   version: 0.0.0-use.local
-  resolution: "@flarelabs/fasset-bots-api@workspace:packages/fasset-bots-api"
+  resolution: "@flarenetwork/fasset-bots-api@workspace:packages/fasset-bots-api"
   dependencies:
-    "@flarelabs/fasset-bots-core": "workspace:*"
+    "@flarenetwork/fasset-bots-core": "workspace:*"
     "@mikro-orm/cli": 5.8.4
     "@mikro-orm/core": 5.8.4
     "@mikro-orm/knex": 5.8.4
@@ -1277,11 +1277,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@flarelabs/fasset-bots-cli@workspace:packages/fasset-bots-cli":
+"@flarenetwork/fasset-bots-cli@workspace:packages/fasset-bots-cli":
   version: 0.0.0-use.local
-  resolution: "@flarelabs/fasset-bots-cli@workspace:packages/fasset-bots-cli"
+  resolution: "@flarenetwork/fasset-bots-cli@workspace:packages/fasset-bots-cli"
   dependencies:
-    "@flarelabs/fasset-bots-core": "workspace:*"
+    "@flarenetwork/fasset-bots-core": "workspace:*"
     "@flarenetwork/state-connector-protocol": 1.0.0-beta.4
     "@types/bn.js": 5.1.5
     bn.js: 5.2.1
@@ -1301,11 +1301,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@flarelabs/fasset-bots-core@workspace:*, @flarelabs/fasset-bots-core@workspace:packages/fasset-bots-core":
+"@flarenetwork/fasset-bots-core@workspace:*, @flarenetwork/fasset-bots-core@workspace:packages/fasset-bots-core":
   version: 0.0.0-use.local
-  resolution: "@flarelabs/fasset-bots-core@workspace:packages/fasset-bots-core"
+  resolution: "@flarenetwork/fasset-bots-core@workspace:packages/fasset-bots-core"
   dependencies:
-    "@flarelabs/simple-wallet": "workspace:*"
+    "@flarenetwork/simple-wallet": "workspace:*"
     "@flarenetwork/state-connector-protocol": 1.0.0-beta.6
     "@mikro-orm/core": 5.8.4
     "@mikro-orm/knex": 5.8.4
@@ -1352,11 +1352,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@flarelabs/fasset-liquidator@workspace:packages/fasset-liquidator":
+"@flarenetwork/fasset-liquidator@workspace:packages/fasset-liquidator":
   version: 0.0.0-use.local
-  resolution: "@flarelabs/fasset-liquidator@workspace:packages/fasset-liquidator"
+  resolution: "@flarenetwork/fasset-liquidator@workspace:packages/fasset-liquidator"
   dependencies:
-    "@flarelabs/fasset": 1.0.0-beta.12
+    "@flarenetwork/fasset": "git+https://github.com/flare-foundation/fassets.git#1.0.0-beta.12"
     "@nomicfoundation/hardhat-chai-matchers": ^2.0.2
     "@nomicfoundation/hardhat-ethers": ^3.0.4
     "@nomicfoundation/hardhat-network-helpers": ^1.0.9
@@ -1388,20 +1388,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@flarelabs/fasset@npm:1.0.0-beta.12":
+"@flarenetwork/fasset@git+https://github.com/flare-foundation/fassets.git#1.0.0-beta.12":
   version: 1.0.0-beta.12
-  resolution: "@flarelabs/fasset@npm:1.0.0-beta.12"
+  resolution: "@flarenetwork/fasset@https://github.com/flare-foundation/fassets.git#commit=3cdd511985397dda27f8f69514a209bfc2e7ba54"
   dependencies:
     "@flarenetwork/state-connector-protocol": 1.0.0-beta.3
     "@openzeppelin/contracts": 4.9.2
     flare-smart-contracts: "git+https://gitlab.com/flarenetwork/flare-smart-contracts.git#flare-distribution-to-delegators"
-  checksum: 2702c2550bdf99b3738497e06c16a5a1f1a6106c5541af8a3b4c073d283dd34cf3960dfcacd065e98d933421000dfd9ae3352b350bc441a49756c7ac57c13a15
+  checksum: 0a334c4d48d129a9a6f40752d35b6f0be5fb9cd9c84bc57785fc571113276d44b17187a59e4adb322c215f8da004cdaebaf67ab2f9f18a58b90021bfc2421424
   languageName: node
   linkType: hard
 
-"@flarelabs/simple-wallet@workspace:*, @flarelabs/simple-wallet@workspace:packages/simple-wallet":
+"@flarenetwork/simple-wallet@workspace:*, @flarenetwork/simple-wallet@workspace:packages/simple-wallet":
   version: 0.0.0-use.local
-  resolution: "@flarelabs/simple-wallet@workspace:packages/simple-wallet"
+  resolution: "@flarenetwork/simple-wallet@workspace:packages/simple-wallet"
   dependencies:
     "@mikro-orm/core": 5.8.4
     "@mikro-orm/knex": 5.8.4

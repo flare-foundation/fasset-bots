@@ -14,7 +14,7 @@ import { AgentNotifier } from "../utils/notifier/AgentNotifier";
 import { web3DeepNormalize } from "../utils/web3normalize";
 import { AgentBot } from "./AgentBot";
 import { AgentTokenBalances } from "./AgentTokenBalances";
-import { TransactionStatus } from "@flarelabs/simple-wallet";
+import { TransactionStatus } from "@flarenetwork/simple-wallet";
 import { Payment } from "@flarenetwork/state-connector-protocol/dist/generated/types/typescript/Payment";
 import { confirmationAllowedAt } from "../utils/fasset-helpers";
 import { latestBlockTimestampBN } from "../utils/web3helpers";

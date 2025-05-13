@@ -1,10 +1,10 @@
 import "dotenv/config";
 import "source-map-support/register";
 
-import { CollateralClass, CollateralType } from "@flarelabs/fasset-bots-core";
-import { ChainContracts, Secrets, loadConfigFile, loadContracts } from "@flarelabs/fasset-bots-core/config";
-import { AssetManagerControllerInstance } from "@flarelabs/fasset-bots-core/types";
-import { artifacts, authenticatedHttpProvider, initWeb3, requireNotNull, requireNotNullCmd, toBNExp, web3 } from "@flarelabs/fasset-bots-core/utils";
+import { CollateralClass, CollateralType } from "@flarenetwork/fasset-bots-core";
+import { ChainContracts, Secrets, loadConfigFile, loadContracts } from "@flarenetwork/fasset-bots-core/config";
+import { AssetManagerControllerInstance } from "@flarenetwork/fasset-bots-core/types";
+import { artifacts, authenticatedHttpProvider, initWeb3, requireNotNull, requireNotNullCmd, toBNExp, web3 } from "@flarenetwork/fasset-bots-core/utils";
 import { readFileSync } from "fs";
 import { AgentRegistrationTransport } from "../utils/open-beta";
 import { programWithCommonOptions } from "../utils/program";

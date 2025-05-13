@@ -1,4 +1,4 @@
-import { CommandLineError, logger, programVersion } from "@flarelabs/fasset-bots-core/utils";
+import { CommandLineError, logger, programVersion } from "@flarenetwork/fasset-bots-core/utils";
 import chalk from "chalk";
 import path from "path";
 

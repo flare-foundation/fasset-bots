@@ -1,9 +1,9 @@
 import "dotenv/config";
 import "source-map-support/register";
 
-import { ActorBaseKind, ActorBaseRunner } from "@flarelabs/fasset-bots-core";
-import { Secrets, closeBotConfig, createBotConfig, loadConfigFile } from "@flarelabs/fasset-bots-core/config";
-import { authenticatedHttpProvider, initWeb3, logger } from "@flarelabs/fasset-bots-core/utils";
+import { ActorBaseKind, ActorBaseRunner } from "@flarenetwork/fasset-bots-core";
+import { Secrets, closeBotConfig, createBotConfig, loadConfigFile } from "@flarenetwork/fasset-bots-core/config";
+import { authenticatedHttpProvider, initWeb3, logger } from "@flarenetwork/fasset-bots-core/utils";
 import { programWithCommonOptions } from "../utils/program";
 import { toplevelRun } from "../utils/toplevel";
 

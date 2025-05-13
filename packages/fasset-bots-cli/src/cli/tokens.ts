@@ -1,16 +1,16 @@
 import "dotenv/config";
 import "source-map-support/register";
 
-import { BlockchainWalletHelper, ChainId, DBWalletKeys, VerificationPrivateApiClient } from "@flarelabs/fasset-bots-core";
+import { BlockchainWalletHelper, ChainId, DBWalletKeys, VerificationPrivateApiClient } from "@flarenetwork/fasset-bots-core";
 import {
     BotConfigFile, BotFAssetInfo, ChainAccount, Secrets, createBlockchainWalletHelper, createBotConfig, createBotOrm, createNativeContext,
     indexerApiKey,
     loadConfigFile, loadContracts, overrideAndCreateOrm,
-} from "@flarelabs/fasset-bots-core/config";
+} from "@flarenetwork/fasset-bots-core/config";
 import {
     CommandLineError, Currencies, Currency, EVMNativeTokenBalance, TokenBalances, artifacts, assertCmd, authenticatedHttpProvider, initWeb3, logger,
     requireNotNull, requiredAddressBalance, sendWeb3Transaction, toBN
-} from "@flarelabs/fasset-bots-core/utils";
+} from "@flarenetwork/fasset-bots-core/utils";
 import BN from "bn.js";
 import { programWithCommonOptions } from "../utils/program";
 import { toplevelRun } from "../utils/toplevel";

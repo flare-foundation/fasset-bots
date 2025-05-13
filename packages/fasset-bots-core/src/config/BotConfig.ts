@@ -1,6 +1,6 @@
 import "dotenv/config";
 
-import { StuckTransaction } from "@flarelabs/simple-wallet";
+import { StuckTransaction } from "@flarenetwork/simple-wallet";
 import { EntityManager } from "@mikro-orm/core";
 import BN from "bn.js";
 import { Secrets } from ".";

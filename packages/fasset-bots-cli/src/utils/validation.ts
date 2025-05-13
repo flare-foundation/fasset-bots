@@ -1,7 +1,7 @@
-import { BNish, CommandLineError, assertCmd, logger, toBN } from "@flarelabs/fasset-bots-core/utils";
+import { BNish, CommandLineError, assertCmd, logger, toBN } from "@flarenetwork/fasset-bots-core/utils";
 import Web3 from "web3";
 
-export { assertCmd as validate } from "@flarelabs/fasset-bots-core/utils";
+export { assertCmd as validate } from "@flarenetwork/fasset-bots-core/utils";
 
 export function validateAddress(address: string | null | undefined, what: string) {
     if (address == null) return;

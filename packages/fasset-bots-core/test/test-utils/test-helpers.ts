@@ -21,7 +21,7 @@ import { artifacts } from "../../src/utils/web3";
 import { TestAssetBotContext } from "../../test-hardhat/test-utils/create-test-asset-context";
 import { RedemptionRequested } from "../../typechain-truffle/IIAssetManager";
 import { testNotifierTransports } from "./testNotifierTransports";
-import { IWalletKeys, WalletAddressEntity } from "@flarelabs/simple-wallet";
+import { IWalletKeys, WalletAddressEntity } from "@flarenetwork/simple-wallet";
 
 const FakeERC20 = artifacts.require("FakeERC20");
 

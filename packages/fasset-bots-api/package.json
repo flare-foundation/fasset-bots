@@ -1,8 +1,8 @@
 {
-    "name": "@flarelabs/fasset-bots-api",
+    "name": "@flarenetwork/fasset-bots-api",
     "version": "1.2.1",
     "description": "FAsset bots web API",
-    "author": "Flare Labs",
+    "author": "Flare Foundation",
     "homepage": "https://gitlab.com/flarenetwork/fasset-bots",
     "repository": {
         "type": "git",
@@ -26,7 +26,7 @@
         "start_agent_api_debug": "yarn nest start --debug --watch"
     },
     "dependencies": {
-        "@flarelabs/fasset-bots-core": "workspace:*",
+        "@flarenetwork/fasset-bots-core": "workspace:*",
         "@mikro-orm/cli": "5.8.4",
         "@mikro-orm/core": "5.8.4",
         "@mikro-orm/knex": "5.8.4",

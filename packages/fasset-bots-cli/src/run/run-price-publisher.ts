@@ -1,9 +1,9 @@
 import "dotenv/config";
 import "source-map-support/register";
 
-import { PricePublisherService } from "@flarelabs/fasset-bots-core";
-import { Secrets, closeBotConfig, createBotConfig, loadConfigFile } from "@flarelabs/fasset-bots-core/config";
-import { authenticatedHttpProvider, initWeb3, logger, sleep } from "@flarelabs/fasset-bots-core/utils";
+import { PricePublisherService } from "@flarenetwork/fasset-bots-core";
+import { Secrets, closeBotConfig, createBotConfig, loadConfigFile } from "@flarenetwork/fasset-bots-core/config";
+import { authenticatedHttpProvider, initWeb3, logger, sleep } from "@flarenetwork/fasset-bots-core/utils";
 import { programWithCommonOptions } from "../utils/program";
 import { toplevelRun } from "../utils/toplevel";
 

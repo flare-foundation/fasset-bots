@@ -4,7 +4,7 @@ import { AgentService } from "../services/agent.service";
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiQuery, ApiSecurity, ApiTags } from "@nestjs/swagger";
 import { ApiResponseWrapper, handleApiResponse } from "../../common/ApiResponse";
 import { APIKey, AgentBalance, AgentCreateResponse, AgentData, AgentSettings, AgentVaultStatus, AllBalances, AllCollaterals, ExtendedAgentVaultInfo, RedemptionQueueData, UnderlyingAddress, VaultCollaterals } from "../../common/AgentResponse";
-import { AgentSettingsConfig } from "@flarelabs/fasset-bots-core/config";
+import { AgentSettingsConfig } from "@flarenetwork/fasset-bots-core/config";
 import { AgentSettingsService } from "../services/agentSettings.service";
 import { AgentSettingsConfigDTO } from "../../common/AgentSettingsConfigDTO";
 import { ErrorStatusInterceptor } from "../interceptors/error.status.interceptor";

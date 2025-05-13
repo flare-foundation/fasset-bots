@@ -1,10 +1,10 @@
 import { EntityManager, FilterQuery } from "@mikro-orm/core";
 import { CommandLineError } from "../utils/command-line-errors";
-import { EncryptionMethod } from "@flarelabs/simple-wallet";
+import { EncryptionMethod } from "@flarenetwork/simple-wallet";
 import { logger } from "../utils/logger";
-import { decryptText, encryptText } from "@flarelabs/simple-wallet"
+import { decryptText, encryptText } from "@flarenetwork/simple-wallet"
 import { Secrets } from "../config";
-import { IWalletKeys, WalletAddressEntity } from "@flarelabs/simple-wallet";
+import { IWalletKeys, WalletAddressEntity } from "@flarenetwork/simple-wallet";
 
 
 export class MemoryWalletKeys implements IWalletKeys {

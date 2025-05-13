@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { Logger } from "winston";
-import { createCustomizedLogger } from "@flarelabs/simple-wallet";
+import { createCustomizedLogger } from "@flarenetwork/simple-wallet";
 
 
 export const transactionLogger: Logger = createCustomizedLogger({

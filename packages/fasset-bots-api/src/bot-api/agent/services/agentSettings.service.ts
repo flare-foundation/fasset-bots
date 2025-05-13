@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AgentSettingsConfigDTO } from '../../common/AgentSettingsConfigDTO';
-import { AgentSettingsConfig } from '@flarelabs/fasset-bots-core/config';
+import { AgentSettingsConfig } from '@flarenetwork/fasset-bots-core/config';
 
 @Injectable()
 export class AgentSettingsService {

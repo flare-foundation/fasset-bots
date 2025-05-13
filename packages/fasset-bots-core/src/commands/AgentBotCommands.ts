@@ -28,7 +28,7 @@ import { NotifierTransport } from "../utils/notifier/BaseNotifier";
 import { artifacts, authenticatedHttpProvider, initWeb3 } from "../utils/web3";
 import { latestBlockTimestampBN } from "../utils/web3helpers";
 import { AgentBotOwnerValidation } from "./AgentBotOwnerValidation";
-import { TransactionStatus, WalletAddressEntity } from "@flarelabs/simple-wallet";
+import { TransactionStatus, WalletAddressEntity } from "@flarenetwork/simple-wallet";
 import { requiredEventArgs } from "../utils/events/truffle";
 import { EventArgs } from "../utils/events/common";
 import { ReturnFromCoreVaultRequested, TransferToCoreVaultStarted } from "../../typechain-truffle/IIAssetManager";

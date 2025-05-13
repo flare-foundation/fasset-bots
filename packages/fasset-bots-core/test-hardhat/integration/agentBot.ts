@@ -2106,7 +2106,7 @@ describe("Agent bot tests", () => {
         const allEvents = await readEventsFrom(context.assetManager, fromBlock);
         const events = filterEventList(allEvents, context.assetManager, "AgentPingResponse");
         assert.equal(events.length, 1);
-        const response = JSON.stringify({ name: "flarelabs/fasset-bots", version: programVersion() });
+        const response = JSON.stringify({ name: "flarenetwork/fasset-bots", version: programVersion() });
         assert.equal(events[0].args.response, response);
     });
 

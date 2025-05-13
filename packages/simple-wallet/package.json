@@ -1,5 +1,5 @@
 {
-    "name": "@flarelabs/simple-wallet",
+    "name": "@flarenetwork/simple-wallet",
     "version": "1.2.1",
     "description": "Fasset bots simple wallet",
     "engines": {
@@ -11,7 +11,7 @@
             "default": "./dist/src/index.js"
         }
     },
-    "author": "Flare Labs",
+    "author": "Flare Foundation",
     "homepage": "https://gitlab.com/flarenetwork/fasset-bots",
     "repository": {
         "type": "git",

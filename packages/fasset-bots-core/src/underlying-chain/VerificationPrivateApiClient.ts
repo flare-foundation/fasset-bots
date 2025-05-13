@@ -4,7 +4,7 @@ import { formatArgs } from "../utils/formatting";
 import { ZERO_BYTES32 } from "../utils/helpers";
 import { logger } from "../utils/logger";
 import { IVerificationApiClient } from "./interfaces/IVerificationApiClient";
-import { createAxiosConfig, tryWithClients } from "@flarelabs/simple-wallet";
+import { createAxiosConfig, tryWithClients } from "@flarenetwork/simple-wallet";
 
 export class VerificationApiError extends Error {}
 

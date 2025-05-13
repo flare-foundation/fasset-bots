@@ -1,5 +1,5 @@
-import { ApiNotifierTransport } from "@flarelabs/fasset-bots-core";
-import { Secrets } from "@flarelabs/fasset-bots-core/config";
+import { ApiNotifierTransport } from "@flarenetwork/fasset-bots-core";
+import { Secrets } from "@flarenetwork/fasset-bots-core/config";
 
 export interface AgentRegistrationSubmission {
     management_address: string;

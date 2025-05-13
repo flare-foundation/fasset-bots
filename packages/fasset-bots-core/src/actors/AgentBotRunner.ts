@@ -11,7 +11,7 @@ import { logger } from "../utils/logger";
 import { AgentNotifier } from "../utils/notifier/AgentNotifier";
 import { NotifierTransport } from "../utils/notifier/BaseNotifier";
 import { AgentBot, AgentBotLocks, AgentBotTransientStorage, ITimeKeeper } from "./AgentBot";
-import { ITransactionMonitor } from "@flarelabs/simple-wallet";
+import { ITransactionMonitor } from "@flarenetwork/simple-wallet";
 import { ChainId } from "../underlying-chain/ChainId";
 import { HandshakeAddressVerifier } from "./plugins/HandshakeAddressVerifier";
 

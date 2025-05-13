@@ -5,7 +5,7 @@ import { formatArgs } from "../utils/formatting";
 import { logger } from "../utils/logger";
 import { ChainId } from "./ChainId";
 import BN from "bn.js";
-import { createAxiosConfig, tryWithClients } from "@flarelabs/simple-wallet";
+import { createAxiosConfig, tryWithClients } from "@flarenetwork/simple-wallet";
 
 // Satoshi to BTC 100_000_000
 export const BTC_MDU = 1e8;

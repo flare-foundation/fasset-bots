@@ -1,4 +1,4 @@
-import { BTC, DOGE, StuckTransaction, WalletClient, XRP } from "@flarelabs/simple-wallet";
+import { BTC, DOGE, StuckTransaction, WalletClient, XRP } from "@flarenetwork/simple-wallet";
 import { ChainId } from "../underlying-chain/ChainId";
 import { CommandLineError } from "../utils";
 import { Secrets } from "./secrets";

@@ -1,8 +1,8 @@
 {
-    "name": "@flarelabs/fasset-bots-core",
+    "name": "@flarenetwork/fasset-bots-core",
     "version": "1.2.1",
     "description": "FAsset bots library",
-    "author": "Flare Labs",
+    "author": "Flare Foundation",
     "homepage": "https://gitlab.com/flarenetwork/fasset-bots",
     "repository": {
         "type": "git",
@@ -86,7 +86,7 @@
         "console:coston": "yarn hardhat console --no-compile --network coston"
     },
     "dependencies": {
-        "@flarelabs/simple-wallet": "workspace:*",
+        "@flarenetwork/simple-wallet": "workspace:*",
         "@flarenetwork/state-connector-protocol": "1.0.0-beta.6",
         "@mikro-orm/core": "5.8.4",
         "@mikro-orm/knex": "5.8.4",

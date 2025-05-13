@@ -16,7 +16,7 @@ import { logger } from "../utils/logger";
 import { AgentNotifier } from "../utils/notifier/AgentNotifier";
 import { web3DeepNormalize } from "../utils/web3normalize";
 import { AgentBot } from "./AgentBot";
-import { TransactionStatus } from "@flarelabs/simple-wallet";
+import { TransactionStatus } from "@flarenetwork/simple-wallet";
 import { lastFinalizedUnderlyingBlock, maxFeeMultiplier } from "../utils/fasset-helpers";
 import { AddressCheck } from "./AgentBotHandshake";
 import { blockTimestamp, latestBlockTimestamp } from "../utils/web3helpers";

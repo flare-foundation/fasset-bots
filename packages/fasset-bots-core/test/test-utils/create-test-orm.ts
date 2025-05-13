@@ -1,4 +1,4 @@
-import { HistoryItem, MonitoringStateEntity, TransactionEntity, WalletAddressEntity } from "@flarelabs/simple-wallet";
+import { HistoryItem, MonitoringStateEntity, TransactionEntity, WalletAddressEntity } from "@flarenetwork/simple-wallet";
 import { copyFile } from "fs/promises";
 import { ActivityTimestampEntity } from "../../src";
 import { CreateOrmOptions, ORM } from "../../src/config/orm";

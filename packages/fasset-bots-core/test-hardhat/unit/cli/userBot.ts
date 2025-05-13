@@ -22,7 +22,7 @@ import { createTestAgentBotAndMakeAvailable, createTestMinter, createTestRedeeme
 import { fundUnderlying } from "../../../test/test-utils/test-helpers";
 import { AgentRedemptionState } from "../../../src/entities/common";
 import { proveAndUpdateUnderlyingBlock, TokenBalances } from "../../../src/utils";
-import { loggerAsyncStorage } from "@flarelabs/simple-wallet";
+import { loggerAsyncStorage } from "@flarenetwork/simple-wallet";
 import { testNotifierTransports } from "../../../test/test-utils/testNotifierTransports";
 import { createAgentVaultInitSettings, loadAgentSettings } from "../../../src/config/AgentVaultInitSettings";
 use(chaiAsPromised);

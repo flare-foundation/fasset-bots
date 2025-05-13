@@ -9,7 +9,7 @@ import { DBWalletKeys } from "../../../src/underlying-chain/WalletKeys";
 import { createTestOrm } from "../../test-utils/create-test-orm";
 import { TEST_SECRETS } from "../../test-utils/test-bot-config";
 import { removeWalletAddressFromDB } from "../../test-utils/test-helpers";
-import { TransactionStatus } from "@flarelabs/simple-wallet";
+import { TransactionStatus } from "@flarenetwork/simple-wallet";
 import { sleep } from "../../../src/utils";
 use(chaiAsPromised);
 

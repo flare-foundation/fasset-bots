@@ -1,8 +1,8 @@
 {
-    "name": "@flarelabs/fasset-bots-cli",
+    "name": "@flarenetwork/fasset-bots-cli",
     "version": "1.2.1",
     "description": "FAsset bots command line executables",
-    "author": "Flare Labs",
+    "author": "Flare Foundation",
     "homepage": "https://gitlab.com/flarenetwork/fasset-bots",
     "repository": {
         "type": "git",
@@ -29,7 +29,7 @@
         "/src"
     ],
     "dependencies": {
-        "@flarelabs/fasset-bots-core": "workspace:*",
+        "@flarenetwork/fasset-bots-core": "workspace:*",
         "@flarenetwork/state-connector-protocol": "1.0.0-beta.4",
         "@types/bn.js": "5.1.5",
         "bn.js": "5.2.1",

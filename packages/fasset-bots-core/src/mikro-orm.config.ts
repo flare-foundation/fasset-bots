@@ -3,7 +3,7 @@ import { AbstractSqlDriver } from "@mikro-orm/knex";
 import { DatabaseAccount } from "./config/config-files/SecretsFile";
 import { CreateOrmOptions, ORM, createOrm } from "./config/orm";
 import { AgentEntity, AgentHandshake, AgentMinting, AgentRedemption, AgentUnderlyingPayment, AgentUpdateSetting, Event, RejectedRedemptionRequest, ReturnFromCoreVault } from "./entities/agent";
-import { HistoryItem, MonitoringStateEntity, TransactionEntity, WalletAddressEntity } from "@flarelabs/simple-wallet";
+import { HistoryItem, MonitoringStateEntity, TransactionEntity, WalletAddressEntity } from "@flarenetwork/simple-wallet";
 import { ActivityTimestampEntity } from "./entities/activityTimestamp";
 
 /* istanbul ignore next */

@@ -1,9 +1,9 @@
 import "dotenv/config";
 import "source-map-support/register";
 
-import { InfoBotCommands, PoolUserBotCommands, UserBotCommands } from "@flarelabs/fasset-bots-core";
-import { Secrets } from "@flarelabs/fasset-bots-core/config";
-import { TokenBalances, formatFixed, toBN, toBNExp } from "@flarelabs/fasset-bots-core/utils";
+import { InfoBotCommands, PoolUserBotCommands, UserBotCommands } from "@flarenetwork/fasset-bots-core";
+import { Secrets } from "@flarenetwork/fasset-bots-core/config";
+import { TokenBalances, formatFixed, toBN, toBNExp } from "@flarenetwork/fasset-bots-core/utils";
 import BN from "bn.js";
 import os from "os";
 import path from "path";

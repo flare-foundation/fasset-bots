@@ -1,9 +1,9 @@
 import "dotenv/config";
 import "source-map-support/register";
 
-import { decryptText, EncryptionMethod, encryptText, generateSecrets, generateUnderlyingAccount, isJSON, promptForPassword, SecretsUser } from "@flarelabs/fasset-bots-core";
-import { ENCRYPTION_PASSWORD_MIN_LENGTH, validateEncryptionPassword } from "@flarelabs/fasset-bots-core/config";
-import { assertCmd, CommandLineError, createSha256Hash, generateRandomHexString, logger, squashSpace, web3 } from "@flarelabs/fasset-bots-core/utils";
+import { decryptText, EncryptionMethod, encryptText, generateSecrets, generateUnderlyingAccount, isJSON, promptForPassword, SecretsUser } from "@flarenetwork/fasset-bots-core";
+import { ENCRYPTION_PASSWORD_MIN_LENGTH, validateEncryptionPassword } from "@flarenetwork/fasset-bots-core/config";
+import { assertCmd, CommandLineError, createSha256Hash, generateRandomHexString, logger, squashSpace, web3 } from "@flarenetwork/fasset-bots-core/utils";
 import chalk from "chalk";
 import { Command } from "commander";
 import fs from "fs";

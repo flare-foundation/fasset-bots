@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { createCustomizedLogger } from "@flarelabs/simple-wallet";
+import { createCustomizedLogger } from "@flarenetwork/simple-wallet";
 import type { Logger } from "winston";
 
 

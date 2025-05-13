@@ -1,5 +1,5 @@
-import { AgentInfo } from "@flarelabs/fasset-bots-core";
-import type { BNish } from "@flarelabs/fasset-bots-core/utils";
+import { AgentInfo } from "@flarenetwork/fasset-bots-core";
+import type { BNish } from "@flarenetwork/fasset-bots-core/utils";
 
 export interface AgentCreateResponse {
     vaultAddress: string;
