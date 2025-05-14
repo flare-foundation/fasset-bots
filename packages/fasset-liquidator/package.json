@@ -2,6 +2,14 @@
   "name": "@flarenetwork/fasset-liquidator",
   "version": "1.2.2",
   "description": "Liquidator utilities for the f-asset bridge on the Flare network",
+  "author": "Flare Foundation",
+  "homepage": "https://github.com/flare-foundation/fasset-bots",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/flare-foundation/fasset-bots.git",
+    "directory": "packages/fasset-liquidator"
+  },
+  "license": "MIT",
   "scripts": {
     "------------ contracts -------------": "----------------- contracts -----------------",
     "clean": "rimraf ./artifacts ./cache ./coverage ./types ./coverage.json && yarn typechain",
@@ -20,7 +28,6 @@
     "------------ cli ---------------": "----------------- cli -----------------",
     "cli": "yarn ts-node src/cli.ts"
   },
-  "license": "MIT",
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.2",
     "@nomicfoundation/hardhat-ethers": "^3.0.4",

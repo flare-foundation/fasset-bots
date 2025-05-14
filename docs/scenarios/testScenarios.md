@@ -3,8 +3,8 @@
 ## Challenger
 
 Preconditions:
-- [Properly configure Challenger bot](https://gitlab.com/flarenetwork/fasset-bots/-/blob/master/README.md#challenger).
-- [Properly configure Agent bot](https://gitlab.com/flarenetwork/fasset-bots/-/blob/master/README.md#agent-bot).
+- [Properly configure Challenger bot](https://github.com/flare-foundation/fasset-bots/-/blob/master/README.md#challenger).
+- [Properly configure Agent bot](https://github.com/flare-foundation/fasset-bots/-/blob/master/README.md#agent-bot).
 - Choose Fasset (e.g. `FTestXRP`) and use it in challenger bot script and later in agent's cli commands.
 - Choose default challenge strategy (i.e. in challenger's run-config, there should not be variable `challengeStrategy`).
 
@@ -60,8 +60,8 @@ Agent part:
 ## Liquidator
 
 Preconditions:
-- [Properly configure Liquidator bot](https://gitlab.com/flarenetwork/fasset-bots/-/blob/master/README.md#liquidator).
-- [Properly configure Agent bot](https://gitlab.com/flarenetwork/fasset-bots/-/blob/master/README.md#agent-bot).
+- [Properly configure Liquidator bot](https://github.com/flare-foundation/fasset-bots/-/blob/master/README.md#liquidator).
+- [Properly configure Agent bot](https://github.com/flare-foundation/fasset-bots/-/blob/master/README.md#agent-bot).
 - Choose Fasset `FSimCoinX` and use it in liquidator bot script and later in agent's cli commands.
 - Choose default liquidation strategy (i.e. in liquidator's run-config, there should not be variable `liquidationStrategy`).
 

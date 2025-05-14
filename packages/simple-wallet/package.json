@@ -12,10 +12,11 @@
         }
     },
     "author": "Flare Foundation",
-    "homepage": "https://gitlab.com/flarenetwork/fasset-bots",
+    "homepage": "https://github.com/flare-foundation/fasset-bots",
     "repository": {
         "type": "git",
-        "url": "https://gitlab.com/flarenetwork/fasset-bots"
+        "url": "git+https://github.com/flare-foundation/fasset-bots.git",
+        "directory": "packages/simple-wallet"
     },
     "license": "MIT",
     "files": [
