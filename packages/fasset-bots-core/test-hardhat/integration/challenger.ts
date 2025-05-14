@@ -132,6 +132,135 @@ describe("Challenger tests", () => {
         expect(spyChlg).to.have.been.called.once;
     });
 
+    it("Should challenge illegal payment - pay after rejecting redemption request", async () => {
+        const challenger = await createTestChallenger(context, challengerAddress, state);
+        const spyChlg = spy.on(challenger, "illegalTransactionChallenge");
+        // create test actors
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerAddress);
+        const minter = await createTestMinter(context, minterAddress, chain);
+        const redeemer = await createTestRedeemer(context, redeemerAddress, "SANCTIONED_UNDERLYING");
+        await runChallengerStep(challenger);
+        // create collateral reservation and perform minting
+        await createCRAndPerformMintingAndRunSteps(minter, agentBot, 3, orm, chain);
+        // transfer FAssets
+        const fBalance = await context.fAsset.balanceOf(minter.address);
+        const transferFeeMillionths = await context.assetManager.transferFeeMillionths();
+        const transferFee = fBalance.mul(transferFeeMillionths).divn(1e6);
+        await context.fAsset.transfer(redeemer.address, fBalance, { from: minter.address });
+        // update underlying block
+        await proveAndUpdateUnderlyingBlock(context.attestationProvider, context.assetManager, ownerAddress);
+        // claim transfer fee
+        const balanceBefore = await context.fAsset.balanceOf(redeemer.address);
+        await agentBot.agent.claimAndSendTransferFee(redeemer.address);
+        const balanceAfter = await context.fAsset.balanceOf(redeemer.address);
+        assertWeb3DeepEqual(balanceAfter, balanceBefore.add(transferFee));
+        // enable handshake
+        const validAt = await agentBot.agent.announceAgentSettingUpdate("handshakeType", 1);
+        // increase time
+        await time.increaseTo(validAt);
+        await agentBot.agent.executeAgentSettingUpdate("handshakeType");
+        // update underlying block
+        await proveAndUpdateUnderlyingBlock(context.attestationProvider, context.assetManager, ownerAddress);
+        // create redemption requests and reject it
+        const [reqs] = await redeemer.requestRedemption(3);
+        const rdReq = reqs[0];
+        // run agent's steps until redemption process is finished
+        for (let i = 0; ; i++) {
+            await updateAgentBotUnderlyingBlockProof(context, agentBot);
+            await time.advanceBlock();
+            chain.mine();
+            await agentBot.runStep(orm.em); // check if redemption is rejected
+            const redemption = await agentBot.redemption.findRedemption(orm.em, { requestId: rdReq.requestId });
+            console.log(`Agent step ${i}, state = ${redemption.state}`);
+            if (redemption.state === AgentRedemptionState.REJECTED) break;
+            assert.isBelow(i, 50);  // prevent infinite loops
+        }
+
+        // execute redemption payment after rejection
+        await performRedemptionPayment(agentBot.agent, rdReq);
+
+        // run challenger's and agent's steps until agent's status is FULL_LIQUIDATION
+        for (let i = 0; ; i++) {
+            await time.advanceBlock();
+            chain.mine();
+            await time.increase(10);
+            await runChallengerStep(challenger);
+            await agentBot.runStep(orm.em);
+            const agentStatus = await getAgentStatus(agentBot);
+            console.log(`Challenger step ${i}, agent status = ${AgentStatus[agentStatus]}`);
+            if (agentStatus === AgentStatus.FULL_LIQUIDATION) break;
+            assert.isBelow(i, 50);  // prevent infinite loops
+        }
+        const agentStatus = await getAgentStatus(agentBot);
+        assert.equal(agentStatus, AgentStatus.FULL_LIQUIDATION);
+        expect(spyChlg).to.have.been.called.once;
+    });
+
+    it("Should challenge illegal payment - pay before rejecting redemption request", async () => {
+        const challenger = await createTestChallenger(context, challengerAddress, state);
+        const spyChlg = spy.on(challenger, "illegalTransactionChallenge");
+        // create test actors
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerAddress);
+        const minter = await createTestMinter(context, minterAddress, chain);
+        const redeemer = await createTestRedeemer(context, redeemerAddress, "SANCTIONED_UNDERLYING");
+        await runChallengerStep(challenger);
+        // create collateral reservation and perform minting
+        await createCRAndPerformMintingAndRunSteps(minter, agentBot, 3, orm, chain);
+        // transfer FAssets
+        const fBalance = await context.fAsset.balanceOf(minter.address);
+        const transferFeeMillionths = await context.assetManager.transferFeeMillionths();
+        const transferFee = fBalance.mul(transferFeeMillionths).divn(1e6);
+        await context.fAsset.transfer(redeemer.address, fBalance, { from: minter.address });
+        // update underlying block
+        await proveAndUpdateUnderlyingBlock(context.attestationProvider, context.assetManager, ownerAddress);
+        // claim transfer fee
+        const balanceBefore = await context.fAsset.balanceOf(redeemer.address);
+        await agentBot.agent.claimAndSendTransferFee(redeemer.address);
+        const balanceAfter = await context.fAsset.balanceOf(redeemer.address);
+        assertWeb3DeepEqual(balanceAfter, balanceBefore.add(transferFee));
+        // enable handshake
+        const validAt = await agentBot.agent.announceAgentSettingUpdate("handshakeType", 1);
+        // increase time
+        await time.increaseTo(validAt);
+        await agentBot.agent.executeAgentSettingUpdate("handshakeType");
+        // update underlying block
+        await proveAndUpdateUnderlyingBlock(context.attestationProvider, context.assetManager, ownerAddress);
+        // create redemption requests and reject it
+        const [reqs] = await redeemer.requestRedemption(3);
+        const rdReq = reqs[0];
+
+        // execute redemption payment before rejection
+        await performRedemptionPayment(agentBot.agent, rdReq);
+
+        // run agent's steps until redemption process is finished
+        for (let i = 0; ; i++) {
+            await updateAgentBotUnderlyingBlockProof(context, agentBot);
+            await time.advanceBlock();
+            chain.mine();
+            await agentBot.runStep(orm.em); // check if redemption is rejected
+            const redemption = await agentBot.redemption.findRedemption(orm.em, { requestId: rdReq.requestId });
+            console.log(`Agent step ${i}, state = ${redemption.state}`);
+            if (redemption.state === AgentRedemptionState.REJECTED) break;
+            assert.isBelow(i, 50);  // prevent infinite loops
+        }
+
+        // run challenger's and agent's steps until agent's status is FULL_LIQUIDATION
+        for (let i = 0; ; i++) {
+            await time.advanceBlock();
+            chain.mine();
+            await time.increase(10);
+            await runChallengerStep(challenger);
+            await agentBot.runStep(orm.em);
+            const agentStatus = await getAgentStatus(agentBot);
+            console.log(`Challenger step ${i}, agent status = ${AgentStatus[agentStatus]}`);
+            if (agentStatus === AgentStatus.FULL_LIQUIDATION) break;
+            assert.isBelow(i, 50);  // prevent infinite loops
+        }
+        const agentStatus = await getAgentStatus(agentBot);
+        assert.equal(agentStatus, AgentStatus.FULL_LIQUIDATION);
+        expect(spyChlg).to.have.been.called.once;
+    });
+
     it("Should challenge double payment", async () => {
         const challenger = await createTestChallenger(context, challengerAddress, state);
         const spyChlg = spy.on(challenger, "doublePaymentChallenge");
@@ -802,8 +931,8 @@ describe("Challenger tests", () => {
         const redemption = challenger.activeRedemptions.get(paymentReference);
         assert(redemption, "Redemption should not be null");
         const blockHeight = chain.blockHeight();
-        await chain.mine(blockHeight + redemption.endBlock.toNumber())
-        await chain.skipTimeTo(redemption.endTimestamp.toNumber())
+        chain.mine(blockHeight + redemption.endBlock.toNumber())
+        chain.skipTimeTo(redemption.endTimestamp.toNumber())
         await time.increase((await context.assetManager.getSettings()).confirmationByOthersAfterSeconds);
         // 3rd party confirmation
         for (let i = 0; i < 5; i++) {

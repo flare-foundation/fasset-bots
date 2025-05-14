@@ -1,5 +1,5 @@
 import BN from "bn.js";
-import { RedemptionRequested, UnderlyingWithdrawalAnnounced } from "../../typechain-truffle/IIAssetManager";
+import { RedemptionRequested, RedemptionRequestRejected, UnderlyingWithdrawalAnnounced } from "../../typechain-truffle/IIAssetManager";
 import { BotFAssetConfigWithIndexer, KeeperBotConfig, createChallengerContext } from "../config";
 import { ActorBase, ActorBaseKind } from "../fasset-bots/ActorBase";
 import { IChallengerContext } from "../fasset-bots/IAssetBotContext";
@@ -31,6 +31,7 @@ interface ActiveRedemption {
     startBlock: BN;
     endBlock: BN;
     endTimestamp: BN;
+    rejected: boolean;
 }
 
 interface ActiveWithdrawal {
@@ -106,6 +107,10 @@ export class Challenger extends ActorBase {
                     logger.info(`Challenger ${this.address} received event 'RedemptionRequested' with data ${formatArgs(event.args)}.`);
                     await this.handleRedemptionRequested(event.args);
                     logger.info(`Challenger ${this.address} stored active redemption: ${formatArgs(event.args)}.`);
+                } else if (eventIs(event, this.context.assetManager, "RedemptionRequestRejected")) {
+                    logger.info(`Challenger ${this.address} received event 'RedemptionRequestRejected' with data ${formatArgs(event.args)}.`);
+                    await this.handleRedemptionRejected(event.args);
+                    logger.info(`Challenger ${this.address} updated active redemption: ${formatArgs(event.args)}.`);
                 } else if (eventIs(event, this.context.assetManager, "RedemptionPerformed")) {
                     logger.info(`Challenger ${this.address} received event 'RedemptionPerformed' with data ${formatArgs(event.args)}.`);
                     await this.handleRedemptionFinished(event.args);
@@ -147,7 +152,7 @@ export class Challenger extends ActorBase {
         }
         // handleUnconfirmedTransaction
         const latestTimestampBN = await latestBlockTimestampBN();
-        this.checkIfConfirmationNeeded(latestTimestampBN, to);
+        await this.checkIfConfirmationNeeded(latestTimestampBN, to);
         // mark as handled
         this.lastEventUnderlyingBlockHandled = to + 1;
     }
@@ -194,21 +199,42 @@ export class Challenger extends ActorBase {
             paymentAddress: args.paymentAddress,
             startBlock:toBN(args.firstUnderlyingBlock),
             endBlock:toBN(args.lastUnderlyingBlock),
-            endTimestamp:toBN(args.lastUnderlyingTimestamp)
+            endTimestamp:toBN(args.lastUnderlyingTimestamp),
+            rejected: false,
         });
+    }
+
+    /**
+     * @param args event's RedemptionRequestRejected arguments
+     */
+    async handleRedemptionRejected(args: EventArgs<RedemptionRequestRejected>): Promise<void> {
+        const reference = PaymentReference.redemption(args.requestId);
+        const redemption = this.activeRedemptions.get(reference);
+        if (redemption == null) return;
+        // mark as rejected
+        redemption.rejected = true;
+        // check if there was a payment for this redemption
+        const txHash = this.transactionForPaymentReference.get(reference);
+        if (txHash) {
+            // illegal transaction challenge
+            const agent = await this.state.getAgentTriggerAdd(redemption.agentAddress);
+            if (agent && agent.status !== AgentStatus.FULL_LIQUIDATION) {
+                this.runner.startThread((scope) => this.illegalTransactionChallenge(scope, txHash, agent));
+            }
+        }
     }
 
     /**
      * @param args event's UnderlyingWithdrawalAnnounced arguments
      */
-        async handleWithdrawalAnnounced(args: EventArgs<UnderlyingWithdrawalAnnounced>): Promise<void> {
-            this.activeWithdrawals.set(args.paymentReference, {
-                agentAddress: args.agentVault,
-                receivedAt: await latestBlockTimestamp(),
-                announcementId: args.announcementId,
-                paymentReference: args.paymentReference
-            });
-        }
+    async handleWithdrawalAnnounced(args: EventArgs<UnderlyingWithdrawalAnnounced>): Promise<void> {
+        this.activeWithdrawals.set(args.paymentReference, {
+            agentAddress: args.agentVault,
+            receivedAt: await latestBlockTimestamp(),
+            announcementId: args.announcementId,
+            paymentReference: args.paymentReference
+        });
+    }
 
     /**
      * @param args object containing redemption request id, agent's vault address and underlying transaction hash
@@ -260,23 +286,23 @@ export class Challenger extends ActorBase {
         // if the challenger starts tracking later, activeRedemptions might not hold all active redemeptions,
         // but that just means there will be a few unnecessary illegal transaction challenges, which is perfectly safe
         if (!transactionValid && agent.status !== AgentStatus.FULL_LIQUIDATION) {
-            this.runner.startThread((scope) => this.illegalTransactionChallenge(scope, transaction, agent));
+            this.runner.startThread((scope) => this.illegalTransactionChallenge(scope, transaction.hash, agent));
         }
     }
 
     /**
      * @param scope
-     * @param transaction underlying transaction
+     * @param txHash underlying transaction hash
      * @param agent instance of TrackedAgentState
      */
-    async illegalTransactionChallenge(scope: EventScope, transaction: ITransaction, agent: TrackedAgentState) {
-        logger.info(`Challenger ${this.address} is challenging agent ${agent.vaultAddress} for illegal transaction ${transaction.hash}.`);
-        console.log(`Challenger ${this.address} is challenging agent ${agent.vaultAddress} for illegal transaction ${transaction.hash}.`);
+    async illegalTransactionChallenge(scope: EventScope, txHash: string, agent: TrackedAgentState) {
+        logger.info(`Challenger ${this.address} is challenging agent ${agent.vaultAddress} for illegal transaction ${txHash}.`);
+        console.log(`Challenger ${this.address} is challenging agent ${agent.vaultAddress} for illegal transaction ${txHash}.`);
         await this.singleChallengePerAgent(agent, async () => {
-            const proof = await this.waitForDecreasingBalanceProof(scope, transaction.hash, agent.underlyingAddress);
+            const proof = await this.waitForDecreasingBalanceProof(scope, txHash, agent.underlyingAddress);
             await this.challengeStrategy.illegalTransactionChallenge(scope, agent, web3DeepNormalize(proof));
-            logger.info(`Challenger ${this.address} successfully challenged agent ${agent.vaultAddress} for illegal transaction ${transaction.hash}.`);
-            await this.notifier.sendIllegalTransactionChallenge(agent.vaultAddress, transaction.hash);
+            logger.info(`Challenger ${this.address} successfully challenged agent ${agent.vaultAddress} for illegal transaction ${txHash}.`);
+            await this.notifier.sendIllegalTransactionChallenge(agent.vaultAddress, txHash);
         });
     }
 
@@ -388,7 +414,7 @@ export class Challenger extends ActorBase {
     isValidRedemptionReference(agent: TrackedAgentState, reference: string) {
         const redemption = this.activeRedemptions.get(reference);
         if (redemption == null) return false;
-        return agent.vaultAddress === redemption.agentAddress;
+        return agent.vaultAddress === redemption.agentAddress && !redemption.rejected
     }
 
     /**
