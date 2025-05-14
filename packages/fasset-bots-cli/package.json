@@ -1,6 +1,6 @@
 {
     "name": "@flarenetwork/fasset-bots-cli",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "description": "FAsset bots command line executables",
     "author": "Flare Foundation",
     "homepage": "https://gitlab.com/flarenetwork/fasset-bots",
