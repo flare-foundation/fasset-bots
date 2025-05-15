@@ -13,7 +13,7 @@ import { Minter } from "../mock/Minter";
 import { Redeemer } from "../mock/Redeemer";
 import { attestationProved } from "../underlying-chain/AttestationHelper";
 import { IVerificationApiClient } from "../underlying-chain/interfaces/IVerificationApiClient";
-import { CommandLineError, assertNotNullCmd } from "../utils/command-line-errors";
+import { CommandLineError, assertNotNullCmd, requireNotNullCmd } from "../utils/command-line-errors";
 import { proveAndUpdateUnderlyingBlock } from "../utils/fasset-helpers";
 import { formatArgs } from "../utils/formatting";
 import { BN_ZERO, BNish, ZERO_ADDRESS, requireNotNull, sumBN, toBN } from "../utils/helpers";
@@ -22,7 +22,8 @@ import { artifacts, authenticatedHttpProvider, initWeb3, web3 } from "../utils/w
 import { latestBlockTimestamp } from "../utils/web3helpers";
 import { web3DeepNormalize } from "../utils/web3normalize";
 import { InfoBotCommands } from "./InfoBotCommands";
-import { eventIs } from "../utils/events/truffle";
+import { eventIs, findEvent } from "../utils/events/truffle";
+import { Currencies } from "../utils";
 
 export const CollateralPool = artifacts.require("CollateralPool");
 
@@ -527,6 +528,26 @@ export class UserBotCommands {
         logger.info(`User ${this.nativeAddress} is asking for core vault redemption of ${lots} lots.`);
         await redeemer.requestRedemptionFromCoreVault(lots);
         console.log(`Asked for redemption of ${lots} from core vault.`);
+    }
+
+    /**
+     * Confirm payment to core vault (e.g. to increase balance for fees).
+     * @param txHash
+     */
+    async confirmTransferToCoreVault(txHash: string) {
+        const coreVaultManager = requireNotNullCmd(this.context.coreVaultManager, "core vault not enabled");
+        const coreVaultAddress = await coreVaultManager.coreVaultAddress();
+        console.log(`Obtaining FDC proof of transaction ${txHash}. Please wait a few minutes...`)
+        const proof = await this.context.attestationProvider.provePayment(txHash, null, coreVaultAddress);
+        console.log(`Confirming transaction...`)
+        const res = await coreVaultManager.confirmPayment(proof, { from: this.nativeAddress });
+        const paymentEvt = findEvent(res, "PaymentConfirmed");
+        if (paymentEvt != null) {
+            const currency = await Currencies.fassetUnderlyingToken(this.context);
+            console.log(`Payment confirmed, deposited ${currency.format(paymentEvt.args.amount)} to core vault.`);
+        } else {
+            console.log(`Payment already confirmed.`)
+        }
     }
 
     async listRedemption(requestId: string): Promise<void> {
