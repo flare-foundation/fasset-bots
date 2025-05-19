@@ -20,6 +20,8 @@ export * from "./interfaces/IWalletTransaction";
 export { logger } from "./utils/logger";
 export { createCustomizedLogger, loggerAsyncStorage, type LoggerPaths } from "./utils/logger-config";
 export * from "./utils/axios-utils";
+export { XRPBlockchainAPI } from "./blockchain-apis/XRPBlockchainAPI";
+export { UTXOBlockchainAPI } from "./blockchain-apis/UTXOBlockchainAPI";
 
 export class XrpAccount extends XrpAccountGeneration {
     constructor(inTestnet: boolean) {

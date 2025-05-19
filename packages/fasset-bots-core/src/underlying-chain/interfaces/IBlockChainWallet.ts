@@ -1,7 +1,5 @@
-import { FeeParams, ITransactionMonitor, TransactionInfo } from "@flarenetwork/simple-wallet";
+import { FeeParams, ITransactionMonitor, TransactionInfo, UTXOBlockchainAPI, XRPBlockchainAPI } from "@flarenetwork/simple-wallet";
 import type BN from "bn.js";
-import { XRPBlockchainAPI } from "../../../../simple-wallet/src/blockchain-apis/XRPBlockchainAPI";
-import { UTXOBlockchainAPI } from "../../../../simple-wallet/src/blockchain-apis/UTXOBlockchainAPI";
 
 type NumberLike = BN | number | string;
 

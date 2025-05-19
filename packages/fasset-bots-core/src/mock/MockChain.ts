@@ -3,9 +3,7 @@ import { IBlock, IBlockChain, IBlockId, ITransaction, TxInputOutput, TX_FAILED, 
 import { BNish, BN_ZERO, fail, systemTimestamp, toBN, requireNotNull } from "../utils/helpers";
 import type { IBlockChainWallet, TransactionOptionsWithFee, SpentReceivedObject } from "../underlying-chain/interfaces/IBlockChainWallet";
 import BN from "bn.js";
-import { ITransactionMonitor, TransactionInfo, TransactionStatus } from "@flarenetwork/simple-wallet";
-import { XRPBlockchainAPI } from "../../../simple-wallet/src/blockchain-apis/XRPBlockchainAPI";
-import { UTXOBlockchainAPI } from "../../../simple-wallet/src/blockchain-apis/UTXOBlockchainAPI";
+import { ITransactionMonitor, TransactionInfo, TransactionStatus, UTXOBlockchainAPI, XRPBlockchainAPI } from "@flarenetwork/simple-wallet";
 
 export type MockTransactionOptions = { status?: number };
 export type MockTransactionOptionsWithFee = TransactionOptionsWithFee & { status?: number };

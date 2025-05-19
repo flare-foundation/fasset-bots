@@ -25,7 +25,6 @@ import { TestAssetBotContext, createTestAssetContext } from "../../test-utils/cr
 import { getLotSize } from "../../test-utils/fuzzing-utils";
 import { loadFixtureCopyVars } from "../../test-utils/hardhat-test-helpers";
 import { createTestAgentBot, createTestAgentBotAndMakeAvailable, mintVaultCollateralToOwner, updateAgentBotUnderlyingBlockProof } from "../../test-utils/helpers";
-import { sleepMs } from "../../../../simple-wallet/src/utils/utils";
 use(spies);
 use(chaiAsPromised);
 

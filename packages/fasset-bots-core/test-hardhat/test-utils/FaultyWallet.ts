@@ -1,7 +1,5 @@
-import { ITransactionMonitor, TransactionInfo } from "@flarenetwork/simple-wallet";
+import { ITransactionMonitor, TransactionInfo, UTXOBlockchainAPI, XRPBlockchainAPI } from "@flarenetwork/simple-wallet";
 import { IBlockChainWallet, TransactionOptionsWithFee } from "../../src/underlying-chain/interfaces/IBlockChainWallet";
-import { XRPBlockchainAPI } from "../../../simple-wallet/src/blockchain-apis/XRPBlockchainAPI";
-import { UTXOBlockchainAPI } from "../../../simple-wallet/src/blockchain-apis/UTXOBlockchainAPI";
 
 export class FaultyWallet implements IBlockChainWallet {
     monitoringId(): string {

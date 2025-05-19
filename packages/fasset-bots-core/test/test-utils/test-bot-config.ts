@@ -19,7 +19,7 @@ export const COSTON_CONFIG_INVALID = "./test/test-utils/run-config-test/run-conf
 
 export const INDEXER_URL_XRP: string[] = [
     "https://testnet-verifier-fdc-test.aflabs.org/verifier/xrp",
-    "https://testnet-verifier-fdc-test.aflabs.org/verifier/xrp"
+    // "https://testnet-verifier-fdc-test.aflabs.org/verifier/xrp"
 ];
 
 export const INDEXER_URL_BTC: string[] = [
