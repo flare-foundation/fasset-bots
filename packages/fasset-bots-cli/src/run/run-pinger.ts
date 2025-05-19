@@ -8,15 +8,30 @@ import { getOneDefaultToAll, programWithCommonOptions } from "../utils/program";
 import { toplevelRun } from "../utils/toplevel";
 
 
+const MAX_PING_ERROR = 10
+const SLEEP_ON_ERROR_MS = 30_000
+
 const program = programWithCommonOptions("bot", "all_fassets");
 program.argument('<pingsleepsec>', 'Time to sleep between pings in milliseconds', parseInt);
+
+async function pingFAssetAgent(infoBot: InfoBotCommands, agent: any, pingerAddress: string) {
+    for (let i = 0; i < MAX_PING_ERROR; i++) {
+        try {
+            await infoBot.context.assetManager.agentPing(agent, 0, { from: pingerAddress });
+            break
+        } catch (e: any) {
+            logger.error(`Could not ping agent due to: ${e}`)
+            await sleep(SLEEP_ON_ERROR_MS)
+        }
+    }
+}
 
 async function pingFAssetAgents(infoBot: InfoBotCommands, pingerAddress: string) {
     const agents = await infoBot.getAllAgents();
     for (const agent of agents) {
-        console.log(`Pinging ${infoBot.context.fAssetSymbol} agent vault ${agent}...`);
-        await infoBot.context.assetManager.agentPing(agent, 0, { from: pingerAddress });
-        console.log(`Pinged ${infoBot.context.fAssetSymbol} agent vault ${agent}`);
+        logger.info(`Pinging ${infoBot.context.fAssetSymbol} agent vault ${agent}...`);
+        await pingFAssetAgent(infoBot, agent, pingerAddress)
+        logger.info(`Pinged ${infoBot.context.fAssetSymbol} agent vault ${agent}`);
     }
 }
 

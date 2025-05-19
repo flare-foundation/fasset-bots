@@ -310,6 +310,22 @@ program
         }
     });
 
+program
+    .command("confirmTransferToCoreVault")
+    .description("Confirm payment to core vault (e.g. to increase balance for fees)")
+    .argument("<transactionHash>")
+    .action(async (transactionHash: string) => {
+        const options: { config: string; secrets: string; fasset: string; dir: string } = program.opts();
+        const bot = await UserBotCommands.create(options.secrets, options.config, options.fasset, options.dir, registerToplevelFinalizer);
+        try {
+            await bot.confirmTransferToCoreVault(transactionHash);
+        } catch (error) {
+            translateError(error, {
+                "transaction not found": "Transaction does not exist or has not been finalized yet."
+            });
+        }
+    });
+
 async function getPoolAddress(bot: PoolUserBotCommands, poolAddressOrTokenSymbol: string) {
     return Web3.utils.isAddress(poolAddressOrTokenSymbol)
         ? poolAddressOrTokenSymbol
