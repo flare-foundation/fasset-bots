@@ -43,7 +43,7 @@
         "minBalanceOnServiceAccount": "10",
         "minBalanceOnWorkAccount": "1000",
         "defaultAgentSettings": {
-            "fee": "1%",
+            "fee": "0.25%",
             "poolFeeShare": "30%",
             "mintingVaultCollateralRatio": "1.4",
             "mintingPoolCollateralRatio": "1.7",
