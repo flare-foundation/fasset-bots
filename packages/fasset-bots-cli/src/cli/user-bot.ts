@@ -36,12 +36,13 @@ program
     .command("agents")
     .description("Lists the available agents")
     .option("-a, --all", "print all agents, including non-public")
-    .action(async (opts: { all: boolean }) => {
+    .option("-v, --verbose", "more verbose output (include underlying address; implies --all)")
+    .action(async (opts: { all: boolean, verbose: boolean }) => {
         const options: { config: string; secrets: string; fasset: string } = program.opts();
         const secrets = await Secrets.load(options.secrets);
         const bot = await InfoBotCommands.create(secrets, options.config, options.fasset, registerToplevelFinalizer);
-        if (opts.all) {
-            await bot.printAllAgents();
+        if (opts.all || opts.verbose) {
+            await bot.printAllAgents(opts.verbose);
         } else {
             await bot.printAvailableAgents();
         }

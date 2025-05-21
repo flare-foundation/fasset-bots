@@ -94,7 +94,7 @@ describe("InfoBot cli commands unit tests", () => {
             await createTestAgentAndMakeAvailable(context, ownerAddress, agentUnderlyingAddress + "_" + i);
             await createTestAgent(context, ownerAddress, agentUnderlyingAddress + "_" + (100 + i));
         }
-        await infoBot.printAllAgents();
+        await infoBot.printAllAgents(false);
         await infoBot.printAvailableAgents();
         expect(spyLog).to.be.called.gt(0);
     });

@@ -1,3 +1,5 @@
+import { isNotNull } from "../utils";
+
 export type ColumnType = [title: string, width: number, align: "l" | "r"];
 
 export class ColumnPrinter {
@@ -6,13 +8,20 @@ export class ColumnPrinter {
         public separator: string = "  "
     ) {
         for (const ct of this.columns) {
-            ct[1] = Math.max(ct[1], ct[0].length);
+            const [title, width, _] = ct;
+            ct[1] = width > 0 ? Math.max(width, title.length) : 0;
         }
     }
 
     line(...items: string[]) {
-        const chunks = this.columns.map(([_, width, align], ind) => (align === "l" ? String(items[ind]).padEnd(width) : String(items[ind]).padStart(width)));
+        function alignText(width: number, align: string, item: unknown) {
+            if (width === 0) return null;
+            const text = String(item);
+            return align === "l" ? text.padEnd(width) : text.padStart(width);
+        }
+        const chunks = this.columns.map(([_, width, align], ind) => alignText(width, align, items[ind])).filter(isNotNull);
         return chunks.join(this.separator);
+
     }
 
     printHeader() {

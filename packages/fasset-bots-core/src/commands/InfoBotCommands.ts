@@ -190,11 +190,12 @@ export class InfoBotCommands {
         logger.info(`InfoBot finished fetching pools.`);
     }
 
-    async printAllAgents() {
+    async printAllAgents(verbose: boolean) {
         const printer = new ColumnPrinter([
             ["Vault address", 42, "l"],
             ["Owner", 20, "l"],
             ["Owner address", 42, "l"],
+            ["Underlying address", verbose ? 42 : 0, "l"],
             ["Collateral", 12, "l"],
             ["Minted lots", 12, "r"],
             ["Free lots", 12, "r"],
@@ -228,7 +229,7 @@ export class InfoBotCommands {
             const available = info.publiclyAvailable ? "YES" : "no";
             const status = AgentStatus[Number(info.status)];
             const mintedFee = Number(info.feeBIPS) / 100;
-            printer.printLine(vaultAddr, ownerName.slice(0, 20), info.ownerManagementAddress,
+            printer.printLine(vaultAddr, ownerName.slice(0, 20), info.ownerManagementAddress, info.underlyingAddressString,
                 collateral.slice(0, 12), mintedLots.toFixed(2), freeLots.toFixed(0), mintedFee.toFixed(2), available, status);
             ++countAll;
             totalMinted += mintedLots;
