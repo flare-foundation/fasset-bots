@@ -30,14 +30,15 @@ program
                 Object.entries(event.args as any)
                     .filter(([k, v]) => !isBigNumber(k) && k !== "__length__")
                     .map(([k, v]) => [k, web3DeepNormalize(v)]));
-            const datetime = new Date(timestamp * 1000);
+            const datetime = new Date(timestamp * 1000).toISOString().replace(/\.0+Z$/, "Z");
             if (timestamp - lastPrintTs >= DAYS) {
                 lastPrintTs = timestamp;
-                console.error(`Exporting date ${datetime.toISOString()}, event count ${count}, elapsed ${(Date.now() - startTime) / 1000}s`);
+                console.error(`Exporting date ${datetime}, event count ${count}, elapsed ${(Date.now() - startTime) / 1000}s`);
             }
             const niceEvent = {
-                datetime: datetime.toISOString(),
+                datetime: datetime,
                 block: Number(event.blockNumber),
+                transaction: Number(event.transactionIndex),
                 timestamp: timestamp,
                 name: event.event,
                 args: niceArgs,
