@@ -135,7 +135,6 @@ export class AgentBotReturnFromCoreVault {
             }
         }
         await this.requestPaymentProof(rootEm, returnFromCoreVault);
-        await this.notifier.sendReturnFromCVRequestPaymentProof(returnFromCoreVault.requestId.toString(), returnFromCoreVault.paymentReference);
     }
 
 
@@ -155,6 +154,7 @@ export class AgentBotReturnFromCoreVault {
             logger.info(squashSpace`Agent ${this.agent.vaultAddress} requested payment proof for transaction ${txHash}
                 and return from core vault ${returnFromCoreVault.requestId.toString()};
                 proofRequestRound ${request.round}, proofRequestData ${request.data}`);
+            await this.notifier.sendReturnFromCVRequestPaymentProof(returnFromCoreVault.requestId.toString(), returnFromCoreVault.paymentReference);
         } catch (error) {
             logger.error(`Agent ${this.agent.vaultAddress} cannot yet request payment proof for transaction ${txHash} and return from core vault ${returnFromCoreVault.requestId.toString()}.`,
                 messageForExpectedError(error, [AttestationHelperError]));

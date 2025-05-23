@@ -524,7 +524,6 @@ export class AgentBotRedemption {
                 assertNotNull(redemption.txHash);
                 if (await this.bot.underlyingTransactionFinalized(redemption.txHash)) {
                     await this.requestPaymentProof(rootEm, redemption);
-                    await this.notifier.sendRedemptionRequestPaymentProof(redemption.requestId.toString());
                 }
             }
         } else if (info.status == TransactionStatus.TX_REPLACED && (
@@ -537,7 +536,6 @@ export class AgentBotRedemption {
                 assertNotNull(redemption.txHash);
                 if (await this.bot.underlyingTransactionFinalized(redemption.txHash)) {
                     await this.requestPaymentProof(rootEm, redemption);
-                    await this.notifier.sendRedemptionRequestPaymentProof(redemption.requestId.toString());
                 }
             }
         }
@@ -563,6 +561,7 @@ export class AgentBotRedemption {
             logger.info(squashSpace`Agent ${this.agent.vaultAddress} requested payment proof for transaction ${txHash}
                 and redemption ${redemption.requestId}; target underlying address ${redemption.paymentAddress},
                 proofRequestRound ${request.round}, proofRequestData ${request.data}`);
+            await this.notifier.sendRedemptionRequestPaymentProof(redemption.requestId.toString());
         } catch (error) {
             logger.error(`Agent ${this.agent.vaultAddress} cannot yet request payment proof for transaction ${txHash} and redemption ${redemption.requestId}.`,
                 messageForExpectedError(error, [AttestationHelperError]));

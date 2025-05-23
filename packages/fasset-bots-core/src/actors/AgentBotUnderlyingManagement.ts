@@ -289,7 +289,6 @@ export class AgentBotUnderlyingManagement {
                 assertNotNull(underlyingPayment.txHash);
                 if (await this.bot.underlyingTransactionFinalized(underlyingPayment.txHash)) {
                     await this.requestPaymentProof(rootEm, underlyingPayment);
-                    await this.notifier.sendAgentUnderlyingPaymentRequestPaymentProof(underlyingPayment.txHash, underlyingPayment.type);
                 }
             } else {
                 if (underlyingPayment.type === AgentUnderlyingPaymentType.WITHDRAWAL) {
@@ -310,7 +309,6 @@ export class AgentBotUnderlyingManagement {
                 assertNotNull(underlyingPayment.txHash);
                 if (await this.bot.underlyingTransactionFinalized(underlyingPayment.txHash)) {
                     await this.requestPaymentProof(rootEm, underlyingPayment);
-                    await this.notifier.sendAgentUnderlyingPaymentRequestPaymentProof(underlyingPayment.txHash, underlyingPayment.type);
                 }
             } else {
                 if (underlyingPayment.type === AgentUnderlyingPaymentType.WITHDRAWAL) {
@@ -345,8 +343,10 @@ export class AgentBotUnderlyingManagement {
                 proofRequestRound: request.round,
                 proofRequestData: request.data,
             });
+            assertNotNull(underlyingPayment.txHash);
             logger.info(squashSpace`Agent ${this.agent.vaultAddress} requested payment proof for underlying ${underlyingPayment.type}
                 payment ${underlyingPayment.txHash}; proofRequestRound ${request.round}, proofRequestData ${request.data}`);
+            await this.notifier.sendAgentUnderlyingPaymentRequestPaymentProof(underlyingPayment.txHash, underlyingPayment.type);
         } catch (error) {
             logger.info(`Agent ${this.agent.vaultAddress} cannot yet request payment proof for underlying ${underlyingPayment.type} payment ${underlyingPayment.txHash}:`,
                 messageForExpectedError(error, [AttestationHelperError]));
