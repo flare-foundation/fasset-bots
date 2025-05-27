@@ -567,7 +567,7 @@ export class AgentService {
                 const symbol = collateralType.tokenFtsoSymbol;
                 const collateralClass = collateralType.collateralClass;
                 if (collateralClass == toBN(2)) {
-                    const template = JSON.stringify(allTemplate);
+                    const template = JSON.stringify(cli.agentBotSettings.defaultAgentSettings);
                     collateralTokens.push({symbol: symbol, template: template});
                 }
             }
