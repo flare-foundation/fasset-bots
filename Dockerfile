@@ -1,6 +1,9 @@
 FROM node:18
 
+ENV NODE_ENV=production
+
 WORKDIR /usr/src/app
+
 RUN chown node /usr/src/app
 
 RUN apt-get update && apt-get install -y iputils-ping less nano build-essential
@@ -13,9 +16,4 @@ RUN mkdir -p log
 
 COPY --chown=node . .
 
-RUN yarn install
-
-
-RUN yarn
-
-RUN yarn build
+RUN yarn install --frozen-lockfile; yarn build; yarn cache clean;
