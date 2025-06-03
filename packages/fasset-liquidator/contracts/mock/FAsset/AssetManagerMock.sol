@@ -391,22 +391,22 @@ contract AssetManagerMock {
     // challenges
 
     function illegalPaymentChallenge(
-        BalanceDecreasingTransaction.Proof calldata /* _transaction */,
+        IBalanceDecreasingTransaction.Proof calldata /* _transaction */,
         address _agentVault
     ) external {
         putAgentInFullLiquidation(_agentVault);
     }
 
     function doublePaymentChallenge(
-        BalanceDecreasingTransaction.Proof calldata /* _payment1 */,
-        BalanceDecreasingTransaction.Proof calldata /* _payment2 */,
+        IBalanceDecreasingTransaction.Proof calldata /* _payment1 */,
+        IBalanceDecreasingTransaction.Proof calldata /* _payment2 */,
         address _agentVault
     ) external {
         putAgentInFullLiquidation(_agentVault);
     }
 
     function freeBalanceNegativeChallenge(
-        BalanceDecreasingTransaction.Proof[] calldata /* _payments */,
+        IBalanceDecreasingTransaction.Proof[] calldata /* _payments */,
         address _agentVault
     ) external {
         putAgentInFullLiquidation(_agentVault);

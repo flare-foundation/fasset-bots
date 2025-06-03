@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {SafeERC20, IERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IIAgentVault, IIAssetManager, IAssetManager} from "@flarenetwork/fasset/contracts/assetManager/interfaces/IIAgentVault.sol";
-import {BalanceDecreasingTransaction} from "@flarenetwork/fasset/contracts/stateConnector/interfaces/ISCProofVerifier.sol";
+import {IBalanceDecreasingTransaction} from "@flarenetwork/flare-periphery-contracts/flare/IFdcVerification.sol";
 import {IChallenger} from "./interfaces/IChallenger.sol";
 import {ILiquidator} from "./interfaces/ILiquidator.sol";
 import {ArbitrageConfig} from "./lib/Structs.sol";
@@ -24,7 +24,7 @@ contract Challenger is IChallenger, Liquidator {
     ) Liquidator(_flashLender, _dex) {}
 
     function illegalPaymentChallenge(
-        BalanceDecreasingTransaction.Proof calldata _transaction,
+        IBalanceDecreasingTransaction.Proof calldata _transaction,
         address _agentVault,
         address _profitTo,
         ArbitrageConfig calldata _config
@@ -39,8 +39,8 @@ contract Challenger is IChallenger, Liquidator {
     }
 
     function doublePaymentChallenge(
-        BalanceDecreasingTransaction.Proof calldata _payment1,
-        BalanceDecreasingTransaction.Proof calldata _payment2,
+        IBalanceDecreasingTransaction.Proof calldata _payment1,
+        IBalanceDecreasingTransaction.Proof calldata _payment2,
         address _agentVault,
         address _profitTo,
         ArbitrageConfig calldata _config
@@ -56,7 +56,7 @@ contract Challenger is IChallenger, Liquidator {
     }
 
     function freeBalanceNegativeChallenge(
-        BalanceDecreasingTransaction.Proof[] calldata _payments,
+        IBalanceDecreasingTransaction.Proof[] calldata _payments,
         address _agentVault,
         address _profitTo,
         ArbitrageConfig calldata _config
