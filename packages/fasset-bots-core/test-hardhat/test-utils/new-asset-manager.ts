@@ -6,7 +6,7 @@ import { findEvent } from "../../src/utils/events/truffle";
 import { BNish, requireNotNull, ZERO_ADDRESS } from "../../src/utils/helpers";
 import { artifacts, web3 } from "../../src/utils/web3";
 import { web3DeepNormalize } from "../../src/utils/web3normalize";
-import { AssetManagerControllerInstance, AssetManagerInitInstance, FAssetInstance, GovernanceSettingsInstance, IDiamondLoupeInstance, IIAssetManagerInstance, Truffle } from "../../typechain-truffle";
+import { AssetManagerInitInstance, FAssetInstance, GovernanceSettingsInstance, IDiamondLoupeInstance, IIAssetManagerControllerInstance, IIAssetManagerInstance, Truffle } from "../../typechain-truffle";
 import { GovernanceCallTimelocked } from "../../typechain-truffle/AssetManagerController";
 import { DiamondCut, FacetCutAction } from "./diamond";
 
@@ -43,7 +43,7 @@ export async function newAssetManagerController(governanceSettings: string, init
 
 export async function newAssetManager(
     governanceAddress: string,
-    assetManagerController: string | AssetManagerControllerInstance,
+    assetManagerController: string | IIAssetManagerControllerInstance,
     name: string,
     symbol: string,
     assetName: string,

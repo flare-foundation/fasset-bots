@@ -1,4 +1,4 @@
-import { AddressUpdaterInstance, AgentOwnerRegistryInstance, AssetManagerControllerInstance, CoreVaultManagerInstance, FAssetInstance, IIAssetManagerInstance, IPriceChangeEmitterInstance, WNatInstance } from "../../typechain-truffle";
+import { AddressUpdaterInstance, AgentOwnerRegistryInstance, IIAssetManagerControllerInstance, CoreVaultManagerInstance, FAssetInstance, IIAssetManagerInstance, IPriceChangeEmitterInstance, WNatInstance } from "../../typechain-truffle";
 import { ChallengerBotStrategyDefinition, LiquidatorBotStrategyDefinition } from "../config";
 import { ChainInfo } from "../fasset/ChainInfo";
 import { NativeChainInfo } from "../fasset/ChainInfo";
@@ -10,7 +10,7 @@ import { ContractWithEvents } from "../utils/events/truffle";
 
 export type AddressUpdaterEvents = import("../../typechain-truffle/AddressUpdater").AllEvents;
 export type WNatEvents = import("../../typechain-truffle/WNat").AllEvents;
-export type AssetManagerControllerEvents = import("../../typechain-truffle/AssetManagerController").AllEvents;
+export type IIAssetManagerControllerEvents = import("../../typechain-truffle/IIAssetManagerController").AllEvents;
 export type AssetManagerEvents = import("../../typechain-truffle/IIAssetManager").AllEvents;
 export type FAssetEvents = import("../../typechain-truffle/FAsset").AllEvents;
 export type IERC20Events = import("../../typechain-truffle/IERC20").AllEvents;
@@ -25,7 +25,7 @@ export interface IAssetNativeChainContext {
     wNat: ContractWithEvents<WNatInstance, WNatEvents>;
     fAsset: ContractWithEvents<FAssetInstance, FAssetEvents>;
     assetManager: ContractWithEvents<IIAssetManagerInstance, AssetManagerEvents>;
-    assetManagerController: ContractWithEvents<AssetManagerControllerInstance, AssetManagerControllerEvents>;
+    assetManagerController: ContractWithEvents<IIAssetManagerControllerInstance, IIAssetManagerControllerEvents>;
     addressUpdater: ContractWithEvents<AddressUpdaterInstance, AddressUpdaterEvents>;
     agentOwnerRegistry: ContractWithEvents<AgentOwnerRegistryInstance, AgentOwnerRegistryEvents>;
     coreVaultManager: ContractWithEvents<CoreVaultManagerInstance, CoreVaultManagerEvents> | undefined;

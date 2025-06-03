@@ -3,7 +3,7 @@ import "source-map-support/register";
 
 import { CollateralClass, CollateralType } from "@flarenetwork/fasset-bots-core";
 import { ChainContracts, Secrets, loadConfigFile, loadContracts } from "@flarenetwork/fasset-bots-core/config";
-import { AssetManagerControllerInstance } from "@flarenetwork/fasset-bots-core/types";
+import { IIAssetManagerControllerInstance } from "@flarenetwork/fasset-bots-core/types";
 import { artifacts, authenticatedHttpProvider, initWeb3, requireNotNull, requireNotNullCmd, toBNExp, web3 } from "@flarenetwork/fasset-bots-core/utils";
 import { readFileSync } from "fs";
 import { AgentRegistrationTransport } from "../utils/open-beta";
@@ -14,7 +14,7 @@ import type { OptionValues } from "commander";
 
 const FakeERC20 = artifacts.require("FakeERC20");
 const AgentOwnerRegistry = artifacts.require("AgentOwnerRegistry");
-const AssetManagerController = artifacts.require("AssetManagerController");
+const IIAssetManagerController = artifacts.require("IIAssetManagerController");
 const CoreVaultManager = artifacts.require("CoreVaultManager");
 
 const program = programWithCommonOptions("util", "all_fassets");
@@ -167,10 +167,10 @@ async function transferFakeTokens(secretsFile: string, configFileName: string, t
     await token.transfer(recipientAddress, amountBN, { from: deployerAddress });
 }
 
-async function runOnAssetManagerController(secretsFile: string, configFileName: string, method: (controller: AssetManagerControllerInstance, assetManagers: string[]) => Promise<void>) {
+async function runOnAssetManagerController(secretsFile: string, configFileName: string, method: (controller: IIAssetManagerControllerInstance, assetManagers: string[]) => Promise<void>) {
     const [_secrets, config] = await initEnvironment(secretsFile, configFileName);
     const contracts = loadContracts(requireNotNull(config.contractsJsonFile));
-    const controller = await AssetManagerController.at(contracts.AssetManagerController.address);
+    const controller = await IIAssetManagerController.at(contracts.AssetManagerController.address);
     const assetManagers = await controller.getAssetManagers();
     return await method(controller, assetManagers);
 }
@@ -192,7 +192,7 @@ async function addCollateralToken(secretsFile: string, configFileName: string, p
         ccbMinCollateralRatioBIPS: parameters.ccbMinCollateralRatioBIPS,
         safetyMinCollateralRatioBIPS: parameters.safetyMinCollateralRatioBIPS,
     };
-    const controller = await AssetManagerController.at(contracts.AssetManagerController.address);
+    const controller = await IIAssetManagerController.at(contracts.AssetManagerController.address);
     const assetManagers = await controller.getAssetManagers();
     await controller.addCollateralType(assetManagers, collateralType, { from: deployerAddress });
 }

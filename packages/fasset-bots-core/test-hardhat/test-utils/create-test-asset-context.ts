@@ -19,14 +19,14 @@ import { BNish, DAYS, HOURS, MAX_BIPS, MINUTES, Modify, requireNotNull, toBIPS, 
 import { artifacts } from "../../src/utils/web3";
 import { web3DeepNormalize } from "../../src/utils/web3normalize";
 import { testChainInfo, TestChainInfo, testNativeChainInfo } from "../../test/test-utils/TestChainInfo";
-import { AddressUpdaterInstance, AssetManagerControllerInstance, FakeERC20Instance, FtsoV2PriceStoreMockInstance, IIAssetManagerInstance } from "../../typechain-truffle";
+import { AddressUpdaterInstance, FakeERC20Instance, FtsoV2PriceStoreMockInstance, IIAssetManagerControllerInstance, IIAssetManagerInstance } from "../../typechain-truffle";
 import { FaultyWallet } from "./FaultyWallet";
 import { AssetManagerInitSettings, newAssetManager, newAssetManagerController, waitForTimelock } from "./new-asset-manager";
 
 const AgentVault = artifacts.require("AgentVault");
 const AgentVaultFactory = artifacts.require("AgentVaultFactory");
 const FdcVerification = artifacts.require("FdcVerificationMock");
-const AssetManagerController = artifacts.require("AssetManagerController");
+const IIAssetManagerController = artifacts.require("IIAssetManagerController");
 const AddressUpdater = artifacts.require("AddressUpdater");
 const WNat = artifacts.require("WNat");
 const Relay = artifacts.require("RelayMock");
@@ -44,7 +44,7 @@ const IPriceChangeEmitter = artifacts.require("IPriceChangeEmitter");
 const CoreVaultManager = artifacts.require('CoreVaultManager');
 const CoreVaultManagerProxy = artifacts.require('CoreVaultManagerProxy');
 
-export type AssetManagerControllerEvents = import("../../typechain-truffle/AssetManagerController").AllEvents;
+export type IIAssetManagerControllerEvents = import("../../typechain-truffle/IIAssetManagerController").AllEvents;
 export type FtsoV2PriceStoreMockEvents = import("../../typechain-truffle/FtsoV2PriceStoreMock").AllEvents;
 
 const GENESIS_GOVERNANCE = "0xfffEc6C83c8BF5c3F4AE0cCF8c45CE20E4560BD7";
@@ -58,7 +58,7 @@ export type TestAssetBotContext = Modify<
     IAssetAgentContext,
     {
         blockchainIndexer: MockIndexer;
-        assetManagerController: ContractWithEvents<AssetManagerControllerInstance, AssetManagerControllerEvents>;
+        assetManagerController: ContractWithEvents<IIAssetManagerControllerInstance, IIAssetManagerControllerEvents>;
         stablecoins: Record<string, ContractWithEvents<FakeERC20Instance, IERC20Events>>;
         collaterals: CollateralType[];
         priceStore: ContractWithEvents<FtsoV2PriceStoreMockInstance, FtsoV2PriceStoreMockEvents>;
@@ -213,7 +213,7 @@ export async function createTestAssetContext(
     // contract wrappers
     const relay = await Relay.at(contracts.Relay.address);
     const fdcHub = await FdcHub.at(contracts.FdcHub.address);
-    const assetManagerController = await AssetManagerController.at(contracts.AssetManagerController.address);
+    const assetManagerController = await IIAssetManagerController.at(contracts.AssetManagerController.address);
     const wNat = await WNat.at(contracts.WNat.address);
     const addressUpdater = await AddressUpdater.at(contracts.AddressUpdater.address);
     const agentOwnerRegistry = await AgentOwnerRegistry.at(contracts.AgentOwnerRegistry.address);

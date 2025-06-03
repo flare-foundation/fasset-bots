@@ -1,6 +1,10 @@
 import BN from "bn.js";
-import { AgentAvailable, AgentCollateralTypeChanged, CollateralReserved, DustChanged, LiquidationPerformed, MintingExecuted, MintingPaymentDefault, RedemptionDefault, RedemptionPaymentBlocked, RedemptionPaymentFailed, RedemptionPerformed, RedemptionRequested, SelfClose, UnderlyingBalanceToppedUp, UnderlyingWithdrawalAnnounced, UnderlyingWithdrawalConfirmed } from "../../typechain-truffle/AssetManagerController";
-import { AgentVaultCreated, CollateralReservationDeleted, RedeemedInCollateral, RedemptionPoolFeeMinted, ReturnFromCoreVaultConfirmed, ReturnFromCoreVaultRequested, SelfMint, TransferToCoreVaultDefaulted } from "../../typechain-truffle/IIAssetManager";
+import {
+    AgentAvailable, AgentCollateralTypeChanged, AgentVaultCreated, CollateralReservationDeleted, CollateralReserved, DustChanged, LiquidationPerformed,
+    MintingExecuted, MintingPaymentDefault, RedeemedInCollateral, RedemptionDefault, RedemptionPaymentBlocked, RedemptionPaymentFailed, RedemptionPerformed,
+    RedemptionPoolFeeMinted, RedemptionRequested, ReturnFromCoreVaultConfirmed, ReturnFromCoreVaultRequested, SelfClose, SelfMint, TransferToCoreVaultDefaulted,
+    UnderlyingBalanceToppedUp, UnderlyingWithdrawalAnnounced, UnderlyingWithdrawalConfirmed
+} from "../../typechain-truffle/IIAssetManager";
 import { AgentInfo, AgentStatus, CollateralClass, CollateralType } from "../fasset/AssetManagerTypes";
 import { roundUBAToAmg } from "../fasset/Conversions";
 import { EventArgs } from "../utils/events/common";
