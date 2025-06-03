@@ -60,6 +60,10 @@ export type AllEvents =
   | RequestsOffsetSet;
 
 export interface FdcHubMockInstance extends Truffle.ContractInstance {
+  fdcInflationConfigurations(
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<string>;
+
   fdcRequestFeeConfigurations(
     txDetails?: Truffle.TransactionDetails
   ): Promise<string>;
@@ -82,6 +86,10 @@ export interface FdcHubMockInstance extends Truffle.ContractInstance {
   requestsOffsetSeconds(txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
   methods: {
+    fdcInflationConfigurations(
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+
     fdcRequestFeeConfigurations(
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;

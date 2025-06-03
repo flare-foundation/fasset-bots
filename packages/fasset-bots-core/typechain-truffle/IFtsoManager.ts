@@ -100,6 +100,16 @@ export interface RewardEpochFinalized {
   };
 }
 
+export interface UseGoodRandomSet {
+  name: "UseGoodRandomSet";
+  args: {
+    useGoodRandom: boolean;
+    maxWaitForGoodRandomSeconds: BN;
+    0: boolean;
+    1: BN;
+  };
+}
+
 export type AllEvents =
   | AccruingUnearnedRewardsFailed
   | DistributingRewardsFailed
@@ -109,7 +119,8 @@ export type AllEvents =
   | FtsoFallbackMode
   | InitializingCurrentEpochStateForRevealFailed
   | PriceEpochFinalized
-  | RewardEpochFinalized;
+  | RewardEpochFinalized
+  | UseGoodRandomSet;
 
 export interface IFtsoManagerInstance extends Truffle.ContractInstance {
   active(txDetails?: Truffle.TransactionDetails): Promise<boolean>;

@@ -237,29 +237,6 @@ export interface FakeERC20Instance extends Truffle.ContractInstance {
     ): Promise<number>;
   };
 
-  initialise: {
-    (
-      _governanceSettings: string,
-      _initialGovernance: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      _governanceSettings: string,
-      _initialGovernance: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _governanceSettings: string,
-      _initialGovernance: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _governanceSettings: string,
-      _initialGovernance: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
   isExecutor(
     _address: string,
     txDetails?: Truffle.TransactionDetails
@@ -498,29 +475,6 @@ export interface FakeERC20Instance extends Truffle.ContractInstance {
       estimateGas(
         spender: string,
         addedValue: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
-
-    initialise: {
-      (
-        _governanceSettings: string,
-        _initialGovernance: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        _governanceSettings: string,
-        _initialGovernance: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        _governanceSettings: string,
-        _initialGovernance: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        _governanceSettings: string,
-        _initialGovernance: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };

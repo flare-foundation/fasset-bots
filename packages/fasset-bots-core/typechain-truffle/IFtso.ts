@@ -43,8 +43,10 @@ export interface PriceFinalized {
     epochId: BN;
     price: BN;
     rewardedFtso: boolean;
-    lowRewardPrice: BN;
-    highRewardPrice: BN;
+    lowIQRRewardPrice: BN;
+    highIQRRewardPrice: BN;
+    lowElasticBandRewardPrice: BN;
+    highElasticBandRewardPrice: BN;
     finalizationType: BN;
     timestamp: BN;
     0: BN;
@@ -54,6 +56,8 @@ export interface PriceFinalized {
     4: BN;
     5: BN;
     6: BN;
+    7: BN;
+    8: BN;
   };
 }
 

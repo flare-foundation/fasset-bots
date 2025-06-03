@@ -70,12 +70,11 @@ export interface IIGovernanceVotePowerInstance
     txDetails?: Truffle.TransactionDetails
   ): Promise<string>;
 
-  getVotes(
-    account: string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<BN>;
+  getVotes(_who: string, txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
   ownerToken(txDetails?: Truffle.TransactionDetails): Promise<string>;
+
+  pChainStakeMirror(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
   setCleanerContract: {
     (_cleanerContract: string, txDetails?: Truffle.TransactionDetails): Promise<
@@ -193,12 +192,11 @@ export interface IIGovernanceVotePowerInstance
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
 
-    getVotes(
-      account: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<BN>;
+    getVotes(_who: string, txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
     ownerToken(txDetails?: Truffle.TransactionDetails): Promise<string>;
+
+    pChainStakeMirror(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
     setCleanerContract: {
       (

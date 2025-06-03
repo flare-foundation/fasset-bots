@@ -115,6 +115,29 @@ export interface IFdcVerificationInstance extends Truffle.ContractInstance {
     txDetails?: Truffle.TransactionDetails
   ): Promise<boolean>;
 
+  verifyJsonApi(
+    _proof: {
+      merkleProof: string[];
+      data: {
+        attestationType: string;
+        sourceId: string;
+        votingRound: number | BN | string;
+        lowestUsedTimestamp: number | BN | string;
+        requestBody: {
+          url: string;
+          httpMethod: string;
+          headers: string;
+          queryParams: string;
+          body: string;
+          postProcessJq: string;
+          abiSignature: string;
+        };
+        responseBody: { abiEncodedData: string };
+      };
+    },
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<boolean>;
+
   verifyPayment(
     _proof: {
       merkleProof: string[];
@@ -275,6 +298,29 @@ export interface IFdcVerificationInstance extends Truffle.ContractInstance {
               removed: boolean;
             }[];
           };
+        };
+      },
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<boolean>;
+
+    verifyJsonApi(
+      _proof: {
+        merkleProof: string[];
+        data: {
+          attestationType: string;
+          sourceId: string;
+          votingRound: number | BN | string;
+          lowestUsedTimestamp: number | BN | string;
+          requestBody: {
+            url: string;
+            httpMethod: string;
+            headers: string;
+            queryParams: string;
+            body: string;
+            postProcessJq: string;
+            abiSignature: string;
+          };
+          responseBody: { abiEncodedData: string };
         };
       },
       txDetails?: Truffle.TransactionDetails

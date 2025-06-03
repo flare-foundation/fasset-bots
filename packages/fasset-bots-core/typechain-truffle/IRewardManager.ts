@@ -299,6 +299,8 @@ export interface IRewardManagerInstance extends Truffle.ContractInstance {
     txDetails?: Truffle.TransactionDetails
   ): Promise<BN>;
 
+  rewardManagerId(txDetails?: Truffle.TransactionDetails): Promise<BN>;
+
   methods: {
     active(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
 
@@ -553,6 +555,8 @@ export interface IRewardManagerInstance extends Truffle.ContractInstance {
       _rewardEpochId: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<BN>;
+
+    rewardManagerId(txDetails?: Truffle.TransactionDetails): Promise<BN>;
   };
 
   getPastEvents(event: string): Promise<EventData[]>;

@@ -667,29 +667,6 @@ export interface CoreVaultManagerInstance extends Truffle.ContractInstance {
 
   governanceSettings(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
-  initialise: {
-    (
-      _governanceSettings: string,
-      _initialGovernance: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      _governanceSettings: string,
-      _initialGovernance: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _governanceSettings: string,
-      _initialGovernance: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _governanceSettings: string,
-      _initialGovernance: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
   initialize: {
     (
       _governanceSettings: string,
@@ -1443,29 +1420,6 @@ export interface CoreVaultManagerInstance extends Truffle.ContractInstance {
     governance(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
     governanceSettings(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
-    initialise: {
-      (
-        _governanceSettings: string,
-        _initialGovernance: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        _governanceSettings: string,
-        _initialGovernance: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        _governanceSettings: string,
-        _initialGovernance: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        _governanceSettings: string,
-        _initialGovernance: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
 
     initialize: {
       (

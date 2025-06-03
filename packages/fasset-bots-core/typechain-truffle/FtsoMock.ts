@@ -47,8 +47,10 @@ export interface PriceFinalized {
     epochId: BN;
     price: BN;
     rewardedFtso: boolean;
-    lowRewardPrice: BN;
-    highRewardPrice: BN;
+    lowIQRRewardPrice: BN;
+    highIQRRewardPrice: BN;
+    lowElasticBandRewardPrice: BN;
+    highElasticBandRewardPrice: BN;
     finalizationType: BN;
     timestamp: BN;
     0: BN;
@@ -58,6 +60,8 @@ export interface PriceFinalized {
     4: BN;
     5: BN;
     6: BN;
+    7: BN;
+    8: BN;
   };
 }
 
@@ -123,6 +127,8 @@ export interface FtsoMockInstance extends Truffle.ContractInstance {
       _highAssetUSDThreshold: number | BN | string,
       _highAssetTurnoutThresholdBIPS: number | BN | string,
       _lowNatTurnoutThresholdBIPS: number | BN | string,
+      _elasticBandRewardBIPS: number | BN | string,
+      _elasticBandWidthPPM: number | BN | string,
       _trustedAddresses: string[],
       txDetails?: Truffle.TransactionDetails
     ): Promise<Truffle.TransactionResponse<AllEvents>>;
@@ -133,6 +139,8 @@ export interface FtsoMockInstance extends Truffle.ContractInstance {
       _highAssetUSDThreshold: number | BN | string,
       _highAssetTurnoutThresholdBIPS: number | BN | string,
       _lowNatTurnoutThresholdBIPS: number | BN | string,
+      _elasticBandRewardBIPS: number | BN | string,
+      _elasticBandWidthPPM: number | BN | string,
       _trustedAddresses: string[],
       txDetails?: Truffle.TransactionDetails
     ): Promise<void>;
@@ -143,6 +151,8 @@ export interface FtsoMockInstance extends Truffle.ContractInstance {
       _highAssetUSDThreshold: number | BN | string,
       _highAssetTurnoutThresholdBIPS: number | BN | string,
       _lowNatTurnoutThresholdBIPS: number | BN | string,
+      _elasticBandRewardBIPS: number | BN | string,
+      _elasticBandWidthPPM: number | BN | string,
       _trustedAddresses: string[],
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
@@ -153,6 +163,8 @@ export interface FtsoMockInstance extends Truffle.ContractInstance {
       _highAssetUSDThreshold: number | BN | string,
       _highAssetTurnoutThresholdBIPS: number | BN | string,
       _lowNatTurnoutThresholdBIPS: number | BN | string,
+      _elasticBandRewardBIPS: number | BN | string,
+      _elasticBandWidthPPM: number | BN | string,
       _trustedAddresses: string[],
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
@@ -171,7 +183,17 @@ export interface FtsoMockInstance extends Truffle.ContractInstance {
 
   epochsConfiguration(
     txDetails?: Truffle.TransactionDetails
-  ): Promise<{ 0: BN; 1: BN; 2: BN; 3: BN; 4: BN; 5: BN; 6: string[] }>;
+  ): Promise<{
+    0: BN;
+    1: BN;
+    2: BN;
+    3: BN;
+    4: BN;
+    5: BN;
+    6: BN;
+    7: BN;
+    8: string[];
+  }>;
 
   fallbackFinalizePriceEpoch: {
     (
@@ -537,6 +559,8 @@ export interface FtsoMockInstance extends Truffle.ContractInstance {
         _highAssetUSDThreshold: number | BN | string,
         _highAssetTurnoutThresholdBIPS: number | BN | string,
         _lowNatTurnoutThresholdBIPS: number | BN | string,
+        _elasticBandRewardBIPS: number | BN | string,
+        _elasticBandWidthPPM: number | BN | string,
         _trustedAddresses: string[],
         txDetails?: Truffle.TransactionDetails
       ): Promise<Truffle.TransactionResponse<AllEvents>>;
@@ -547,6 +571,8 @@ export interface FtsoMockInstance extends Truffle.ContractInstance {
         _highAssetUSDThreshold: number | BN | string,
         _highAssetTurnoutThresholdBIPS: number | BN | string,
         _lowNatTurnoutThresholdBIPS: number | BN | string,
+        _elasticBandRewardBIPS: number | BN | string,
+        _elasticBandWidthPPM: number | BN | string,
         _trustedAddresses: string[],
         txDetails?: Truffle.TransactionDetails
       ): Promise<void>;
@@ -557,6 +583,8 @@ export interface FtsoMockInstance extends Truffle.ContractInstance {
         _highAssetUSDThreshold: number | BN | string,
         _highAssetTurnoutThresholdBIPS: number | BN | string,
         _lowNatTurnoutThresholdBIPS: number | BN | string,
+        _elasticBandRewardBIPS: number | BN | string,
+        _elasticBandWidthPPM: number | BN | string,
         _trustedAddresses: string[],
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
@@ -567,6 +595,8 @@ export interface FtsoMockInstance extends Truffle.ContractInstance {
         _highAssetUSDThreshold: number | BN | string,
         _highAssetTurnoutThresholdBIPS: number | BN | string,
         _lowNatTurnoutThresholdBIPS: number | BN | string,
+        _elasticBandRewardBIPS: number | BN | string,
+        _elasticBandWidthPPM: number | BN | string,
         _trustedAddresses: string[],
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
@@ -585,7 +615,17 @@ export interface FtsoMockInstance extends Truffle.ContractInstance {
 
     epochsConfiguration(
       txDetails?: Truffle.TransactionDetails
-    ): Promise<{ 0: BN; 1: BN; 2: BN; 3: BN; 4: BN; 5: BN; 6: string[] }>;
+    ): Promise<{
+      0: BN;
+      1: BN;
+      2: BN;
+      3: BN;
+      4: BN;
+      5: BN;
+      6: BN;
+      7: BN;
+      8: string[];
+    }>;
 
     fallbackFinalizePriceEpoch: {
       (

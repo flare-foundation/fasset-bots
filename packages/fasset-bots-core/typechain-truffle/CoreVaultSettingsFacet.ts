@@ -198,29 +198,6 @@ export interface CoreVaultSettingsFacetInstance
     ): Promise<number>;
   };
 
-  initialise: {
-    (
-      _governanceSettings: string,
-      _initialGovernance: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      _governanceSettings: string,
-      _initialGovernance: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _governanceSettings: string,
-      _initialGovernance: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _governanceSettings: string,
-      _initialGovernance: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
   isExecutor(
     _address: string,
     txDetails?: Truffle.TransactionDetails
@@ -486,29 +463,6 @@ export interface CoreVaultSettingsFacetInstance
         _redemptionFeeBIPS: number | BN | string,
         _minimumAmountLeftBIPS: number | BN | string,
         _minimumRedeemLots: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
-
-    initialise: {
-      (
-        _governanceSettings: string,
-        _initialGovernance: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        _governanceSettings: string,
-        _initialGovernance: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        _governanceSettings: string,
-        _initialGovernance: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        _governanceSettings: string,
-        _initialGovernance: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };

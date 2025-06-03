@@ -4,6 +4,43 @@
 
 import type { Truffle } from "./types";
 
+import { IIFtsoContract } from "./IIFtso";
+import { IFtsoGenesisContract } from "./IFtsoGenesis";
+import { IFtsoManagerGenesisContract } from "./IFtsoManagerGenesis";
+import { IFtsoRegistryGenesisContract } from "./IFtsoRegistryGenesis";
+import { IAddressValidityVerificationContract } from "./IAddressValidityVerification";
+import { IBalanceDecreasingTransactionVerificationContract } from "./IBalanceDecreasingTransactionVerification";
+import { IClaimSetupManagerContract } from "./IClaimSetupManager";
+import { IConfirmedBlockHeightExistsVerificationContract } from "./IConfirmedBlockHeightExistsVerification";
+import { IDelegationAccountContract } from "./IDelegationAccount";
+import { IDistributionToDelegatorsContract } from "./IDistributionToDelegators";
+import { IEVMTransactionVerificationContract } from "./IEVMTransactionVerification";
+import { IFdcHubContract } from "./IFdcHub";
+import { IFdcInflationConfigurationsContract } from "./IFdcInflationConfigurations";
+import { IFdcRequestFeeConfigurationsContract } from "./IFdcRequestFeeConfigurations";
+import { IFdcVerificationContract } from "./IFdcVerification";
+import { IFtsoContract } from "./IFtso";
+import { IFtsoManagerContract } from "./IFtsoManager";
+import { IFtsoRegistryContract } from "./IFtsoRegistry";
+import { IGovernanceSettingsContract } from "./IGovernanceSettings";
+import { IGovernanceVotePowerContract } from "./IGovernanceVotePower";
+import { IPaymentVerificationContract } from "./IPaymentVerification";
+import { IPChainStakeMirrorContract } from "./IPChainStakeMirror";
+import { IPChainVotePowerContract } from "./IPChainVotePower";
+import { IReferencedPaymentNonexistenceVerificationContract } from "./IReferencedPaymentNonexistenceVerification";
+import { IRelayContract } from "./IRelay";
+import { IRewardManagerContract } from "./IRewardManager";
+import { IVPContractEventsContract } from "./IVPContractEvents";
+import { IVPTokenContract } from "./IVPToken";
+import { IWeb2JsonVerificationContract } from "./IWeb2JsonVerification";
+import { RandomNumberV2InterfaceContract } from "./RandomNumberV2Interface";
+import { RewardsV2InterfaceContract } from "./RewardsV2Interface";
+import { IICleanableContract } from "./IICleanable";
+import { IIGovernanceVotePowerContract } from "./IIGovernanceVotePower";
+import { IIVPContractContract } from "./IIVPContract";
+import { IIVPTokenContract } from "./IIVPToken";
+import { IIAddressUpdatableContract } from "./IIAddressUpdatable";
+import { IIAddressUpdaterContract } from "./IIAddressUpdater";
 import { MockContractContract } from "./MockContract";
 import { MockInterfaceContract } from "./MockInterface";
 import { IERC1822ProxiableContract } from "./IERC1822Proxiable";
@@ -93,11 +130,14 @@ import { FtsoManagerMockContract } from "./FtsoManagerMock";
 import { FtsoMockContract } from "./FtsoMock";
 import { FtsoRegistryMockContract } from "./FtsoRegistryMock";
 import { FtsoV2PriceStoreMockContract } from "./FtsoV2PriceStoreMock";
+import { MaliciousDistributionToDelegatorsContract } from "./MaliciousDistributionToDelegators";
 import { MaliciousExecutorContract } from "./MaliciousExecutor";
 import { MaliciousMintExecutorContract } from "./MaliciousMintExecutor";
+import { MaliciousRewardManagerContract } from "./MaliciousRewardManager";
 import { MaliciousTokenContract } from "./MaliciousToken";
 import { MerkleTreeMockContract } from "./MerkleTreeMock";
 import { MinterMockContract } from "./MinterMock";
+import { RewardManagerMockContract } from "./RewardManagerMock";
 import { DiamondLoupeFacetContract } from "./DiamondLoupeFacet";
 import { DiamondContract } from "./Diamond";
 import { IDiamondContract } from "./IDiamond";
@@ -124,6 +164,7 @@ import { AddressUpdatableContract } from "./AddressUpdatable";
 import { GovernedContract } from "./Governed";
 import { GovernedBaseContract } from "./GovernedBase";
 import { GovernedProxyImplementationContract } from "./GovernedProxyImplementation";
+import { IAddressUpdatableContract } from "./IAddressUpdatable";
 import { IGovernedContract } from "./IGoverned";
 import { AddressUpdatableMockContract } from "./AddressUpdatableMock";
 import { GovernedMockContract } from "./GovernedMock";
@@ -140,6 +181,7 @@ import { IAgentOwnerRegistryContract } from "./IAgentOwnerRegistry";
 import { IAgentPingContract } from "./IAgentPing";
 import { IAgentVaultContract } from "./IAgentVault";
 import { IAssetManagerContract } from "./IAssetManager";
+import { IAssetManagerControllerContract } from "./IAssetManagerController";
 import { IAssetManagerEventsContract } from "./IAssetManagerEvents";
 import { ICollateralPoolContract } from "./ICollateralPool";
 import { ICollateralPoolTokenContract } from "./ICollateralPoolToken";
@@ -151,6 +193,7 @@ import { IRedemptionTimeExtensionContract } from "./IRedemptionTimeExtension";
 import { ITransferFeesContract } from "./ITransferFees";
 import { IWhitelistContract } from "./IWhitelist";
 import { IUpgradableProxyContract } from "./IUpgradableProxy";
+import { IUUPSUpgradeableContract } from "./IUUPSUpgradeable";
 import { MathUtilsMockContract } from "./MathUtilsMock";
 import { MockProxyFactoryContract } from "./MockProxyFactory";
 import { SafeMath64MockContract } from "./SafeMath64Mock";
@@ -159,40 +202,6 @@ import { SuicidalMockContract } from "./SuicidalMock";
 import { TestUUPSProxyImplContract } from "./TestUUPSProxyImpl";
 import { TimeCumulativeMockContract } from "./TimeCumulativeMock";
 import { TransfersMockContract } from "./TransfersMock";
-import { IAddressValidityVerificationContract } from "./IAddressValidityVerification";
-import { IBalanceDecreasingTransactionVerificationContract } from "./IBalanceDecreasingTransactionVerification";
-import { IConfirmedBlockHeightExistsVerificationContract } from "./IConfirmedBlockHeightExistsVerification";
-import { IEVMTransactionVerificationContract } from "./IEVMTransactionVerification";
-import { IPaymentVerificationContract } from "./IPaymentVerification";
-import { IReferencedPaymentNonexistenceVerificationContract } from "./IReferencedPaymentNonexistenceVerification";
-import { IFdcHubContract } from "./IFdcHub";
-import { IFdcInflationConfigurationsContract } from "./IFdcInflationConfigurations";
-import { IFdcRequestFeeConfigurationsContract } from "./IFdcRequestFeeConfigurations";
-import { IFdcVerificationContract } from "./IFdcVerification";
-import { IRelayContract } from "./IRelay";
-import { IRewardManagerContract } from "./IRewardManager";
-import { RandomNumberV2InterfaceContract } from "./RandomNumberV2Interface";
-import { RewardsV2InterfaceContract } from "./RewardsV2Interface";
-import { IIAddressUpdatableContract } from "./IIAddressUpdatable";
-import { IIAddressUpdaterContract } from "./IIAddressUpdater";
-import { IIFtsoContract } from "./IIFtso";
-import { IFtsoGenesisContract } from "./IFtsoGenesis";
-import { IFtsoManagerGenesisContract } from "./IFtsoManagerGenesis";
-import { IFtsoRegistryGenesisContract } from "./IFtsoRegistryGenesis";
-import { IICleanableContract } from "./IICleanable";
-import { IIGovernanceVotePowerContract } from "./IIGovernanceVotePower";
-import { IIVPContractContract } from "./IIVPContract";
-import { IIVPTokenContract } from "./IIVPToken";
-import { IClaimSetupManagerContract } from "./IClaimSetupManager";
-import { IDelegationAccountContract } from "./IDelegationAccount";
-import { IDistributionToDelegatorsContract } from "./IDistributionToDelegators";
-import { IFtsoContract } from "./IFtso";
-import { IFtsoManagerContract } from "./IFtsoManager";
-import { IFtsoRegistryContract } from "./IFtsoRegistry";
-import { IGovernanceSettingsContract } from "./IGovernanceSettings";
-import { IGovernanceVotePowerContract } from "./IGovernanceVotePower";
-import { IVPContractEventsContract } from "./IVPContractEvents";
-import { IVPTokenContract } from "./IVPToken";
 import { AddressUpdaterContract } from "./AddressUpdater";
 import { DelegatableContract } from "./Delegatable";
 import { DelegationHistoryContract } from "./DelegationHistory";
@@ -218,6 +227,59 @@ import { MockLibraryNonDepContract } from "./MockLibraryNonDep";
 export type * from "./types";
 
     export interface Artifacts {
+      require(name: "IIFtso"): IIFtsoContract;
+      require(name: "IFtsoGenesis"): IFtsoGenesisContract;
+      require(name: "IFtsoManagerGenesis"): IFtsoManagerGenesisContract;
+      require(name: "IFtsoRegistryGenesis"): IFtsoRegistryGenesisContract;
+      require(
+        name: "IAddressValidityVerification"
+      ): IAddressValidityVerificationContract;
+      require(
+        name: "IBalanceDecreasingTransactionVerification"
+      ): IBalanceDecreasingTransactionVerificationContract;
+      require(name: "IClaimSetupManager"): IClaimSetupManagerContract;
+      require(
+        name: "IConfirmedBlockHeightExistsVerification"
+      ): IConfirmedBlockHeightExistsVerificationContract;
+      require(name: "IDelegationAccount"): IDelegationAccountContract;
+      require(
+        name: "IDistributionToDelegators"
+      ): IDistributionToDelegatorsContract;
+      require(
+        name: "IEVMTransactionVerification"
+      ): IEVMTransactionVerificationContract;
+      require(name: "IFdcHub"): IFdcHubContract;
+      require(
+        name: "IFdcInflationConfigurations"
+      ): IFdcInflationConfigurationsContract;
+      require(
+        name: "IFdcRequestFeeConfigurations"
+      ): IFdcRequestFeeConfigurationsContract;
+      require(name: "IFdcVerification"): IFdcVerificationContract;
+      require(name: "IFtso"): IFtsoContract;
+      require(name: "IFtsoManager"): IFtsoManagerContract;
+      require(name: "IFtsoRegistry"): IFtsoRegistryContract;
+      require(name: "IGovernanceSettings"): IGovernanceSettingsContract;
+      require(name: "IGovernanceVotePower"): IGovernanceVotePowerContract;
+      require(name: "IPaymentVerification"): IPaymentVerificationContract;
+      require(name: "IPChainStakeMirror"): IPChainStakeMirrorContract;
+      require(name: "IPChainVotePower"): IPChainVotePowerContract;
+      require(
+        name: "IReferencedPaymentNonexistenceVerification"
+      ): IReferencedPaymentNonexistenceVerificationContract;
+      require(name: "IRelay"): IRelayContract;
+      require(name: "IRewardManager"): IRewardManagerContract;
+      require(name: "IVPContractEvents"): IVPContractEventsContract;
+      require(name: "IVPToken"): IVPTokenContract;
+      require(name: "IWeb2JsonVerification"): IWeb2JsonVerificationContract;
+      require(name: "RandomNumberV2Interface"): RandomNumberV2InterfaceContract;
+      require(name: "RewardsV2Interface"): RewardsV2InterfaceContract;
+      require(name: "IICleanable"): IICleanableContract;
+      require(name: "IIGovernanceVotePower"): IIGovernanceVotePowerContract;
+      require(name: "IIVPContract"): IIVPContractContract;
+      require(name: "IIVPToken"): IIVPTokenContract;
+      require(name: "IIAddressUpdatable"): IIAddressUpdatableContract;
+      require(name: "IIAddressUpdater"): IIAddressUpdaterContract;
       require(name: "MockContract"): MockContractContract;
       require(name: "MockInterface"): MockInterfaceContract;
       require(name: "IERC1822Proxiable"): IERC1822ProxiableContract;
@@ -341,11 +403,16 @@ export type * from "./types";
       require(name: "FtsoMock"): FtsoMockContract;
       require(name: "FtsoRegistryMock"): FtsoRegistryMockContract;
       require(name: "FtsoV2PriceStoreMock"): FtsoV2PriceStoreMockContract;
+      require(
+        name: "MaliciousDistributionToDelegators"
+      ): MaliciousDistributionToDelegatorsContract;
       require(name: "MaliciousExecutor"): MaliciousExecutorContract;
       require(name: "MaliciousMintExecutor"): MaliciousMintExecutorContract;
+      require(name: "MaliciousRewardManager"): MaliciousRewardManagerContract;
       require(name: "MaliciousToken"): MaliciousTokenContract;
       require(name: "MerkleTreeMock"): MerkleTreeMockContract;
       require(name: "MinterMock"): MinterMockContract;
+      require(name: "RewardManagerMock"): RewardManagerMockContract;
       require(name: "DiamondLoupeFacet"): DiamondLoupeFacetContract;
       require(name: "Diamond"): DiamondContract;
       require(name: "IDiamond"): IDiamondContract;
@@ -378,6 +445,7 @@ export type * from "./types";
       require(
         name: "GovernedProxyImplementation"
       ): GovernedProxyImplementationContract;
+      require(name: "IAddressUpdatable"): IAddressUpdatableContract;
       require(name: "IGoverned"): IGovernedContract;
       require(name: "AddressUpdatableMock"): AddressUpdatableMockContract;
       require(name: "GovernedMock"): GovernedMockContract;
@@ -400,6 +468,7 @@ export type * from "./types";
       require(name: "IAgentPing"): IAgentPingContract;
       require(name: "IAgentVault"): IAgentVaultContract;
       require(name: "IAssetManager"): IAssetManagerContract;
+      require(name: "IAssetManagerController"): IAssetManagerControllerContract;
       require(name: "IAssetManagerEvents"): IAssetManagerEventsContract;
       require(name: "ICollateralPool"): ICollateralPoolContract;
       require(name: "ICollateralPoolToken"): ICollateralPoolTokenContract;
@@ -413,6 +482,7 @@ export type * from "./types";
       require(name: "ITransferFees"): ITransferFeesContract;
       require(name: "IWhitelist"): IWhitelistContract;
       require(name: "IUpgradableProxy"): IUpgradableProxyContract;
+      require(name: "IUUPSUpgradeable"): IUUPSUpgradeableContract;
       require(name: "MathUtilsMock"): MathUtilsMockContract;
       require(name: "MockProxyFactory"): MockProxyFactoryContract;
       require(name: "SafeMath64Mock"): SafeMath64MockContract;
@@ -421,56 +491,6 @@ export type * from "./types";
       require(name: "TestUUPSProxyImpl"): TestUUPSProxyImplContract;
       require(name: "TimeCumulativeMock"): TimeCumulativeMockContract;
       require(name: "TransfersMock"): TransfersMockContract;
-      require(
-        name: "IAddressValidityVerification"
-      ): IAddressValidityVerificationContract;
-      require(
-        name: "IBalanceDecreasingTransactionVerification"
-      ): IBalanceDecreasingTransactionVerificationContract;
-      require(
-        name: "IConfirmedBlockHeightExistsVerification"
-      ): IConfirmedBlockHeightExistsVerificationContract;
-      require(
-        name: "IEVMTransactionVerification"
-      ): IEVMTransactionVerificationContract;
-      require(name: "IPaymentVerification"): IPaymentVerificationContract;
-      require(
-        name: "IReferencedPaymentNonexistenceVerification"
-      ): IReferencedPaymentNonexistenceVerificationContract;
-      require(name: "IFdcHub"): IFdcHubContract;
-      require(
-        name: "IFdcInflationConfigurations"
-      ): IFdcInflationConfigurationsContract;
-      require(
-        name: "IFdcRequestFeeConfigurations"
-      ): IFdcRequestFeeConfigurationsContract;
-      require(name: "IFdcVerification"): IFdcVerificationContract;
-      require(name: "IRelay"): IRelayContract;
-      require(name: "IRewardManager"): IRewardManagerContract;
-      require(name: "RandomNumberV2Interface"): RandomNumberV2InterfaceContract;
-      require(name: "RewardsV2Interface"): RewardsV2InterfaceContract;
-      require(name: "IIAddressUpdatable"): IIAddressUpdatableContract;
-      require(name: "IIAddressUpdater"): IIAddressUpdaterContract;
-      require(name: "IIFtso"): IIFtsoContract;
-      require(name: "IFtsoGenesis"): IFtsoGenesisContract;
-      require(name: "IFtsoManagerGenesis"): IFtsoManagerGenesisContract;
-      require(name: "IFtsoRegistryGenesis"): IFtsoRegistryGenesisContract;
-      require(name: "IICleanable"): IICleanableContract;
-      require(name: "IIGovernanceVotePower"): IIGovernanceVotePowerContract;
-      require(name: "IIVPContract"): IIVPContractContract;
-      require(name: "IIVPToken"): IIVPTokenContract;
-      require(name: "IClaimSetupManager"): IClaimSetupManagerContract;
-      require(name: "IDelegationAccount"): IDelegationAccountContract;
-      require(
-        name: "IDistributionToDelegators"
-      ): IDistributionToDelegatorsContract;
-      require(name: "IFtso"): IFtsoContract;
-      require(name: "IFtsoManager"): IFtsoManagerContract;
-      require(name: "IFtsoRegistry"): IFtsoRegistryContract;
-      require(name: "IGovernanceSettings"): IGovernanceSettingsContract;
-      require(name: "IGovernanceVotePower"): IGovernanceVotePowerContract;
-      require(name: "IVPContractEvents"): IVPContractEventsContract;
-      require(name: "IVPToken"): IVPTokenContract;
       require(name: "AddressUpdater"): AddressUpdaterContract;
       require(name: "Delegatable"): DelegatableContract;
       require(name: "DelegationHistory"): DelegationHistoryContract;
@@ -496,6 +516,121 @@ export type * from "./types";
 
 
 
+export { IIFtsoContract, IIFtsoInstance } from "./IIFtso";
+export { IFtsoGenesisContract, IFtsoGenesisInstance } from "./IFtsoGenesis";
+export {
+  IFtsoManagerGenesisContract,
+  IFtsoManagerGenesisInstance,
+} from "./IFtsoManagerGenesis";
+export {
+  IFtsoRegistryGenesisContract,
+  IFtsoRegistryGenesisInstance,
+} from "./IFtsoRegistryGenesis";
+export {
+  IAddressValidityVerificationContract,
+  IAddressValidityVerificationInstance,
+} from "./IAddressValidityVerification";
+export {
+  IBalanceDecreasingTransactionVerificationContract,
+  IBalanceDecreasingTransactionVerificationInstance,
+} from "./IBalanceDecreasingTransactionVerification";
+export {
+  IClaimSetupManagerContract,
+  IClaimSetupManagerInstance,
+} from "./IClaimSetupManager";
+export {
+  IConfirmedBlockHeightExistsVerificationContract,
+  IConfirmedBlockHeightExistsVerificationInstance,
+} from "./IConfirmedBlockHeightExistsVerification";
+export {
+  IDelegationAccountContract,
+  IDelegationAccountInstance,
+} from "./IDelegationAccount";
+export {
+  IDistributionToDelegatorsContract,
+  IDistributionToDelegatorsInstance,
+} from "./IDistributionToDelegators";
+export {
+  IEVMTransactionVerificationContract,
+  IEVMTransactionVerificationInstance,
+} from "./IEVMTransactionVerification";
+export { IFdcHubContract, IFdcHubInstance } from "./IFdcHub";
+export {
+  IFdcInflationConfigurationsContract,
+  IFdcInflationConfigurationsInstance,
+} from "./IFdcInflationConfigurations";
+export {
+  IFdcRequestFeeConfigurationsContract,
+  IFdcRequestFeeConfigurationsInstance,
+} from "./IFdcRequestFeeConfigurations";
+export {
+  IFdcVerificationContract,
+  IFdcVerificationInstance,
+} from "./IFdcVerification";
+export { IFtsoContract, IFtsoInstance } from "./IFtso";
+export { IFtsoManagerContract, IFtsoManagerInstance } from "./IFtsoManager";
+export { IFtsoRegistryContract, IFtsoRegistryInstance } from "./IFtsoRegistry";
+export {
+  IGovernanceSettingsContract,
+  IGovernanceSettingsInstance,
+} from "./IGovernanceSettings";
+export {
+  IGovernanceVotePowerContract,
+  IGovernanceVotePowerInstance,
+} from "./IGovernanceVotePower";
+export {
+  IPaymentVerificationContract,
+  IPaymentVerificationInstance,
+} from "./IPaymentVerification";
+export {
+  IPChainStakeMirrorContract,
+  IPChainStakeMirrorInstance,
+} from "./IPChainStakeMirror";
+export {
+  IPChainVotePowerContract,
+  IPChainVotePowerInstance,
+} from "./IPChainVotePower";
+export {
+  IReferencedPaymentNonexistenceVerificationContract,
+  IReferencedPaymentNonexistenceVerificationInstance,
+} from "./IReferencedPaymentNonexistenceVerification";
+export { IRelayContract, IRelayInstance } from "./IRelay";
+export {
+  IRewardManagerContract,
+  IRewardManagerInstance,
+} from "./IRewardManager";
+export {
+  IVPContractEventsContract,
+  IVPContractEventsInstance,
+} from "./IVPContractEvents";
+export { IVPTokenContract, IVPTokenInstance } from "./IVPToken";
+export {
+  IWeb2JsonVerificationContract,
+  IWeb2JsonVerificationInstance,
+} from "./IWeb2JsonVerification";
+export {
+  RandomNumberV2InterfaceContract,
+  RandomNumberV2InterfaceInstance,
+} from "./RandomNumberV2Interface";
+export {
+  RewardsV2InterfaceContract,
+  RewardsV2InterfaceInstance,
+} from "./RewardsV2Interface";
+export { IICleanableContract, IICleanableInstance } from "./IICleanable";
+export {
+  IIGovernanceVotePowerContract,
+  IIGovernanceVotePowerInstance,
+} from "./IIGovernanceVotePower";
+export { IIVPContractContract, IIVPContractInstance } from "./IIVPContract";
+export { IIVPTokenContract, IIVPTokenInstance } from "./IIVPToken";
+export {
+  IIAddressUpdatableContract,
+  IIAddressUpdatableInstance,
+} from "./IIAddressUpdatable";
+export {
+  IIAddressUpdaterContract,
+  IIAddressUpdaterInstance,
+} from "./IIAddressUpdater";
 export { MockContractContract, MockContractInstance } from "./MockContract";
 export { MockInterfaceContract, MockInterfaceInstance } from "./MockInterface";
 export {
@@ -790,6 +925,10 @@ export {
   FtsoV2PriceStoreMockInstance,
 } from "./FtsoV2PriceStoreMock";
 export {
+  MaliciousDistributionToDelegatorsContract,
+  MaliciousDistributionToDelegatorsInstance,
+} from "./MaliciousDistributionToDelegators";
+export {
   MaliciousExecutorContract,
   MaliciousExecutorInstance,
 } from "./MaliciousExecutor";
@@ -797,6 +936,10 @@ export {
   MaliciousMintExecutorContract,
   MaliciousMintExecutorInstance,
 } from "./MaliciousMintExecutor";
+export {
+  MaliciousRewardManagerContract,
+  MaliciousRewardManagerInstance,
+} from "./MaliciousRewardManager";
 export {
   MaliciousTokenContract,
   MaliciousTokenInstance,
@@ -806,6 +949,10 @@ export {
   MerkleTreeMockInstance,
 } from "./MerkleTreeMock";
 export { MinterMockContract, MinterMockInstance } from "./MinterMock";
+export {
+  RewardManagerMockContract,
+  RewardManagerMockInstance,
+} from "./RewardManagerMock";
 export {
   DiamondLoupeFacetContract,
   DiamondLoupeFacetInstance,
@@ -865,6 +1012,10 @@ export {
   GovernedProxyImplementationContract,
   GovernedProxyImplementationInstance,
 } from "./GovernedProxyImplementation";
+export {
+  IAddressUpdatableContract,
+  IAddressUpdatableInstance,
+} from "./IAddressUpdatable";
 export { IGovernedContract, IGovernedInstance } from "./IGoverned";
 export {
   AddressUpdatableMockContract,
@@ -909,6 +1060,10 @@ export { IAgentPingContract, IAgentPingInstance } from "./IAgentPing";
 export { IAgentVaultContract, IAgentVaultInstance } from "./IAgentVault";
 export { IAssetManagerContract, IAssetManagerInstance } from "./IAssetManager";
 export {
+  IAssetManagerControllerContract,
+  IAssetManagerControllerInstance,
+} from "./IAssetManagerController";
+export {
   IAssetManagerEventsContract,
   IAssetManagerEventsInstance,
 } from "./IAssetManagerEvents";
@@ -940,6 +1095,10 @@ export {
   IUpgradableProxyContract,
   IUpgradableProxyInstance,
 } from "./IUpgradableProxy";
+export {
+  IUUPSUpgradeableContract,
+  IUUPSUpgradeableInstance,
+} from "./IUUPSUpgradeable";
 export { MathUtilsMockContract, MathUtilsMockInstance } from "./MathUtilsMock";
 export {
   MockProxyFactoryContract,
@@ -960,109 +1119,6 @@ export {
   TimeCumulativeMockInstance,
 } from "./TimeCumulativeMock";
 export { TransfersMockContract, TransfersMockInstance } from "./TransfersMock";
-export {
-  IAddressValidityVerificationContract,
-  IAddressValidityVerificationInstance,
-} from "./IAddressValidityVerification";
-export {
-  IBalanceDecreasingTransactionVerificationContract,
-  IBalanceDecreasingTransactionVerificationInstance,
-} from "./IBalanceDecreasingTransactionVerification";
-export {
-  IConfirmedBlockHeightExistsVerificationContract,
-  IConfirmedBlockHeightExistsVerificationInstance,
-} from "./IConfirmedBlockHeightExistsVerification";
-export {
-  IEVMTransactionVerificationContract,
-  IEVMTransactionVerificationInstance,
-} from "./IEVMTransactionVerification";
-export {
-  IPaymentVerificationContract,
-  IPaymentVerificationInstance,
-} from "./IPaymentVerification";
-export {
-  IReferencedPaymentNonexistenceVerificationContract,
-  IReferencedPaymentNonexistenceVerificationInstance,
-} from "./IReferencedPaymentNonexistenceVerification";
-export { IFdcHubContract, IFdcHubInstance } from "./IFdcHub";
-export {
-  IFdcInflationConfigurationsContract,
-  IFdcInflationConfigurationsInstance,
-} from "./IFdcInflationConfigurations";
-export {
-  IFdcRequestFeeConfigurationsContract,
-  IFdcRequestFeeConfigurationsInstance,
-} from "./IFdcRequestFeeConfigurations";
-export {
-  IFdcVerificationContract,
-  IFdcVerificationInstance,
-} from "./IFdcVerification";
-export { IRelayContract, IRelayInstance } from "./IRelay";
-export {
-  IRewardManagerContract,
-  IRewardManagerInstance,
-} from "./IRewardManager";
-export {
-  RandomNumberV2InterfaceContract,
-  RandomNumberV2InterfaceInstance,
-} from "./RandomNumberV2Interface";
-export {
-  RewardsV2InterfaceContract,
-  RewardsV2InterfaceInstance,
-} from "./RewardsV2Interface";
-export {
-  IIAddressUpdatableContract,
-  IIAddressUpdatableInstance,
-} from "./IIAddressUpdatable";
-export {
-  IIAddressUpdaterContract,
-  IIAddressUpdaterInstance,
-} from "./IIAddressUpdater";
-export { IIFtsoContract, IIFtsoInstance } from "./IIFtso";
-export { IFtsoGenesisContract, IFtsoGenesisInstance } from "./IFtsoGenesis";
-export {
-  IFtsoManagerGenesisContract,
-  IFtsoManagerGenesisInstance,
-} from "./IFtsoManagerGenesis";
-export {
-  IFtsoRegistryGenesisContract,
-  IFtsoRegistryGenesisInstance,
-} from "./IFtsoRegistryGenesis";
-export { IICleanableContract, IICleanableInstance } from "./IICleanable";
-export {
-  IIGovernanceVotePowerContract,
-  IIGovernanceVotePowerInstance,
-} from "./IIGovernanceVotePower";
-export { IIVPContractContract, IIVPContractInstance } from "./IIVPContract";
-export { IIVPTokenContract, IIVPTokenInstance } from "./IIVPToken";
-export {
-  IClaimSetupManagerContract,
-  IClaimSetupManagerInstance,
-} from "./IClaimSetupManager";
-export {
-  IDelegationAccountContract,
-  IDelegationAccountInstance,
-} from "./IDelegationAccount";
-export {
-  IDistributionToDelegatorsContract,
-  IDistributionToDelegatorsInstance,
-} from "./IDistributionToDelegators";
-export { IFtsoContract, IFtsoInstance } from "./IFtso";
-export { IFtsoManagerContract, IFtsoManagerInstance } from "./IFtsoManager";
-export { IFtsoRegistryContract, IFtsoRegistryInstance } from "./IFtsoRegistry";
-export {
-  IGovernanceSettingsContract,
-  IGovernanceSettingsInstance,
-} from "./IGovernanceSettings";
-export {
-  IGovernanceVotePowerContract,
-  IGovernanceVotePowerInstance,
-} from "./IGovernanceVotePower";
-export {
-  IVPContractEventsContract,
-  IVPContractEventsInstance,
-} from "./IVPContractEvents";
-export { IVPTokenContract, IVPTokenInstance } from "./IVPToken";
 export {
   AddressUpdaterContract,
   AddressUpdaterInstance,

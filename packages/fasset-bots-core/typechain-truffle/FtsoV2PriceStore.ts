@@ -159,29 +159,6 @@ export interface FtsoV2PriceStoreInstance extends Truffle.ContractInstance {
 
   governanceSettings(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
-  initialise: {
-    (
-      _governanceSettings: string,
-      _initialGovernance: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      _governanceSettings: string,
-      _initialGovernance: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _governanceSettings: string,
-      _initialGovernance: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _governanceSettings: string,
-      _initialGovernance: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
   isExecutor(
     _address: string,
     txDetails?: Truffle.TransactionDetails
@@ -474,29 +451,6 @@ export interface FtsoV2PriceStoreInstance extends Truffle.ContractInstance {
     governance(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
     governanceSettings(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
-    initialise: {
-      (
-        _governanceSettings: string,
-        _initialGovernance: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        _governanceSettings: string,
-        _initialGovernance: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        _governanceSettings: string,
-        _initialGovernance: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        _governanceSettings: string,
-        _initialGovernance: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
 
     isExecutor(
       _address: string,

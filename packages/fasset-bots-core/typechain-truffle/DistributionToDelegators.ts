@@ -32,28 +32,28 @@ export interface DistributionToDelegatorsInstance
       arg0: string,
       _recipient: string,
       arg2: number | BN | string,
-      arg3: boolean,
+      _wrap: boolean,
       txDetails?: Truffle.TransactionDetails
     ): Promise<Truffle.TransactionResponse<AllEvents>>;
     call(
       arg0: string,
       _recipient: string,
       arg2: number | BN | string,
-      arg3: boolean,
+      _wrap: boolean,
       txDetails?: Truffle.TransactionDetails
     ): Promise<BN>;
     sendTransaction(
       arg0: string,
       _recipient: string,
       arg2: number | BN | string,
-      arg3: boolean,
+      _wrap: boolean,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
       arg0: string,
       _recipient: string,
       arg2: number | BN | string,
-      arg3: boolean,
+      _wrap: boolean,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
@@ -73,28 +73,28 @@ export interface DistributionToDelegatorsInstance
         arg0: string,
         _recipient: string,
         arg2: number | BN | string,
-        arg3: boolean,
+        _wrap: boolean,
         txDetails?: Truffle.TransactionDetails
       ): Promise<Truffle.TransactionResponse<AllEvents>>;
       call(
         arg0: string,
         _recipient: string,
         arg2: number | BN | string,
-        arg3: boolean,
+        _wrap: boolean,
         txDetails?: Truffle.TransactionDetails
       ): Promise<BN>;
       sendTransaction(
         arg0: string,
         _recipient: string,
         arg2: number | BN | string,
-        arg3: boolean,
+        _wrap: boolean,
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
       estimateGas(
         arg0: string,
         _recipient: string,
         arg2: number | BN | string,
-        arg3: boolean,
+        _wrap: boolean,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };

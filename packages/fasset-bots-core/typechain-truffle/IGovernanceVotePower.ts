@@ -43,10 +43,7 @@ export interface IGovernanceVotePowerInstance extends Truffle.ContractInstance {
     txDetails?: Truffle.TransactionDetails
   ): Promise<string>;
 
-  getVotes(
-    account: string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<BN>;
+  getVotes(_who: string, txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
   undelegate: {
     (txDetails?: Truffle.TransactionDetails): Promise<
@@ -90,10 +87,7 @@ export interface IGovernanceVotePowerInstance extends Truffle.ContractInstance {
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
 
-    getVotes(
-      account: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<BN>;
+    getVotes(_who: string, txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
     undelegate: {
       (txDetails?: Truffle.TransactionDetails): Promise<

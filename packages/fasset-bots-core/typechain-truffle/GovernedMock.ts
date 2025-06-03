@@ -108,7 +108,7 @@ export interface GovernedMockInstance extends Truffle.ContractInstance {
 
   governanceSettings(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
-  initialise: {
+  initialize: {
     (
       _governanceSettings: string,
       _initialGovernance: string,
@@ -188,7 +188,7 @@ export interface GovernedMockInstance extends Truffle.ContractInstance {
 
     governanceSettings(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
-    initialise: {
+    initialize: {
       (
         _governanceSettings: string,
         _initialGovernance: string,
