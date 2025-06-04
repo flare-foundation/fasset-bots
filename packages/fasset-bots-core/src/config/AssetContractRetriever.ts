@@ -61,7 +61,7 @@ export class AssetContractRetriever extends ContractRetriever {
         } else if (contracts != null) {
             addressUpdater = await AddressUpdater.at(contracts.AddressUpdater.address);
             const contractRetriever = new ContractRetriever(prioritizeAddressUpdater, addressUpdater, contracts);
-            assetManagerController = await contractRetriever.getContract(IIAssetManagerController);
+            assetManagerController = await contractRetriever.getContract(IIAssetManagerController, "AssetManagerController");
         } else {
             throw new CommandLineError("At least one of contractsJsonFile or assetManagerController must be defined");
         }
