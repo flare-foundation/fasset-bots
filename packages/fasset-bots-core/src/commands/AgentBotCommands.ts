@@ -872,7 +872,8 @@ export class AgentBotCommands {
         const underlyingFee = await agentBot.context.wallet.getTransactionFee({source: agentBot.agent.underlyingAddress, amount: toBN(amount), destination: coreVaultSourceAddress, isPayment: true })
         if (toBN(safeToWithdraw).lt(underlyingFee.muln(TRANSACTION_FEE_FACTOR_CV_REDEMPTION))) { // multiply by a constant to be on the safe side, in case the underlying fee changes until redemption ticket is actually paid on the underlying.
             logger.error(`Agent ${agentVault} cannot transfer funds. Not enough free underlying ${currency.formatValue(safeToWithdraw)} to pay for underlying transaction fee ${currency.formatValue(underlyingFee)}.`);
-            throw new CommandLineError(`Cannot transfer funds. Not enough free underlying ${currency.formatValue(safeToWithdraw)} to pay for underlying transaction fee ${currency.formatValue(underlyingFee)}.`);
+            throw new CommandLineError(squashSpace`Cannot transfer funds. Not enough free underlying ${currency.formatValue(safeToWithdraw)} to pay for underlying transaction fee ${currency.formatValue(underlyingFee)}.
+                Note that the "minimumFreeUnderlyingBalance" is set to ${currency.formatValue(agentBot.agentBotSettings.minimumFreeUnderlyingBalance)}.`);
         }
         // get transfer fee
         const fee = await this.context.assetManager.transferToCoreVaultFee(amount);
