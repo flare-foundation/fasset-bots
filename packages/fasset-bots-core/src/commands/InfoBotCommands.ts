@@ -18,6 +18,7 @@ import { artifacts, authenticatedHttpProvider, initWeb3, web3 } from "../utils/w
 import { AgentInfoReader, CollateralPriceCalculator } from "./AgentInfoReader";
 import { ColumnPrinter } from "./ColumnPrinter";
 import { CleanupRegistration } from "./UserBotCommands";
+import { Truffle } from "../../typechain-truffle";
 
 // This key is only for fetching info from the chain; don't ever use it or send any tokens to it!
 const INFO_ACCOUNT_KEY = "0x4a2cc8e041ff98ef4daad2e5e4c1c3f3d5899cf9d0d321b1243e0940d8281c33";
@@ -484,22 +485,29 @@ export class InfoBotCommands {
         }
     }
 
+    /**
+     * Print the events for a contract for a range of blocks.
+     * @param instance contract instance; only events from this contract will be listed
+     * @param from if positive, first block number; if negative, the number of blocks to print (until `to` or last finalized block)
+     * @param to the last block number (optional, default is last finalized block)
+     */
     /* istanbul ignore next */
-    async* readAssetManagerLogs(blockCount: number) {
-        const eventDecoder = new Web3ContractEventDecoder({ assetManager: this.context.assetManager });
+    async* readLogs(instance: Truffle.ContractInstance, from: number, to?: number) {
+        const eventDecoder = new Web3ContractEventDecoder({ instance });
         // get all logs for this agent
         const nci = this.context.nativeChainInfo;
         const blockHeight = await web3.eth.getBlockNumber();
         const lastFinalizedBlock = blockHeight - nci.finalizationBlocks;
-        const startBlock = Math.max(lastFinalizedBlock - blockCount, 0);
-        for (let lastBlockRead = startBlock; lastBlockRead <= lastFinalizedBlock; lastBlockRead += nci.readLogsChunkSize) {
+        const lastBlock = to != null ? Math.min(to, lastFinalizedBlock) : lastFinalizedBlock;
+        const firstBlock = from >= 0 ? Math.min(from, lastBlock) : Math.max(lastBlock + from, 0);
+        for (let lastBlockRead = firstBlock; lastBlockRead <= lastBlock; lastBlockRead += nci.readLogsChunkSize) {
             // asset manager events
-            const logsAssetManager = await web3.eth.getPastLogs({
-                address: this.context.assetManager.address,
+            const logs = await web3.eth.getPastLogs({
+                address: instance.address,
                 fromBlock: lastBlockRead,
-                toBlock: Math.min(lastBlockRead + nci.readLogsChunkSize - 1, lastFinalizedBlock),
+                toBlock: Math.min(lastBlockRead + nci.readLogsChunkSize - 1, lastBlock),
             });
-            const events = eventDecoder.decodeEvents(logsAssetManager);
+            const events = eventDecoder.decodeEvents(logs);
             // sort events first by their block numbers, then internally by their event index
             events.sort(eventOrder);
             for (const event of events) {

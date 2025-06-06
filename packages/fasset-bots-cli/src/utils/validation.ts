@@ -30,6 +30,11 @@ export function validateOpt(value: string | null | undefined, test: (value: stri
     assertCmd(test(value), message);
 }
 
+export function validateOneOf<T extends string>(value: string | null | undefined, what: string, values: T[]): asserts value is T | null | undefined {
+    if (value == null) return;
+    assertCmd(values.includes(value as T), `${what} "${value}" is not one of ${values.map(v => `"${v}"`).join(", ")}`);
+}
+
 export function translateError(error: any, translations: { [search: string]: string }) {
     if (!(error instanceof CommandLineError)) {
         const errorMessage = error?.message as unknown;
