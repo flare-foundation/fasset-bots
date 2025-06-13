@@ -137,6 +137,7 @@ import { MaliciousRewardManagerContract } from "./MaliciousRewardManager";
 import { MaliciousTokenContract } from "./MaliciousToken";
 import { MerkleTreeMockContract } from "./MerkleTreeMock";
 import { MinterMockContract } from "./MinterMock";
+import { MintingProxyMockContract } from "./MintingProxyMock";
 import { RewardManagerMockContract } from "./RewardManagerMock";
 import { DiamondLoupeFacetContract } from "./DiamondLoupeFacet";
 import { DiamondContract } from "./Diamond";
@@ -412,6 +413,7 @@ export type * from "./types";
       require(name: "MaliciousToken"): MaliciousTokenContract;
       require(name: "MerkleTreeMock"): MerkleTreeMockContract;
       require(name: "MinterMock"): MinterMockContract;
+      require(name: "MintingProxyMock"): MintingProxyMockContract;
       require(name: "RewardManagerMock"): RewardManagerMockContract;
       require(name: "DiamondLoupeFacet"): DiamondLoupeFacetContract;
       require(name: "Diamond"): DiamondContract;
@@ -949,6 +951,10 @@ export {
   MerkleTreeMockInstance,
 } from "./MerkleTreeMock";
 export { MinterMockContract, MinterMockInstance } from "./MinterMock";
+export {
+  MintingProxyMockContract,
+  MintingProxyMockInstance,
+} from "./MintingProxyMock";
 export {
   RewardManagerMockContract,
   RewardManagerMockInstance,

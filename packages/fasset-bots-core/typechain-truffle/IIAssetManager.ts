@@ -4278,7 +4278,7 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
       _executor: string,
       _minterUnderlyingAddresses: string[],
       txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
+    ): Promise<BN>;
     sendTransaction(
       _agentVault: string,
       _lots: number | BN | string,
@@ -5941,6 +5941,29 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
     ): Promise<string>;
     estimateGas(
       _agentVault: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  upgradeAgentVaultsAndPools: {
+    (
+      _start: number | BN | string,
+      _end: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse<AllEvents>>;
+    call(
+      _start: number | BN | string,
+      _end: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      _start: number | BN | string,
+      _end: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _start: number | BN | string,
+      _end: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
@@ -9184,7 +9207,7 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
         _executor: string,
         _minterUnderlyingAddresses: string[],
         txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
+      ): Promise<BN>;
       sendTransaction(
         _agentVault: string,
         _lots: number | BN | string,
@@ -10874,6 +10897,29 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
       ): Promise<string>;
       estimateGas(
         _agentVault: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
+    upgradeAgentVaultsAndPools: {
+      (
+        _start: number | BN | string,
+        _end: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+      call(
+        _start: number | BN | string,
+        _end: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        _start: number | BN | string,
+        _end: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        _start: number | BN | string,
+        _end: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };

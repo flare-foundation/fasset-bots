@@ -1670,6 +1670,33 @@ export interface AssetManagerControllerInstance
     ): Promise<number>;
   };
 
+  upgradeAgentVaultsAndPools: {
+    (
+      _assetManagers: string[],
+      _start: number | BN | string,
+      _end: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse<AllEvents>>;
+    call(
+      _assetManagers: string[],
+      _start: number | BN | string,
+      _end: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      _assetManagers: string[],
+      _start: number | BN | string,
+      _end: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _assetManagers: string[],
+      _start: number | BN | string,
+      _end: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
   upgradeFAssetImplementation: {
     (
       _assetManagers: string[],
@@ -3315,6 +3342,33 @@ export interface AssetManagerControllerInstance
       ): Promise<string>;
       estimateGas(
         _assetManagers: string[],
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
+    upgradeAgentVaultsAndPools: {
+      (
+        _assetManagers: string[],
+        _start: number | BN | string,
+        _end: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+      call(
+        _assetManagers: string[],
+        _start: number | BN | string,
+        _end: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        _assetManagers: string[],
+        _start: number | BN | string,
+        _end: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        _assetManagers: string[],
+        _start: number | BN | string,
+        _end: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };

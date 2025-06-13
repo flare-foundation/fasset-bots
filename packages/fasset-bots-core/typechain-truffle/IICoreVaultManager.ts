@@ -234,6 +234,8 @@ export type AllEvents =
   | UnusedPreimageHashRemoved;
 
 export interface IICoreVaultManagerInstance extends Truffle.ContractInstance {
+  assetManager(txDetails?: Truffle.TransactionDetails): Promise<string>;
+
   availableFunds(txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
   cancelTransferRequestFromCoreVault: {
@@ -549,6 +551,8 @@ export interface IICoreVaultManagerInstance extends Truffle.ContractInstance {
   };
 
   methods: {
+    assetManager(txDetails?: Truffle.TransactionDetails): Promise<string>;
+
     availableFunds(txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
     cancelTransferRequestFromCoreVault: {

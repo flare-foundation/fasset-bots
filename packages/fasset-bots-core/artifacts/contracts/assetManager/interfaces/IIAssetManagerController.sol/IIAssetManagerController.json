@@ -1466,6 +1466,29 @@
           "type": "address[]"
         },
         {
+          "internalType": "uint256",
+          "name": "_start",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_end",
+          "type": "uint256"
+        }
+      ],
+      "name": "upgradeAgentVaultsAndPools",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "contract IIAssetManager[]",
+          "name": "_assetManagers",
+          "type": "address[]"
+        },
+        {
           "internalType": "address",
           "name": "_implementation",
           "type": "address"

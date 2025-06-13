@@ -3834,7 +3834,7 @@ export interface IAssetManagerInstance extends Truffle.ContractInstance {
       _executor: string,
       _minterUnderlyingAddresses: string[],
       txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
+    ): Promise<BN>;
     sendTransaction(
       _agentVault: string,
       _lots: number | BN | string,
@@ -7374,7 +7374,7 @@ export interface IAssetManagerInstance extends Truffle.ContractInstance {
         _executor: string,
         _minterUnderlyingAddresses: string[],
         txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
+      ): Promise<BN>;
       sendTransaction(
         _agentVault: string,
         _lots: number | BN | string,

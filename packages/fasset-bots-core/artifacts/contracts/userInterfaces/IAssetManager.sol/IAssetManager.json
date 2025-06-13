@@ -6316,7 +6316,13 @@
         }
       ],
       "name": "reserveCollateral",
-      "outputs": [],
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "_collateralReservationId",
+          "type": "uint256"
+        }
+      ],
       "stateMutability": "payable",
       "type": "function"
     },

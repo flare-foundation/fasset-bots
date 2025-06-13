@@ -234,6 +234,8 @@ export type AllEvents =
   | UnusedPreimageHashRemoved;
 
 export interface ICoreVaultManagerInstance extends Truffle.ContractInstance {
+  assetManager(txDetails?: Truffle.TransactionDetails): Promise<string>;
+
   availableFunds(txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
   confirmPayment: {
@@ -499,6 +501,8 @@ export interface ICoreVaultManagerInstance extends Truffle.ContractInstance {
   };
 
   methods: {
+    assetManager(txDetails?: Truffle.TransactionDetails): Promise<string>;
+
     availableFunds(txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
     confirmPayment: {
