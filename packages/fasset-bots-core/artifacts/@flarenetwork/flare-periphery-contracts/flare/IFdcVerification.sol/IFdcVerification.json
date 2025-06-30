@@ -4,6 +4,32 @@
   "sourceName": "@flarenetwork/flare-periphery-contracts/flare/IFdcVerification.sol",
   "abi": [
     {
+      "inputs": [],
+      "name": "fdcProtocolId",
+      "outputs": [
+        {
+          "internalType": "uint8",
+          "name": "_fdcProtocolId",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "relay",
+      "outputs": [
+        {
+          "internalType": "contract IRelay",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "components": [

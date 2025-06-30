@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
   "contractName": "IIVPContract",
-  "sourceName": "@flarenetwork/flare-periphery-contracts/flare/token/interface/IIVPContract.sol",
+  "sourceName": "@flarenetwork/flare-periphery-contracts/flare/token/interfaces/IIVPContract.sol",
   "abi": [
     {
       "anonymous": false,

@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
   "contractName": "IFtsoRegistryGenesis",
-  "sourceName": "@flarenetwork/flare-periphery-contracts/flare/genesis/interface/IFtsoRegistryGenesis.sol",
+  "sourceName": "@flarenetwork/flare-periphery-contracts/flare/genesis/interfaces/IFtsoRegistryGenesis.sol",
   "abi": [
     {
       "inputs": [

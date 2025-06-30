@@ -195,6 +195,7 @@ import { ITransferFeesContract } from "./ITransferFees";
 import { IWhitelistContract } from "./IWhitelist";
 import { IUpgradableProxyContract } from "./IUpgradableProxy";
 import { IUUPSUpgradeableContract } from "./IUUPSUpgradeable";
+import { CustomErrorMockContract } from "./CustomErrorMock";
 import { MathUtilsMockContract } from "./MathUtilsMock";
 import { MockProxyFactoryContract } from "./MockProxyFactory";
 import { SafeMath64MockContract } from "./SafeMath64Mock";
@@ -485,6 +486,7 @@ export type * from "./types";
       require(name: "IWhitelist"): IWhitelistContract;
       require(name: "IUpgradableProxy"): IUpgradableProxyContract;
       require(name: "IUUPSUpgradeable"): IUUPSUpgradeableContract;
+      require(name: "CustomErrorMock"): CustomErrorMockContract;
       require(name: "MathUtilsMock"): MathUtilsMockContract;
       require(name: "MockProxyFactory"): MockProxyFactoryContract;
       require(name: "SafeMath64Mock"): SafeMath64MockContract;
@@ -1105,6 +1107,10 @@ export {
   IUUPSUpgradeableContract,
   IUUPSUpgradeableInstance,
 } from "./IUUPSUpgradeable";
+export {
+  CustomErrorMockContract,
+  CustomErrorMockInstance,
+} from "./CustomErrorMock";
 export { MathUtilsMockContract, MathUtilsMockInstance } from "./MathUtilsMock";
 export {
   MockProxyFactoryContract,

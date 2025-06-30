@@ -15,6 +15,10 @@ export interface IFdcVerificationContract
 export type AllEvents = never;
 
 export interface IFdcVerificationInstance extends Truffle.ContractInstance {
+  fdcProtocolId(txDetails?: Truffle.TransactionDetails): Promise<BN>;
+
+  relay(txDetails?: Truffle.TransactionDetails): Promise<string>;
+
   verifyAddressValidity(
     _proof: {
       merkleProof: string[];
@@ -200,6 +204,10 @@ export interface IFdcVerificationInstance extends Truffle.ContractInstance {
   ): Promise<boolean>;
 
   methods: {
+    fdcProtocolId(txDetails?: Truffle.TransactionDetails): Promise<BN>;
+
+    relay(txDetails?: Truffle.TransactionDetails): Promise<string>;
+
     verifyAddressValidity(
       _proof: {
         merkleProof: string[];

@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
   "contractName": "IICleanable",
-  "sourceName": "@flarenetwork/flare-periphery-contracts/flare/token/interface/IICleanable.sol",
+  "sourceName": "@flarenetwork/flare-periphery-contracts/flare/token/interfaces/IICleanable.sol",
   "abi": [
     {
       "inputs": [],

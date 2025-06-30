@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
   "contractName": "IIFtso",
-  "sourceName": "@flarenetwork/flare-periphery-contracts/flare/ftso/interface/IIFtso.sol",
+  "sourceName": "@flarenetwork/flare-periphery-contracts/flare/ftso/interfaces/IIFtso.sol",
   "abi": [
     {
       "anonymous": false,
