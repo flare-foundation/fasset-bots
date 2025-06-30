@@ -1,8 +1,8 @@
 import { encodeBytes32String } from 'ethers'
-import type { BalanceDecreasingTransaction } from '../../../types/contracts/Challenger'
+import { IBalanceDecreasingTransaction } from '../../../types/contracts/Challenger'
 
 
-export const balanceDecreasingTxProof: BalanceDecreasingTransaction.ProofStruct = {
+export const balanceDecreasingTxProof: IBalanceDecreasingTransaction.ProofStruct = {
     merkleProof: [encodeBytes32String("")],
     data: {
         attestationType: encodeBytes32String(""),

@@ -1267,8 +1267,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@flarenetwork/fasset-liquidator@workspace:packages/fasset-liquidator"
   dependencies:
-    "@flarenetwork/fasset": "git+https://gitlab.com/flarenetwork/fasset.git#use-periphery-package"
-    "@flarenetwork/flare-periphery-contracts": ^0.1.25
+    "@flarenetwork/fasset": "git+https://github.com/flare-foundation/fassets.git#v1.1.2"
+    "@flarenetwork/flare-periphery-contracts": ^0.1.28
     "@nomicfoundation/hardhat-chai-matchers": ^2.0.2
     "@nomicfoundation/hardhat-ethers": ^3.0.4
     "@nomicfoundation/hardhat-network-helpers": ^1.0.9
@@ -1300,33 +1300,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@flarenetwork/fasset@git+https://gitlab.com/flarenetwork/fasset.git#use-periphery-package":
-  version: 1.1.0
-  resolution: "@flarenetwork/fasset@https://gitlab.com/flarenetwork/fasset.git#commit=0f1c3bc9e02ee1eb069b63558e8ebe4b424ad001"
+"@flarenetwork/fasset@git+https://github.com/flare-foundation/fassets.git#v1.1.2":
+  version: 1.1.2
+  resolution: "@flarenetwork/fasset@https://github.com/flare-foundation/fassets.git#commit=f7c15bfe62d272d42e70b0d6c7b84efe6d767bda"
   dependencies:
-    "@flarenetwork/flare-periphery-contracts": 0.1.25
+    "@flarenetwork/flare-periphery-contracts": 0.1.28
     "@openzeppelin/contracts": 4.9.2
-  checksum: 030e9d6e67fadfffd869d5da082e3126ad1e3158948068418188b482f53e10c6caec569a13ce370312be42c85ec19316c5f3468a5cf38d2499275bfe15eda1cc
+  checksum: 4089a236eef9f4909fb24235bf713f5c00eef60e2f13af9e1f99a014ca2d5a73b24dc0a3c813279c2350bcd3886675621906c043beaf815b28d7e4d2be350a07
   languageName: node
   linkType: hard
 
-"@flarenetwork/flare-periphery-contracts@npm:0.1.25":
-  version: 0.1.25
-  resolution: "@flarenetwork/flare-periphery-contracts@npm:0.1.25"
+"@flarenetwork/flare-periphery-contracts@npm:0.1.28, @flarenetwork/flare-periphery-contracts@npm:^0.1.28":
+  version: 0.1.28
+  resolution: "@flarenetwork/flare-periphery-contracts@npm:0.1.28"
   dependencies:
     "@openzeppelin/contracts": ^4.6.0
     hardhat: ^2.22.5
-  checksum: 287d2d11ed20a2ec5c4985ea97e4b136ffb4fd9abc22ca27b4d46cb24c1c0458d8a9305ea59261fdf5014d6c39048b3f30850b3bb0b4d361099549b5e235fc49
-  languageName: node
-  linkType: hard
-
-"@flarenetwork/flare-periphery-contracts@npm:^0.1.25":
-  version: 0.1.26
-  resolution: "@flarenetwork/flare-periphery-contracts@npm:0.1.26"
-  dependencies:
-    "@openzeppelin/contracts": ^4.6.0
-    hardhat: ^2.22.5
-  checksum: 2bccd868805f96e4f56af8c9784bfacd0b9679d99b24400392e9ab5b5f5e6ef78b8b86e55cb7a0494c65823bd1c578852941a26c4957ac240ee35e436f7c247f
+  checksum: 48bd616ccc115b09447892721d52c7ec3bf30812e849b5ccef40c182f3d5f9df54cb4b03e658a9180da8d2bb02961f7d19309b637cfc687b1defcda68a3c0024
   languageName: node
   linkType: hard
 

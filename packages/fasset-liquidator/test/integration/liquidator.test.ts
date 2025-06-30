@@ -71,6 +71,7 @@ describe("Liquidator", () => {
             AGENT_ADDRESS, signer,
             {
                 flashLender: ZeroAddress, dex: ZeroAddress,
+                maxFlashFeeBips: 0,
                 dexPair1: { minPriceMul: 0, minPriceDiv: 1, path: [] },
                 dexPair2: { minPriceMul: 0, minPriceDiv: 1, path: [] }
             }

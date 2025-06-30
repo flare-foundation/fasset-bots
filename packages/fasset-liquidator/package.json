@@ -54,8 +54,8 @@
     "typescript": "^4.6.3"
   },
   "dependencies": {
-    "@flarenetwork/fasset": "git+https://gitlab.com/flarenetwork/fasset.git#use-periphery-package",
-    "@flarenetwork/flare-periphery-contracts": "^0.1.25",
+    "@flarenetwork/fasset": "git+https://github.com/flare-foundation/fassets.git#v1.1.2",
+    "@flarenetwork/flare-periphery-contracts": "^0.1.28",
     "@openzeppelin/contracts": "^4.9.3",
     "blazeswap": "git+https://github.com/kuco23/blazeswap.git#main",
     "commander": "^11.1.0",
