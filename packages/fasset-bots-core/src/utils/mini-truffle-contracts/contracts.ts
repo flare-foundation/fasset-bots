@@ -4,6 +4,7 @@ import { AbiItem } from "web3-utils";
 import { Truffle } from "../../../typechain-truffle";
 import { Web3EventDecoder } from "../events/Web3EventDecoder";
 import { replaceStringRange } from "../helpers";
+import { buildCustomErrorMap } from "./custom-errors";
 import { createContractInstanceConstructor, executeConstructor } from "./methods";
 import { ContractJson, ContractSettings } from "./types";
 
@@ -68,6 +69,8 @@ export class MiniTruffleContract implements Truffle.Contract<any> {
 
     _eventDecoder = new Web3EventDecoder(this.abi);
 
+    _errorMap = buildCustomErrorMap(this.abi);
+
     async deployed(): Promise<any> {
         if (!this.address) {
             throw new ContractError(`Contract ${this.contractName} has not been deployed`);
@@ -92,7 +95,7 @@ export class MiniTruffleContract implements Truffle.Contract<any> {
         if (this._bytecode.includes("_")) {
             throw new ContractError(`Contract ${this.contractName} must be linked before deploy`);
         }
-        const result = await executeConstructor(this._settings, this.abi, this._bytecode, args);
+        const result = await executeConstructor(this._settings, this.abi, this._errorMap, this._bytecode, args);
         /* istanbul ignore if */
         if (result.contractAddress == null) {
             throw new ContractError(`Deploy of contract ${this.contractName} failed`); // I don't know if this can happen

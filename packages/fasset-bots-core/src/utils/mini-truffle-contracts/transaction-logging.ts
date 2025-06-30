@@ -1,6 +1,7 @@
 import "dotenv/config";
-import { Logger } from "winston";
+
 import { createCustomizedLogger } from "@flarenetwork/simple-wallet";
+import { Logger } from "winston";
 
 
 export const transactionLogger: Logger = createCustomizedLogger({
@@ -42,5 +43,5 @@ export class ErrorWithCause extends Error {
 // Return first line of the error message
 export function extractErrorMessage(error: any, defaultMsg: string = "Unknown error") {
     /* istanbul ignore next */
-    return error?.message?.split("\n")[0] ?? defaultMsg;
+    return (error?.message as string)?.split("\n")[0] ?? defaultMsg;
 }

@@ -4,6 +4,7 @@ import { AbiItem, AbiOutput } from "web3-utils";
 import { getOrCreate, systemTimestamp, toBN } from "../helpers";
 import { web3DeepNormalize } from "../web3normalize";
 import { MiniTruffleContract, MiniTruffleContractInstance } from "./contracts";
+import { decodeRevertData, formatRevertMessage, TransactionRevertedError } from "./custom-errors";
 import { TransactionSubmitRevertedError, waitAfterError } from "./finalization";
 import { submitTransaction } from "./submit-transaction";
 import { ErrorWithCause, extractErrorMessage, transactionLogger } from "./transaction-logging";
@@ -96,7 +97,7 @@ function createMethodCalls(instance: MiniTruffleContractInstance, method: AbiIte
         // console.log(`call ${method.name}`);
         const [methodArgs, config] = splitMethodArgs(method, args);
         const encodedArgs = coder.encodeFunctionCall(method, formatArguments(methodArgs));
-        const encResult = await executeMethodCall(instance._settings, { ...config, to: instance.address, data: encodedArgs });
+        const encResult = await executeMethodCall(instance._settings, instance._contractFactory._errorMap, { ...config, to: instance.address, data: encodedArgs });
         /* istanbul ignore next: method.outputs cannot really be undefined - web3 contract fails if it is */
         const outputs = method.outputs ?? [];
         const decodedOutputs = coder.decodeParameters(outputs, encResult);
@@ -111,7 +112,7 @@ function createMethodCalls(instance: MiniTruffleContractInstance, method: AbiIte
         // console.log(`send ${method.name}`);
         const [methodArgs, config] = splitMethodArgs(method, args);
         const encodedArgs = coder.encodeFunctionCall(method, formatArguments(methodArgs));
-        const receipt = await executeMethodSend(instance._settings, { ...config, to: instance.address, data: encodedArgs });
+        const receipt = await executeMethodSend(instance._settings, instance._contractFactory._errorMap, { ...config, to: instance.address, data: encodedArgs });
         const logs = instance._contractFactory._eventDecoder.decodeEvents(receipt.logs);
         return { tx: receipt.transactionHash, receipt, logs };
     };
@@ -119,7 +120,7 @@ function createMethodCalls(instance: MiniTruffleContractInstance, method: AbiIte
         // console.log(`estimateGas ${method.name}`);
         const [methodArgs, config] = splitMethodArgs(method, args);
         const encodedArgs = coder.encodeFunctionCall(method, formatArguments(methodArgs));
-        return executeMethodEstimateGas(instance._settings, { ...config, to: instance.address, data: encodedArgs });
+        return executeMethodEstimateGas(instance._settings, instance._contractFactory._errorMap, { ...config, to: instance.address, data: encodedArgs });
     };
     sendFn.call = callFn;
     sendFn.sendTransaction = sendFn;
@@ -196,13 +197,13 @@ function splitMethodArgs(method: AbiItem | undefined, args: any[]): [methodArgs:
 /**
  * Deploy a contract.
  */
-export async function executeConstructor(settings: ContractSettings, abi: AbiItem[], bytecode: string, args: any[]) {
+export async function executeConstructor(settings: ContractSettings, abi: AbiItem[], errorMap: Map<string, AbiItem>, bytecode: string, args: any[]) {
     const constructorAbi = abi.find((it) => it.type === "constructor");
     const [methodArgs, config] = splitMethodArgs(constructorAbi, args);
     const encodedArgs = constructorAbi?.inputs != null ? coder.encodeParameters(constructorAbi.inputs, methodArgs) : "";
     // deploy data must be bytecode followed by the abi encoded args
     const data = bytecode + encodedArgs.slice(2);
-    return await executeMethodSend(settings, { ...config, data: data });
+    return await executeMethodSend(settings, errorMap, { ...config, data: data });
 }
 
 // make sure id-s in different processes don't overlap (as long as they are started at least 1 second apart)
@@ -211,7 +212,7 @@ let lastTransactionId = systemTimestamp() * 1000;
 /**
  * Send a transaction for a contract method. Estimate gas before if needed.
  */
-export async function executeMethodSend(settings: ContractSettings, transactionConfig: TransactionConfig) {
+export async function executeMethodSend(settings: ContractSettings, errorMap: Map<string, AbiItem>, transactionConfig: TransactionConfig) {
     const { web3, gasMultiplier, waitFor } = settings;
     const config = mergeConfig(settings, transactionConfig);
     if (typeof config.from !== "string") {
@@ -220,7 +221,7 @@ export async function executeMethodSend(settings: ContractSettings, transactionC
     const transactionId = ++lastTransactionId;
     if (config.gas == null && settings.gas == "auto") {
         transactionLogger.info("SEND (estimate gas)", { transactionId, waitFor, transaction: config });
-        const gas = await web3.eth.estimateGas(config).catch((e) => throwWrappedError(transactionId, e, "estimateGas"));
+        const gas = await web3.eth.estimateGas(config).catch((e) => throwWrappedError(transactionId, e, errorMap, "estimateGas"));
         config.gas = Math.floor(gas * gasMultiplier);
     }
     try {
@@ -233,28 +234,28 @@ export async function executeMethodSend(settings: ContractSettings, transactionC
             if (transaction != null && transaction.blockNumber != null) {
                 // retry transaction with call to get the revert reason
                 await web3.eth.call(config, transaction.blockNumber)
-                    .catch((e) => throwWrappedError(transactionId, error, "send", e.message));
+                    .catch((e) => throwWrappedError(transactionId, e, errorMap, "send", error));
             }
         }
-        throwWrappedError(transactionId, error, "send");
+        throwWrappedError(transactionId, error, errorMap, "send");
     }
 }
 
-async function executeMethodCall(settings: ContractSettings, transactionConfig: TransactionConfig) {
+async function executeMethodCall(settings: ContractSettings, errorMap: Map<string, AbiItem>, transactionConfig: TransactionConfig) {
     const config = mergeConfig(settings, transactionConfig);
     const transactionId = ++lastTransactionId;
     transactionLogger.info("CALL", { transactionId, transaction: config });
-    return await settings.web3.eth.call(config).catch((e) => throwWrappedError(transactionId, e, "call"));
+    return await settings.web3.eth.call(config).catch((e) => throwWrappedError(transactionId, e, errorMap, "call"));
 }
 
 /**
  * Estimate gas usage of a method call.
  */
-async function executeMethodEstimateGas(settings: ContractSettings, transactionConfig: TransactionConfig) {
+async function executeMethodEstimateGas(settings: ContractSettings, errorMap: Map<string, AbiItem>, transactionConfig: TransactionConfig) {
     const config = mergeConfig(settings, transactionConfig);
     const transactionId = ++lastTransactionId;
     transactionLogger.info("ESTIMATE_GAS", { transactionId, transaction: config });
-    return await settings.web3.eth.estimateGas(config).catch((e) => throwWrappedError(transactionId, e, "estimateGas"));
+    return await settings.web3.eth.estimateGas(config).catch((e) => throwWrappedError(transactionId, e, errorMap, "estimateGas"));
 }
 
 /**
@@ -271,9 +272,11 @@ function mergeConfig(settings: ContractSettings, transactionConfig: TransactionC
     return config;
 }
 
-function throwWrappedError(transactionId: number, error: unknown, executionType: "call" | "send" | "estimateGas", forceMessage?: string): never {
-    const message = `${forceMessage ?? extractErrorMessage(error)}`;
-    const wrapped = new TransactionFailedError(message, error);
-    transactionLogger.info(`ERROR [${executionType}]`, { transactionId, stack: wrapped.fullStack() });
-    throw wrapped;
+function throwWrappedError(transactionId: number, error: unknown, errorMap: Map<string, AbiItem>, executionType: "call" | "send" | "estimateGas", originalError?: unknown): never {
+    const revertData = decodeRevertData(error, errorMap);
+    const wrappedError = revertData
+        ? new TransactionRevertedError(formatRevertMessage(revertData), revertData, originalError ?? error)
+        : new TransactionFailedError(extractErrorMessage(error), originalError ?? error);
+    transactionLogger.info(`ERROR [${executionType}]`, { transactionId, stack: wrappedError.fullStack() });
+    throw wrappedError;
 }

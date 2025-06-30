@@ -5,9 +5,9 @@ import { provider, TransactionConfig } from "web3-core";
 import { Artifacts } from "../../typechain-truffle";
 import { FilesystemAddressLocks, MemoryAddressLocks } from "./mini-truffle-contracts/address-locks";
 import { createArtifacts } from "./mini-truffle-contracts/artifacts";
+import { executeMethodSend } from "./mini-truffle-contracts/methods";
 import { ContractSettings } from "./mini-truffle-contracts/types";
 import { resolveInFassetBotsCore } from "./package-paths";
-import { executeMethodSend } from "./mini-truffle-contracts/methods";
 
 const predefinedProviders: Record<string, () => any> = {
     local: () => new Web3.providers.HttpProvider("http://127.0.0.1:8545"),
@@ -77,7 +77,7 @@ let currentProvider: provider;
  * Send generic transaction (equivalent to `web3.eth.sendTransaction`, but with proper finalization). Useful for transferring native tokens.
  */
 export async function sendWeb3Transaction(transactionConfig: TransactionConfig, settings?: ContractSettings) {
-    return await executeMethodSend(settings ?? contractSettings, transactionConfig);
+    return await executeMethodSend(settings ?? contractSettings, new Map(), transactionConfig);
 }
 
 export function authenticatedHttpProvider(url: string, apiToken?: string): provider {
