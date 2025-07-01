@@ -18,7 +18,7 @@ import { fundUnderlying, performRedemptionPayment } from "../../../test/test-uti
 import { AgentDestroyed, AgentVaultCreated } from "../../../typechain-truffle/IIAssetManager";
 import { TestAssetBotContext, TestAssetTrackedStateContext, createTestAssetContext, getTestAssetTrackedStateContext } from "../../test-utils/create-test-asset-context";
 import { loadFixtureCopyVars } from "../../test-utils/hardhat-test-helpers";
-import { QUERY_WINDOW_SECONDS, assertWeb3DeepEqual, createCRAndPerformMinting, createTestAgent, createTestAgentAndMakeAvailable, createTestMinter, createTestRedeemer, fromAgentInfoToInitialAgentData, mintAndDepositVaultCollateralToOwner } from "../../test-utils/helpers";
+import { QUERY_WINDOW_SECONDS, assertWeb3DeepEqual, claimAndSendTransferFee, createCRAndPerformMinting, createTestAgent, createTestAgentAndMakeAvailable, createTestMinter, createTestRedeemer, fromAgentInfoToInitialAgentData, mintAndDepositVaultCollateralToOwner } from "../../test-utils/helpers";
 import { waitForTimelock } from "../../test-utils/new-asset-manager";
 use(chaiAsPromised);
 use(spies);
@@ -372,7 +372,7 @@ describe("Tracked state tests", () => {
         assertWeb3DeepEqual(await context.fAsset.balanceOf(context.assetManager.address), transferFee);
 
         const balanceBefore = await context.fAsset.balanceOf(redeemer.address);
-        await agentB.claimAndSendTransferFee(redeemer.address);
+        await claimAndSendTransferFee(agentB, redeemer.address);
         const balanceAfter = await context.fAsset.balanceOf(redeemer.address);
         assertWeb3DeepEqual(balanceAfter, balanceBefore.add(transferFee));
 

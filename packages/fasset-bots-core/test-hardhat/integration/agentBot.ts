@@ -26,7 +26,7 @@ import { AgentOwnerRegistryInstance, Truffle } from "../../typechain-truffle";
 import { FaultyNotifierTransport } from "../test-utils/FaultyNotifierTransport";
 import { TestAssetBotContext, createTestAssetContext } from "../test-utils/create-test-asset-context";
 import { loadFixtureCopyVars } from "../test-utils/hardhat-test-helpers";
-import { QUERY_WINDOW_SECONDS, assertWeb3DeepEqual, convertFromUSD5, createCRAndPerformMinting, createCRAndPerformMintingAndRunSteps, createTestAgent, createTestAgentAndMakeAvailable, createTestAgentBotAndMakeAvailable, createTestMinter, createTestRedeemer, getAgentStatus, mintVaultCollateralToOwner, runWithManualFDCFinalization, updateAgentBotUnderlyingBlockProof } from "../test-utils/helpers";
+import { QUERY_WINDOW_SECONDS, assertWeb3DeepEqual, claimAndSendTransferFee, claimTransferFees, convertFromUSD5, createCRAndPerformMinting, createCRAndPerformMintingAndRunSteps, createTestAgent, createTestAgentAndMakeAvailable, createTestAgentBotAndMakeAvailable, createTestMinter, createTestRedeemer, getAgentStatus, mintVaultCollateralToOwner, runWithManualFDCFinalization, updateAgentBotUnderlyingBlockProof } from "../test-utils/helpers";
 use(spies);
 
 const IERC20 = artifacts.require("IERC20");
@@ -140,7 +140,7 @@ describe("Agent bot tests", () => {
         const transferFee = fBalance.mul(transferFeeMillionths).divn(1e6);
         await context.fAsset.transfer(redeemer.address, fBalance, { from: minter.address });
         const balanceBefore = await context.fAsset.balanceOf(redeemer.address);
-        await agentBot.agent.claimAndSendTransferFee(redeemer.address);
+        await claimAndSendTransferFee(agentBot.agent, redeemer.address);
         const balanceAfter = await context.fAsset.balanceOf(redeemer.address);
         assertWeb3DeepEqual(balanceAfter, balanceBefore.add(transferFee));
         // update underlying block
@@ -310,7 +310,7 @@ describe("Agent bot tests", () => {
         const transferFee = fBalance.mul(transferFeeMillionths).divn(1e6);
         await context.fAsset.transfer(redeemer.address, fBalance, { from: minter.address });
         const balanceBefore = await context.fAsset.balanceOf(redeemer.address);
-        await agentBot.agent.claimAndSendTransferFee(redeemer.address);
+        await claimAndSendTransferFee(agentBot.agent, redeemer.address);
         const balanceAfter = await context.fAsset.balanceOf(redeemer.address);
         assertWeb3DeepEqual(balanceAfter, balanceBefore.add(transferFee));
         // update underlying block
@@ -1203,7 +1203,7 @@ describe("Agent bot tests", () => {
         // transfer FAssets
         const fBalance = await context.fAsset.balanceOf(minter.address);
         await context.fAsset.transfer(redeemer.address, fBalance, { from: minter.address });
-        await agentBot.agent.claimAndSendTransferFee(redeemer.address);
+        await claimAndSendTransferFee(agentBot.agent, redeemer.address);
         // request redemption
         const [rdReqs] = await redeemer.requestRedemption(2);
         assert.equal(rdReqs.length, 1);
@@ -1242,7 +1242,7 @@ describe("Agent bot tests", () => {
         const fBalance = await context.fAsset.balanceOf(minter.address);
         await context.fAsset.transfer(redeemer.address, fBalance, { from: minter.address });
         // claim and send transfer fee to redeemer address
-        await agentBot.agent.claimAndSendTransferFee(redeemer.address);
+        await claimAndSendTransferFee(agentBot.agent, redeemer.address);
         // request redemption
         const [rdReqs] = await redeemer.requestRedemption(2);
         assert.equal(rdReqs.length, 1);
@@ -1285,7 +1285,7 @@ describe("Agent bot tests", () => {
         const fBalance = await context.fAsset.balanceOf(minter.address);
         await context.fAsset.transfer(redeemer.address, fBalance, { from: minter.address });
         // claim and send transfer fee to redeemer address
-        await agentBot.agent.claimAndSendTransferFee(redeemer.address);
+        await claimAndSendTransferFee(agentBot.agent, redeemer.address);
         // update underlying block
         await proveAndUpdateUnderlyingBlock(context.attestationProvider, context.assetManager, ownerAddress);
         // request redemption
@@ -1336,7 +1336,7 @@ describe("Agent bot tests", () => {
         const fBalance = await context.fAsset.balanceOf(minter.address);
         await context.fAsset.transfer(redeemer.address, fBalance, { from: minter.address });
         // claim and send transfer fee to redeemer address
-        await agentBot.agent.claimAndSendTransferFee(redeemer.address);
+        await claimAndSendTransferFee(agentBot.agent, redeemer.address);
         // update underlying block
         await proveAndUpdateUnderlyingBlock(context.attestationProvider, context.assetManager, ownerAddress);
         // request redemption
@@ -1379,7 +1379,7 @@ describe("Agent bot tests", () => {
         const fBalance = await context.fAsset.balanceOf(minter.address);
         await context.fAsset.transfer(invalidRedeemer.address, fBalance, { from: minter.address });
         // claim and send transfer fee to redeemer address
-        await agentBot.agent.claimAndSendTransferFee(invalidRedeemer.address);
+        await claimAndSendTransferFee(agentBot.agent, invalidRedeemer.address);
         // request redemption with invalid address
         const [rdReqs] = await invalidRedeemer.requestRedemption(2);
         assert.equal(rdReqs.length, 1);
@@ -1535,7 +1535,7 @@ describe("Agent bot tests", () => {
         const fBalance = await context.fAsset.balanceOf(minter.address);
         await context.fAsset.transfer(redeemer.address, fBalance, { from: minter.address });
         // claim and send transfer fee to redeemer address
-        await agentBot.agent.claimAndSendTransferFee(redeemer.address);
+        await claimAndSendTransferFee(agentBot.agent, redeemer.address);
         // exit available
         const exitAllowedAt = await agentBot.agent.announceExitAvailable();
         await time.increaseTo(exitAllowedAt);
@@ -1576,7 +1576,7 @@ describe("Agent bot tests", () => {
                 // move to next epoch
                 await time.increase(epochDuration);
                 // agent claims fee to redeemer address
-                const args = await agentBot.agent.claimTransferFees(workAddress, transferFeeEpoch);
+                const args = await claimTransferFees(agentBot.agent, workAddress, transferFeeEpoch);
                 if (args.poolClaimedUBA.gt(toBN(0))) {
                     await agentBot.agent.withdrawPoolFees(args.poolClaimedUBA, workAddress);
                 }
@@ -1621,7 +1621,7 @@ describe("Agent bot tests", () => {
         const fBalance = await context.fAsset.balanceOf(minter.address);
         await context.fAsset.transfer(redeemer.address, fBalance, { from: minter.address });
         // claim and send transfer fee to redeemer address
-        await agentBot.agent.claimAndSendTransferFee(redeemer.address);
+        await claimAndSendTransferFee(agentBot.agent, redeemer.address);
         // exit available
         const exitAllowedAt = await agentBot.agent.announceExitAvailable();
         await time.increaseTo(exitAllowedAt);
@@ -1692,7 +1692,7 @@ describe("Agent bot tests", () => {
         const fBalance = await context.fAsset.balanceOf(minter.address);
         await context.fAsset.transfer(redeemer.address, fBalance, { from: minter.address });
         // claim and send transfer fee to redeemer address
-        await agentBot.agent.claimAndSendTransferFee(redeemer.address);
+        await claimAndSendTransferFee(agentBot.agent, redeemer.address);
         // exit available
         const exitAllowedAt = await agentBot.agent.announceExitAvailable();
         await time.increaseTo(exitAllowedAt);
@@ -1947,7 +1947,7 @@ describe("Agent bot tests", () => {
         const transferFee = fBalance.mul(transferFeeMillionths).divn(1e6);
         await context.fAsset.transfer(redeemer.address, fBalance, { from: minter.address });
         const balanceBefore = await context.fAsset.balanceOf(redeemer.address);
-        await agentBot.agent.claimAndSendTransferFee(redeemer.address);
+        await claimAndSendTransferFee(agentBot.agent, redeemer.address);
         const balanceAfter = await context.fAsset.balanceOf(redeemer.address);
         assertWeb3DeepEqual(balanceAfter, balanceBefore.add(transferFee));
         // update underlying block
@@ -1997,7 +1997,7 @@ describe("Agent bot tests", () => {
                         // move to next epoch
                         await time.increase(epochDuration);
                         // agent claims fee to redeemer address
-                        const args = await agentBot.agent.claimTransferFees(workAddress, transferFeeEpoch);
+                        const args = await claimTransferFees(agentBot.agent, workAddress, transferFeeEpoch);
                         await agentBot.agent.withdrawPoolFees(args.poolClaimedUBA, workAddress);
                         balanceAfter = await context.fAsset.balanceOf(workAddress);
                     }
@@ -2037,7 +2037,7 @@ describe("Agent bot tests", () => {
         const transferFee = fBalance.mul(transferFeeMillionths).divn(1e6);
         await context.fAsset.transfer(redeemer.address, fBalance, { from: minter.address });
         const balanceBefore = await context.fAsset.balanceOf(redeemer.address);
-        await agentBot.agent.claimAndSendTransferFee(redeemer.address);
+        await claimAndSendTransferFee(agentBot.agent, redeemer.address);
         const balanceAfter = await context.fAsset.balanceOf(redeemer.address);
         assertWeb3DeepEqual(balanceAfter, balanceBefore.add(transferFee));
         // update underlying block
