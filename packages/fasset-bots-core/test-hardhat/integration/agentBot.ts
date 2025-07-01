@@ -1,5 +1,5 @@
 import { FilterQuery } from "@mikro-orm/core";
-import { expectRevert, time } from "@openzeppelin/test-helpers";
+import { expectRevert, time } from "../../src/utils/testing/test-helpers";
 import BN from "bn.js";
 import { assert, expect, spy, use } from "chai";
 import spies from "chai-spies";

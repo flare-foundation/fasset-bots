@@ -1,5 +1,5 @@
 import BN from "bn.js";
-import { time } from "@openzeppelin/test-helpers";
+import { time } from "../../src/utils/testing/test-helpers";
 import { assert, expect, spy, use } from "chai";
 import spies from "chai-spies";
 import { ORM } from "../../src/config/orm";

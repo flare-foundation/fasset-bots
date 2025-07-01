@@ -1,4 +1,4 @@
-import { time } from "@openzeppelin/test-helpers";
+import { time } from "../../src/utils/testing/test-helpers";
 import { MockChain } from "../../src/mock/MockChain";
 import { latestBlockTimestamp } from "../../src/utils/web3helpers";
 import { FuzzingRunner } from "./FuzzingRunner";

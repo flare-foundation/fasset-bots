@@ -11,19 +11,5 @@ export async function initTestWeb3(provider?: provider, defaultAccount: string |
     if (usingGlobalWeb3() && provider == undefined) {
         return await web3.eth.getAccounts();
     }
-    const accounts = await initWeb3(provider ?? NETWORK, "network", defaultAccount);
-    configureOpenzeppelin();
-    return accounts;
-}
-
-function configureOpenzeppelin() {
-    if (usingGlobalWeb3()) return;
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    require("@openzeppelin/test-helpers/configure")({
-        provider: web3.currentProvider,
-        singletons: {
-            abstraction: "truffle",
-            defaultSender: web3.eth.defaultAccount,
-        },
-    });
+    return await initWeb3(provider ?? NETWORK, "network", defaultAccount);
 }

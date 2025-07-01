@@ -1,4 +1,4 @@
-import { time } from "@openzeppelin/test-helpers";
+import { time } from "../../../src/utils/testing/test-helpers";
 import { expect, spy, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import spies from "chai-spies";

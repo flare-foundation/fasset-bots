@@ -1,16 +1,17 @@
-import { constants, expectEvent, expectRevert, time } from "@openzeppelin/test-helpers";
 import { assert, expect } from "chai";
 import fs from "fs";
 import { network } from "hardhat";
 import path from "path";
 import { TransactionReceipt } from "web3-core";
-import { improveConsoleLog, preventReentrancy, requireNotNull, sleep } from "../../../src/utils/helpers";
+import { improveConsoleLog, preventReentrancy, requireNotNull, sleep, ZERO_ADDRESS } from "../../../src/utils/helpers";
 import { FilesystemAddressLocks, MemoryAddressLocks } from "../../../src/utils/mini-truffle-contracts/address-locks";
 import { CancelToken, CancelTokenRegistration } from "../../../src/utils/mini-truffle-contracts/cancelable-promises";
 import { MiniTruffleContract, MiniTruffleContractInstance, withSettings } from "../../../src/utils/mini-truffle-contracts/contracts";
+import { TransactionRevertedError } from "../../../src/utils/mini-truffle-contracts/custom-errors";
 import { TransactionSubmitRevertedError, waitForFinalization, waitForNonceIncrease, waitForReceipt } from "../../../src/utils/mini-truffle-contracts/finalization";
 import { TransactionFailedError } from "../../../src/utils/mini-truffle-contracts/methods";
 import { ContractSettings, TransactionWaitFor } from "../../../src/utils/mini-truffle-contracts/types";
+import { expectEvent, expectRevert, time } from "../../../src/utils/testing/test-helpers";
 import { artifacts, contractSettings, web3 } from "../../../src/utils/web3";
 import { FakePriceReaderInstance, Truffle } from "../../../typechain-truffle";
 
@@ -147,7 +148,7 @@ describe("mini truffle and artifacts tests", () => {
         it("at should fail for wrong address", async () => {
             const WNat = artifacts.require("WNat");
             await expectRevertWithCorrectStack(
-                WNat.at(constants.ZERO_ADDRESS),
+                WNat.at(ZERO_ADDRESS),
                 "Cannot create instance of WNat; no code at address 0x0000000000000000000000000000000000000000"
             );
         });
@@ -543,7 +544,7 @@ describe("mini truffle and artifacts tests", () => {
             await withSettings(fpr, settings).setPrice("BTC", 1000, { gas: 1e6 })
                 .catch(e => error = e);
             const blockNumber = await web3.eth.getBlockNumber();
-            assert(error instanceof TransactionFailedError);
+            assert(error instanceof TransactionRevertedError);
             assert.include(error.message, "price not initialized");
             const cause = error.errorCause;
             assert(cause instanceof TransactionSubmitRevertedError);
@@ -565,7 +566,7 @@ describe("mini truffle and artifacts tests", () => {
             await withSettings(fpr, settings).setPrice("BTC", 1000, { gas: 1e6 })
                 .catch(e => error = e);
             const blockNumber = await web3.eth.getBlockNumber();
-            assert(error instanceof TransactionFailedError);
+            assert(error instanceof TransactionRevertedError);
             assert.include(error.message, "price not initialized");
             const cause = error.errorCause;
             assert(cause instanceof TransactionSubmitRevertedError);

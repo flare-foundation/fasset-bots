@@ -1,6 +1,6 @@
 import { FilterQuery } from "@mikro-orm/core";
 import { setBalance } from "@nomicfoundation/hardhat-network-helpers";
-import { expectRevert, time } from "@openzeppelin/test-helpers";
+import { expectRevert, time } from "../../../src/utils/testing/test-helpers";
 import { assert, expect, spy, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import spies from "chai-spies";
@@ -68,7 +68,7 @@ describe("AgentBot cli commands unit tests", () => {
 
     before(async () => {
         accounts = await web3.eth.getAccounts();
-        secrets = await new Secrets(TEST_SECRETS, { apiKey: {} });
+        secrets = new Secrets(TEST_SECRETS, { apiKey: {} });
         // accounts
         governance = accounts[0];
         ownerAddress = accounts[3];

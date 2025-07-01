@@ -1,4 +1,4 @@
-import { time } from "@openzeppelin/test-helpers";
+import { time } from "../../src/utils/testing/test-helpers";
 import coder from "web3-eth-abi";
 import { AbiItem } from "web3-utils";
 import { AssetManagerSettings, CollateralType } from "../../src/fasset/AssetManagerTypes";
