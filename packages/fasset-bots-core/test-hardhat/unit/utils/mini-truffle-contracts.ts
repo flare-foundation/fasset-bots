@@ -13,6 +13,7 @@ import { TransactionFailedError } from "../../../src/utils/mini-truffle-contract
 import { ContractSettings, TransactionWaitFor } from "../../../src/utils/mini-truffle-contracts/types";
 import { artifacts, contractSettings, web3 } from "../../../src/utils/web3";
 import { FakePriceReaderInstance, Truffle } from "../../../typechain-truffle";
+import { TransactionRevertedError } from "../../../src/utils/mini-truffle-contracts/custom-errors";
 
 describe("mini truffle and artifacts tests", () => {
     const TEST_LOCK_DIR = "./test-data/locks";
@@ -543,7 +544,7 @@ describe("mini truffle and artifacts tests", () => {
             await withSettings(fpr, settings).setPrice("BTC", 1000, { gas: 1e6 })
                 .catch(e => error = e);
             const blockNumber = await web3.eth.getBlockNumber();
-            assert(error instanceof TransactionFailedError);
+            assert(error instanceof TransactionRevertedError);
             assert.include(error.message, "price not initialized");
             const cause = error.errorCause;
             assert(cause instanceof TransactionSubmitRevertedError);
@@ -565,7 +566,7 @@ describe("mini truffle and artifacts tests", () => {
             await withSettings(fpr, settings).setPrice("BTC", 1000, { gas: 1e6 })
                 .catch(e => error = e);
             const blockNumber = await web3.eth.getBlockNumber();
-            assert(error instanceof TransactionFailedError);
+            assert(error instanceof TransactionRevertedError);
             assert.include(error.message, "price not initialized");
             const cause = error.errorCause;
             assert(cause instanceof TransactionSubmitRevertedError);
