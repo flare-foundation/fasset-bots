@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
   "contractName": "Challenger",
-  "sourceName": "liquidator/contracts/Challenger.sol",
+  "sourceName": "contracts/Challenger.sol",
   "abi": [
     {
       "inputs": [

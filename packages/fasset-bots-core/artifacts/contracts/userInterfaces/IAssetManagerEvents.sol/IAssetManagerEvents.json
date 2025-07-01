@@ -246,17 +246,7 @@
             },
             {
               "internalType": "uint256",
-              "name": "poolTopupCollateralRatioBIPS",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "poolTopupTokenPriceFactorBIPS",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "handshakeType",
+              "name": "redemptionPoolFeeShareBIPS",
               "type": "uint256"
             }
           ],
@@ -358,31 +348,6 @@
           "internalType": "uint256",
           "name": "collateralReservationId",
           "type": "uint256"
-        }
-      ],
-      "name": "CollateralReservationCancelled",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "agentVault",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "minter",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "collateralReservationId",
-          "type": "uint256"
         },
         {
           "indexed": false,
@@ -392,31 +357,6 @@
         }
       ],
       "name": "CollateralReservationDeleted",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "agentVault",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "minter",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "collateralReservationId",
-          "type": "uint256"
-        }
-      ],
-      "name": "CollateralReservationRejected",
       "type": "event"
     },
     {
@@ -739,49 +679,6 @@
           "type": "address"
         },
         {
-          "indexed": true,
-          "internalType": "address",
-          "name": "minter",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "collateralReservationId",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "string[]",
-          "name": "minterUnderlyingAddresses",
-          "type": "string[]"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "valueUBA",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "feeUBA",
-          "type": "uint256"
-        }
-      ],
-      "name": "HandshakeRequired",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "agentVault",
-          "type": "address"
-        },
-        {
           "indexed": false,
           "internalType": "bytes32",
           "name": "transactionHash",
@@ -1001,9 +898,9 @@
         },
         {
           "indexed": true,
-          "internalType": "uint64",
+          "internalType": "uint256",
           "name": "requestId",
-          "type": "uint64"
+          "type": "uint256"
         },
         {
           "indexed": false,
@@ -1044,9 +941,9 @@
         },
         {
           "indexed": true,
-          "internalType": "uint64",
+          "internalType": "uint256",
           "name": "requestId",
-          "type": "uint64"
+          "type": "uint256"
         },
         {
           "indexed": false,
@@ -1087,9 +984,9 @@
         },
         {
           "indexed": true,
-          "internalType": "uint64",
+          "internalType": "uint256",
           "name": "requestId",
-          "type": "uint64"
+          "type": "uint256"
         },
         {
           "indexed": false,
@@ -1130,9 +1027,9 @@
         },
         {
           "indexed": true,
-          "internalType": "uint64",
+          "internalType": "uint256",
           "name": "requestId",
-          "type": "uint64"
+          "type": "uint256"
         },
         {
           "indexed": false,
@@ -1167,9 +1064,9 @@
         },
         {
           "indexed": true,
-          "internalType": "uint64",
+          "internalType": "uint256",
           "name": "requestId",
-          "type": "uint64"
+          "type": "uint256"
         },
         {
           "indexed": false,
@@ -1198,9 +1095,9 @@
         },
         {
           "indexed": true,
-          "internalType": "uint64",
+          "internalType": "uint256",
           "name": "requestId",
-          "type": "uint64"
+          "type": "uint256"
         },
         {
           "indexed": false,
@@ -1229,86 +1126,6 @@
         }
       ],
       "name": "RedemptionRequestIncomplete",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "agentVault",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "redeemer",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "uint64",
-          "name": "requestId",
-          "type": "uint64"
-        },
-        {
-          "indexed": false,
-          "internalType": "string",
-          "name": "paymentAddress",
-          "type": "string"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "valueUBA",
-          "type": "uint256"
-        }
-      ],
-      "name": "RedemptionRequestRejected",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "agentVault",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "redeemer",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "uint64",
-          "name": "requestId",
-          "type": "uint64"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "valueTakenOverUBA",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "newAgentVault",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint64",
-          "name": "newRequestId",
-          "type": "uint64"
-        }
-      ],
-      "name": "RedemptionRequestTakenOver",
       "type": "event"
     },
     {
@@ -1633,9 +1450,9 @@
         },
         {
           "indexed": true,
-          "internalType": "uint64",
+          "internalType": "uint256",
           "name": "announcementId",
-          "type": "uint64"
+          "type": "uint256"
         },
         {
           "indexed": false,
@@ -1658,9 +1475,9 @@
         },
         {
           "indexed": true,
-          "internalType": "uint64",
+          "internalType": "uint256",
           "name": "announcementId",
-          "type": "uint64"
+          "type": "uint256"
         }
       ],
       "name": "UnderlyingWithdrawalCancelled",
@@ -1677,9 +1494,9 @@
         },
         {
           "indexed": true,
-          "internalType": "uint64",
+          "internalType": "uint256",
           "name": "announcementId",
-          "type": "uint64"
+          "type": "uint256"
         },
         {
           "indexed": false,

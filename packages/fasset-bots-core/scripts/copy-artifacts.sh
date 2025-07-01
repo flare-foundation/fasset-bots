@@ -14,7 +14,7 @@ echo "***** Building fasset... ****************************************"
 cd ${fassetsdir}
 yarn
 yarn clean
-yarn hardhat compile && yarn typechain-prepare && yarn typechain-truffle-v5
+yarn hardhat compile && yarn typechain-truffle-v5
 
 echo "***** Building liquidator... ****************************************"
 cd ${liquidatordir}
@@ -32,7 +32,6 @@ rm -rf typechain-truffle; mkdir -p typechain-truffle
 cd ${fassetsdir}/artifacts
 find -name '*.json' -not -name '*.dbg.json' -not -path './build-info/*' -not -path './cache/*' -not -path './flattened/*' | xargs cp -t ${projdir}/artifacts --parents
 cd ${fassetsdir}
-yarn typechain-after
 
 # copy liquidator artifacts
 cd ${liquidatordir}/artifacts

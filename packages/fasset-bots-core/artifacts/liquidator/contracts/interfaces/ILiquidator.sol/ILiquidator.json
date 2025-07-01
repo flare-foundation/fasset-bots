@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
   "contractName": "ILiquidator",
-  "sourceName": "liquidator/contracts/interfaces/ILiquidator.sol",
+  "sourceName": "contracts/interfaces/ILiquidator.sol",
   "abi": [
     {
       "inputs": [
