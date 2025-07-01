@@ -1163,11 +1163,11 @@ __metadata:
     "@mikro-orm/mysql": 5.8.4
     "@mikro-orm/postgresql": 5.8.4
     "@mikro-orm/sqlite": 5.8.4
-    "@nomicfoundation/hardhat-network-helpers": 1.0.11
-    "@nomiclabs/hardhat-web3": 2.0.0
+    "@nomicfoundation/hardhat-network-helpers": 1.0.12
+    "@nomiclabs/hardhat-web3": 2.0.1
     "@typechain/truffle-v5": 7.0.0
     "@types/bn.js": 5.1.5
-    "@types/chai": 4.3.6
+    "@types/chai": 5.2.2
     "@types/chai-as-promised": 7.1.6
     "@types/chai-spies": 1.0.4
     "@types/glob": 8.1.0
@@ -1177,19 +1177,19 @@ __metadata:
     axios: 1.5.1
     axios-mock-adapter: 1.22.0
     bn.js: 5.2.1
-    chai: 4.3.8
+    chai: 4.5.0
     chai-as-promised: 7.1.1
     chai-spies: 1.0.0
     chalk: 4.1.2
     commander: 11.0.0
     dotenv: 16.3.1
     glob: 10.3.10
-    hardhat: 2.22.5
+    hardhat: 2.24.3
     read: ^4.0.0
     rewire: 7.0.0
     source-map-support: 0.5.21
     typechain: 8.3.0
-    typescript: 5.2.2
+    typescript: 5.8.3
     typescript-json-schema: 0.61.0
     web3: 1.10.2
     web3-core: 1.10.2
@@ -2144,10 +2144,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nomicfoundation/edr-darwin-arm64@npm:0.4.0":
-  version: 0.4.0
-  resolution: "@nomicfoundation/edr-darwin-arm64@npm:0.4.0"
-  checksum: 61458dc5c9a6429c8225c3a5cffa6e634df86ae7d0a4e27392e99c5ddd0d9bc355de07ba74f9527b3d40a0d819a04485ade107c8ecc3ec86381411ef86b430ce
+"@nomicfoundation/edr-darwin-arm64@npm:0.11.2":
+  version: 0.11.2
+  resolution: "@nomicfoundation/edr-darwin-arm64@npm:0.11.2"
+  checksum: 012a5cbc29e6df80c298e47b3d9343592cf787ec46b41ef55b8ab1fd2bbfa871e458bb5772736d07aed98d760f565ab32391969f19b9660243a7a28182341fcd
   languageName: node
   linkType: hard
 
@@ -2158,10 +2158,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nomicfoundation/edr-darwin-x64@npm:0.4.0":
-  version: 0.4.0
-  resolution: "@nomicfoundation/edr-darwin-x64@npm:0.4.0"
-  checksum: 95bbb5371028e66caabce6d819d54f1726f3497855ec5395989b48e7313343e4f6f04f2d70a036ab518acaff1db309f2f50af19054eb2eb5d582122cff0c3b7c
+"@nomicfoundation/edr-darwin-x64@npm:0.11.2":
+  version: 0.11.2
+  resolution: "@nomicfoundation/edr-darwin-x64@npm:0.11.2"
+  checksum: 76d997fc116f17f8364ded4a13cf97e86ec1af4d8f4f86b7b4add2e1cc0ff2faadfa61c2585510218bcf7e53fb9dce009c0e5c9c5064940e79c9894291674af9
   languageName: node
   linkType: hard
 
@@ -2172,10 +2172,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nomicfoundation/edr-linux-arm64-gnu@npm:0.4.0":
-  version: 0.4.0
-  resolution: "@nomicfoundation/edr-linux-arm64-gnu@npm:0.4.0"
-  checksum: 7a0d39bc6402d0694e550d21a78bc49ab5b8a45a4853d619f4e42022bc1d4c06d380e31dfcade43f732dd3f799a725e7d2efdb942f34ca64e34c58cb92dc9afd
+"@nomicfoundation/edr-linux-arm64-gnu@npm:0.11.2":
+  version: 0.11.2
+  resolution: "@nomicfoundation/edr-linux-arm64-gnu@npm:0.11.2"
+  checksum: fa04f7150f7299eae21860b463d276c1743a80a9656e257f60e241cab77584108d3eb59d100c7138475cf7201cc19d1a899da123b1bd47feec853ffd089a7e78
   languageName: node
   linkType: hard
 
@@ -2186,10 +2186,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nomicfoundation/edr-linux-arm64-musl@npm:0.4.0":
-  version: 0.4.0
-  resolution: "@nomicfoundation/edr-linux-arm64-musl@npm:0.4.0"
-  checksum: 1f2623fad98bcb9118b17ff004b4ea40ce0afea85292e633ebea972ec678815a218774840c15eabd5f1cf3b6359cae26a7e20912c741b14577dc823def40a3bf
+"@nomicfoundation/edr-linux-arm64-musl@npm:0.11.2":
+  version: 0.11.2
+  resolution: "@nomicfoundation/edr-linux-arm64-musl@npm:0.11.2"
+  checksum: 1e8234f6dbc25646b19225ae7a44bf0bb08040a7de044789c9fd5c89833dd53bc114f7f13fc8773d83a2601690d0cde6d0732626f439ba81d802933eee15f07e
   languageName: node
   linkType: hard
 
@@ -2200,10 +2200,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nomicfoundation/edr-linux-x64-gnu@npm:0.4.0":
-  version: 0.4.0
-  resolution: "@nomicfoundation/edr-linux-x64-gnu@npm:0.4.0"
-  checksum: 6164a41c9310e755168b78ae7654d5cad1b6b2c3586d694d0e7e70fc3a9eb12312b5e2e5be893abe4cec2b402553cb32428c0553d31d655643bc2db200fbf040
+"@nomicfoundation/edr-linux-x64-gnu@npm:0.11.2":
+  version: 0.11.2
+  resolution: "@nomicfoundation/edr-linux-x64-gnu@npm:0.11.2"
+  checksum: b09f7ee3f3e61805dc49999cdc413aad5d5f4b7d12a1a2f20aefa64ed9e874d878f0b6b48a0c508d77d3ce61e08b99b48c34c91221bd213e5f12f1af4b7a8468
   languageName: node
   linkType: hard
 
@@ -2214,10 +2214,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nomicfoundation/edr-linux-x64-musl@npm:0.4.0":
-  version: 0.4.0
-  resolution: "@nomicfoundation/edr-linux-x64-musl@npm:0.4.0"
-  checksum: ad067b489bd2ea00dc68614fd87ed82c1261b3b31013322a259065b35d13a1aa3f4210e5f0bc84119e674abdc464723d3ce70a6fdff1810ea84ef14b0cf4ea68
+"@nomicfoundation/edr-linux-x64-musl@npm:0.11.2":
+  version: 0.11.2
+  resolution: "@nomicfoundation/edr-linux-x64-musl@npm:0.11.2"
+  checksum: 3d2e63753a7fb9555f4fdd0b3d8a6477bd484cf2f412e47c2d55c1e414492ee192030cdaeb4920e2c7995e8193b2d19573d730a9048478fdaf285968bdb4d06a
   languageName: node
   linkType: hard
 
@@ -2228,10 +2228,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nomicfoundation/edr-win32-x64-msvc@npm:0.4.0":
-  version: 0.4.0
-  resolution: "@nomicfoundation/edr-win32-x64-msvc@npm:0.4.0"
-  checksum: 3f36760dbb80b0d0dde6685d4eddadc2aa8e4cc002bae291c89378a90402b95815066b50b4226e691f3fceea732f535dbeedc4c51525bd8f5d9f574de846d369
+"@nomicfoundation/edr-win32-x64-msvc@npm:0.11.2":
+  version: 0.11.2
+  resolution: "@nomicfoundation/edr-win32-x64-msvc@npm:0.11.2"
+  checksum: 509554a9c1281a0ac887be3697503a61e04926deeed86f8b09026354ce086fc5723b1a10f7bab8efc75c7940effafbe63db769bc6c23e30aa75ae650862e3c31
   languageName: node
   linkType: hard
 
@@ -2250,18 +2250,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nomicfoundation/edr@npm:^0.4.0":
-  version: 0.4.0
-  resolution: "@nomicfoundation/edr@npm:0.4.0"
+"@nomicfoundation/edr@npm:^0.11.1":
+  version: 0.11.2
+  resolution: "@nomicfoundation/edr@npm:0.11.2"
   dependencies:
-    "@nomicfoundation/edr-darwin-arm64": 0.4.0
-    "@nomicfoundation/edr-darwin-x64": 0.4.0
-    "@nomicfoundation/edr-linux-arm64-gnu": 0.4.0
-    "@nomicfoundation/edr-linux-arm64-musl": 0.4.0
-    "@nomicfoundation/edr-linux-x64-gnu": 0.4.0
-    "@nomicfoundation/edr-linux-x64-musl": 0.4.0
-    "@nomicfoundation/edr-win32-x64-msvc": 0.4.0
-  checksum: 1baaa3f666bb9ea15cf04ba9e3ca8a1d654c722d37d61d93299933113a4305aa9e5cbf667df035ff7161c79a7e461af48986467129c700f4aa843be6fd9d4e7f
+    "@nomicfoundation/edr-darwin-arm64": 0.11.2
+    "@nomicfoundation/edr-darwin-x64": 0.11.2
+    "@nomicfoundation/edr-linux-arm64-gnu": 0.11.2
+    "@nomicfoundation/edr-linux-arm64-musl": 0.11.2
+    "@nomicfoundation/edr-linux-x64-gnu": 0.11.2
+    "@nomicfoundation/edr-linux-x64-musl": 0.11.2
+    "@nomicfoundation/edr-win32-x64-msvc": 0.11.2
+  checksum: 14487098c4e51b9d9423044e697037c572893ca362a5c3d3c45092578dbcd99c312fc12dc387aa5c1bb7bdfa286f3c303ea095aebfd3bf026f50343a1e64b079
   languageName: node
   linkType: hard
 
@@ -2472,14 +2472,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nomicfoundation/hardhat-network-helpers@npm:1.0.11":
-  version: 1.0.11
-  resolution: "@nomicfoundation/hardhat-network-helpers@npm:1.0.11"
+"@nomicfoundation/hardhat-network-helpers@npm:1.0.12":
+  version: 1.0.12
+  resolution: "@nomicfoundation/hardhat-network-helpers@npm:1.0.12"
   dependencies:
     ethereumjs-util: ^7.1.4
   peerDependencies:
     hardhat: ^2.9.5
-  checksum: b1566de2b0ff6de0fa825b13befd9a3318538e45c2d7e54b52dbf724b9ea5019365f1cf6962f4b89313747da847b575692783cfe03b60dbff3a2e419e135c3fb
+  checksum: 7e1b91789dd4e73464b4eec919b1e67c6d482dd7534f4f7cae73fb5bdddd69f2a47143754b34385b098a1df0f4875cd4d2e1109fc3d847db76f4b0a9a44bd959
   languageName: node
   linkType: hard
 
@@ -2647,15 +2647,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nomiclabs/hardhat-web3@npm:2.0.0":
-  version: 2.0.0
-  resolution: "@nomiclabs/hardhat-web3@npm:2.0.0"
-  dependencies:
-    "@types/bignumber.js": ^5.0.0
+"@nomiclabs/hardhat-web3@npm:2.0.1":
+  version: 2.0.1
+  resolution: "@nomiclabs/hardhat-web3@npm:2.0.1"
   peerDependencies:
     hardhat: ^2.0.0
     web3: ^1.0.0-beta.36
-  checksum: b777179ba395ec841848dc28bb7c583dc7a3dbf369a1f00d691157594d7cf74fe8ee7ae31ba1fb6424e2c39080ec386bda77cb56ad2517a0d1e55059178e1075
+  checksum: a47ec860d2b375ac890837e2b54950f79bc4c816e9fa17c27dae4ca1b0fcd860c8b6b72c05ba5bbc3273b5961ff808bf6127badea5f5fd6134fad5ccf7795708
   languageName: node
   linkType: hard
 
@@ -3077,15 +3075,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/bignumber.js@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "@types/bignumber.js@npm:5.0.0"
-  dependencies:
-    bignumber.js: "*"
-  checksum: f31a196da8b93d35c30879f4cc449e1099057ef27514554d2a5c80e2b1ba8cb8925919a2d92700d723ea959cb8b9d66f2917eea4f98a36f9f5d9e24c10c9c36f
-  languageName: node
-  linkType: hard
-
 "@types/bitcore-lib@npm:0.15.6":
   version: 0.15.6
   resolution: "@types/bitcore-lib@npm:0.15.6"
@@ -3187,6 +3176,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/chai@npm:5.2.2":
+  version: 5.2.2
+  resolution: "@types/chai@npm:5.2.2"
+  dependencies:
+    "@types/deep-eql": "*"
+  checksum: 386887bd55ba684572cececd833ed91aba6cce2edd8cc1d8cefa78800b3a74db6dbf5c5c41af041d1d1f3ce672ea30b45c9520f948cdc75431eb7df3fbba8405
+  languageName: node
+  linkType: hard
+
 "@types/chai@npm:^4.3.6":
   version: 4.3.11
   resolution: "@types/chai@npm:4.3.11"
@@ -3218,6 +3216,13 @@ __metadata:
   dependencies:
     "@types/ms": "*"
   checksum: 47876a852de8240bfdaf7481357af2b88cb660d30c72e73789abf00c499d6bc7cd5e52f41c915d1b9cd8ec9fef5b05688d7b7aef17f7f272c2d04679508d1053
+  languageName: node
+  linkType: hard
+
+"@types/deep-eql@npm:*":
+  version: 4.0.2
+  resolution: "@types/deep-eql@npm:4.0.2"
+  checksum: 249a27b0bb22f6aa28461db56afa21ec044fa0e303221a62dff81831b20c8530502175f1a49060f7099e7be06181078548ac47c668de79ff9880241968d43d0c
   languageName: node
   linkType: hard
 
@@ -4636,7 +4641,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bignumber.js@npm:*, bignumber.js@npm:^9.0.0":
+"bignumber.js@npm:^9.0.0":
   version: 9.1.2
   resolution: "bignumber.js@npm:9.1.2"
   checksum: 582c03af77ec9cb0ebd682a373ee6c66475db94a4325f92299621d544aa4bd45cb45fd60001610e94aef8ae98a0905fa538241d9638d4422d57abbeeac6fadaf
@@ -5338,6 +5343,21 @@ __metadata:
     pathval: ^1.1.1
     type-detect: ^4.0.5
   checksum: 29e0984ed13308319cadc35437c8ef0a3e271544d226c991bf7e3b6d771bf89707321669e11d05e362bc0ad0bd26585079b989d1032f3c106e3bb95d7f079cce
+  languageName: node
+  linkType: hard
+
+"chai@npm:4.5.0":
+  version: 4.5.0
+  resolution: "chai@npm:4.5.0"
+  dependencies:
+    assertion-error: ^1.1.0
+    check-error: ^1.0.3
+    deep-eql: ^4.1.3
+    get-func-name: ^2.0.2
+    loupe: ^2.3.6
+    pathval: ^1.1.1
+    type-detect: ^4.1.0
+  checksum: 70e5a8418a39e577e66a441cc0ce4f71fd551a650a71de30dd4e3e31e75ed1f5aa7119cf4baf4a2cb5e85c0c6befdb4d8a05811fad8738c1a6f3aa6a23803821
   languageName: node
   linkType: hard
 
@@ -8369,16 +8389,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hardhat@npm:2.22.5":
-  version: 2.22.5
-  resolution: "hardhat@npm:2.22.5"
+"hardhat@npm:2.24.3":
+  version: 2.24.3
+  resolution: "hardhat@npm:2.24.3"
   dependencies:
+    "@ethereumjs/util": ^9.1.0
     "@ethersproject/abi": ^5.1.2
-    "@metamask/eth-sig-util": ^4.0.0
-    "@nomicfoundation/edr": ^0.4.0
-    "@nomicfoundation/ethereumjs-common": 4.0.4
-    "@nomicfoundation/ethereumjs-tx": 5.0.4
-    "@nomicfoundation/ethereumjs-util": 9.0.4
+    "@nomicfoundation/edr": ^0.11.1
     "@nomicfoundation/solidity-analyzer": ^0.1.0
     "@sentry/node": ^5.18.1
     "@types/bn.js": ^5.1.0
@@ -8387,31 +8404,32 @@ __metadata:
     aggregate-error: ^3.0.0
     ansi-escapes: ^4.3.0
     boxen: ^5.1.2
-    chalk: ^2.4.2
-    chokidar: ^3.4.0
+    chokidar: ^4.0.0
     ci-info: ^2.0.0
     debug: ^4.1.1
     enquirer: ^2.3.0
     env-paths: ^2.2.0
     ethereum-cryptography: ^1.0.3
-    ethereumjs-abi: ^0.6.8
-    find-up: ^2.1.0
+    find-up: ^5.0.0
     fp-ts: 1.19.3
     fs-extra: ^7.0.1
-    glob: 7.2.0
     immutable: ^4.0.0-rc.12
     io-ts: 1.10.4
+    json-stream-stringify: ^3.1.4
     keccak: ^3.0.2
     lodash: ^4.17.11
+    micro-eth-signer: ^0.14.0
     mnemonist: ^0.38.0
     mocha: ^10.0.0
     p-map: ^4.0.0
+    picocolors: ^1.1.0
     raw-body: ^2.4.1
     resolve: 1.17.0
     semver: ^6.3.0
-    solc: 0.7.3
+    solc: 0.8.26
     source-map-support: ^0.5.13
     stacktrace-parser: ^0.1.10
+    tinyglobby: ^0.2.6
     tsort: 0.0.1
     undici: ^5.14.0
     uuid: ^8.3.2
@@ -8426,7 +8444,7 @@ __metadata:
       optional: true
   bin:
     hardhat: internal/cli/bootstrap.js
-  checksum: 34ab9ae3820c26ea4c92db43aefb15668d0575787d214a408b3274d445a7626775f2966dca2cf82a8fa8d9f39ebfdc90f3fb7189409b9582e373ce5b66ec3855
+  checksum: d9f0cd10e045681680f84f55d1097bb8b00f47c09880d089916b94b06c675c6af7b11d5a1051635e3ff95236dc2b14be2c942917de4657f78d665facea3e1c2e
   languageName: node
   linkType: hard
 
@@ -13731,6 +13749,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"type-detect@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "type-detect@npm:4.1.0"
+  checksum: 3b32f873cd02bc7001b00a61502b7ddc4b49278aabe68d652f732e1b5d768c072de0bc734b427abf59d0520a5f19a2e07309ab921ef02018fa1cb4af155cdb37
+  languageName: node
+  linkType: hard
+
 "type-fest@npm:^0.20.2":
   version: 0.20.2
   resolution: "type-fest@npm:0.20.2"
@@ -13888,6 +13913,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:5.8.3":
+  version: 5.8.3
+  resolution: "typescript@npm:5.8.3"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: cb1d081c889a288b962d3c8ae18d337ad6ee88a8e81ae0103fa1fecbe923737f3ba1dbdb3e6d8b776c72bc73bfa6d8d850c0306eed1a51377d2fccdfd75d92c4
+  languageName: node
+  linkType: hard
+
 "typescript@npm:^4.6.3":
   version: 4.9.5
   resolution: "typescript@npm:4.9.5"
@@ -13925,6 +13960,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: c084ee1ab865f108c787e6233a5f63c126c482c0c8e87ec998ac5288a2ad54b603e1ea8b8b272355823b833eb31b9fabb99e8c6152283e1cb47e3a76bd6faf6c
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@5.8.3#~builtin<compat/typescript>":
+  version: 5.8.3
+  resolution: "typescript@patch:typescript@npm%3A5.8.3#~builtin<compat/typescript>::version=5.8.3&hash=29ae49"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 1b503525a88ff0ff5952e95870971c4fb2118c17364d60302c21935dedcd6c37e6a0a692f350892bafcef6f4a16d09073fe461158547978d2f16fbe4cb18581c
   languageName: node
   linkType: hard
 
