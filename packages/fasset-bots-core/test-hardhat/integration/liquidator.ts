@@ -1,5 +1,5 @@
 import BN from "bn.js";
-import { time } from "@openzeppelin/test-helpers";
+import { time } from "../../src/utils/testing/test-helpers";
 import { assert, expect, spy, use } from "chai";
 import spies from "chai-spies";
 import { ORM } from "../../src/config/orm";
@@ -12,7 +12,7 @@ import { testChainInfo } from "../../test/test-utils/TestChainInfo";
 import { createTestOrm } from "../../test/test-utils/create-test-orm";
 import { TestAssetBotContext, TestAssetTrackedStateContext, createTestAssetContext, getTestAssetTrackedStateContext } from "../test-utils/create-test-asset-context";
 import { loadFixtureCopyVars } from "../test-utils/hardhat-test-helpers";
-import { createCRAndPerformMintingAndRunSteps, createTestAgentAndMakeAvailable, createTestAgentBotAndMakeAvailable, createTestChallenger, createTestLiquidator, createTestMinter, getAgentStatus } from "../test-utils/helpers";
+import { claimTransferFees, createCRAndPerformMintingAndRunSteps, createTestAgentAndMakeAvailable, createTestAgentBotAndMakeAvailable, createTestChallenger, createTestLiquidator, createTestMinter, getAgentStatus } from "../test-utils/helpers";
 import { assetPriceForAgentCr } from "../test-utils/calculations";
 use(spies);
 
@@ -249,7 +249,7 @@ describe("Liquidator tests", () => {
                 // move to next epoch
                 await time.increase(epochDuration);
                 // agent claims fee to redeemer address
-                const args = await agentBot.agent.claimTransferFees(liquidatorAddress, transferFeeEpoch);
+                const args = await claimTransferFees(agentBot.agent, liquidatorAddress, transferFeeEpoch);
                 if (args.poolClaimedUBA.gt(toBN(0))) {
                     await agentBot.agent.withdrawPoolFees(args.poolClaimedUBA, liquidatorAddress);
                 }
@@ -373,7 +373,7 @@ describe("Liquidator tests", () => {
                 // move to next epoch
                 await time.increase(epochDuration);
                 // agent claims fee to redeemer address
-                const args = await agentBot.agent.claimTransferFees(liquidatorAddress, transferFeeEpoch);
+                const args = await claimTransferFees(agentBot.agent, liquidatorAddress, transferFeeEpoch);
                 if (args.poolClaimedUBA.gt(toBN(0))) {
                     await agentBot.agent.withdrawPoolFees(args.poolClaimedUBA, liquidatorAddress);
                 }

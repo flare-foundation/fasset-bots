@@ -1,6 +1,7 @@
-import { time } from "@openzeppelin/test-helpers";
+import { time } from "../../src/utils/testing/test-helpers";
 import { assert, expect, spy, use } from "chai";
 import spies from "chai-spies";
+import { Challenger } from "../../src/actors/Challenger";
 import { ORM } from "../../src/config/orm";
 import { AgentRedemptionState } from "../../src/entities/common";
 import { AgentStatus } from "../../src/fasset/AssetManagerTypes";
@@ -10,6 +11,7 @@ import { TrackedState } from "../../src/state/TrackedState";
 import { attestationProved } from "../../src/underlying-chain/AttestationHelper";
 import { TX_BLOCKED } from "../../src/underlying-chain/interfaces/IBlockChain";
 import { IBlockChainWallet, SpentReceivedObject, TransactionOptionsWithFee, UTXO } from "../../src/underlying-chain/interfaces/IBlockChainWallet";
+import { requiredEventArgs } from "../../src/utils/events/truffle";
 import { proveAndUpdateUnderlyingBlock } from "../../src/utils/fasset-helpers";
 import { sleep, toBN } from "../../src/utils/helpers";
 import { artifacts, web3 } from "../../src/utils/web3";
@@ -18,9 +20,7 @@ import { createTestOrm } from "../../test/test-utils/create-test-orm";
 import { fundUnderlying, performRedemptionPayment } from "../../test/test-utils/test-helpers";
 import { TestAssetBotContext, createTestAssetContext } from "../test-utils/create-test-asset-context";
 import { loadFixtureCopyVars } from "../test-utils/hardhat-test-helpers";
-import { assertWeb3DeepEqual, createCRAndPerformMintingAndRunSteps, createTestAgentBotAndMakeAvailable, createTestChallenger, createTestLiquidator, createTestMinter, createTestRedeemer, getAgentStatus, runWithManualFDCFinalization, updateAgentBotUnderlyingBlockProof } from "../test-utils/helpers";
-import { Challenger } from "../../src/actors/Challenger";
-import { requiredEventArgs } from "../../src/utils/events/truffle";
+import { assertWeb3DeepEqual, claimAndSendTransferFee, createCRAndPerformMintingAndRunSteps, createTestAgentBotAndMakeAvailable, createTestChallenger, createTestLiquidator, createTestMinter, createTestRedeemer, getAgentStatus, runWithManualFDCFinalization, updateAgentBotUnderlyingBlockProof } from "../test-utils/helpers";
 use(spies);
 
 const IERC20 = artifacts.require("IERC20");
@@ -151,7 +151,7 @@ describe("Challenger tests", () => {
         await proveAndUpdateUnderlyingBlock(context.attestationProvider, context.assetManager, ownerAddress);
         // claim transfer fee
         const balanceBefore = await context.fAsset.balanceOf(redeemer.address);
-        await agentBot.agent.claimAndSendTransferFee(redeemer.address);
+        await claimAndSendTransferFee(agentBot.agent, redeemer.address);
         const balanceAfter = await context.fAsset.balanceOf(redeemer.address);
         assertWeb3DeepEqual(balanceAfter, balanceBefore.add(transferFee));
         // enable handshake
@@ -215,7 +215,7 @@ describe("Challenger tests", () => {
         await proveAndUpdateUnderlyingBlock(context.attestationProvider, context.assetManager, ownerAddress);
         // claim transfer fee
         const balanceBefore = await context.fAsset.balanceOf(redeemer.address);
-        await agentBot.agent.claimAndSendTransferFee(redeemer.address);
+        await claimAndSendTransferFee(agentBot.agent, redeemer.address);
         const balanceAfter = await context.fAsset.balanceOf(redeemer.address);
         assertWeb3DeepEqual(balanceAfter, balanceBefore.add(transferFee));
         // enable handshake
@@ -369,7 +369,7 @@ describe("Challenger tests", () => {
         await proveAndUpdateUnderlyingBlock(context.attestationProvider, context.assetManager, ownerAddress);
         // claim transfer fee
         const balanceBefore = await context.fAsset.balanceOf(redeemer.address);
-        await agentBot.agent.claimAndSendTransferFee(redeemer.address);
+        await claimAndSendTransferFee(agentBot.agent, redeemer.address);
         const balanceAfter = await context.fAsset.balanceOf(redeemer.address);
         assertWeb3DeepEqual(balanceAfter, balanceBefore.add(transferFee));
         // create redemption requests and perform redemption
@@ -463,7 +463,7 @@ describe("Challenger tests", () => {
         await proveAndUpdateUnderlyingBlock(context.attestationProvider, context.assetManager, ownerAddress);
         // claim transfer fee
         const balanceBefore = await context.fAsset.balanceOf(redeemer.address);
-        await agentBot.agent.claimAndSendTransferFee(redeemer.address);
+        await claimAndSendTransferFee(agentBot.agent, redeemer.address);
         const balanceAfter = await context.fAsset.balanceOf(redeemer.address);
         assertWeb3DeepEqual(balanceAfter, balanceBefore.add(transferFee));
         // update underlying block
@@ -745,7 +745,7 @@ describe("Challenger tests", () => {
         await proveAndUpdateUnderlyingBlock(context.attestationProvider, context.assetManager, ownerAddress);
         // claim transfer fee
         const balanceBefore = await context.fAsset.balanceOf(redeemer.address);
-        await agentBot.agent.claimAndSendTransferFee(redeemer.address);
+        await claimAndSendTransferFee(agentBot.agent, redeemer.address);
         const balanceAfter = await context.fAsset.balanceOf(redeemer.address);
         assertWeb3DeepEqual(balanceAfter, balanceBefore.add(transferFee));
         // update underlying block

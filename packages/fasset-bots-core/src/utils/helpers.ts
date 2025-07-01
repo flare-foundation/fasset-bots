@@ -27,6 +27,7 @@ export const MINUTES = 60;
 export const HOURS = 60 * MINUTES;
 export const DAYS = 24 * HOURS;
 export const WEEKS = 7 * DAYS;
+export const YEARS = 365 * DAYS;
 
 export const MAX_UINT256 = toBN(1).shln(256).subn(1);
 
@@ -112,6 +113,7 @@ export function toBN(x: BN | number | string): BN {
  */
 export function toNumber(x: BN | number | string) {
     if (typeof x === "number") return x;
+    if (BN.isBN(x)) return x.toNumber();
     return Number(x);
 }
 

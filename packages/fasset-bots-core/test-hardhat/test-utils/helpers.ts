@@ -31,6 +31,8 @@ import { IERC20Instance } from "../../typechain-truffle";
 import { TestAssetBotContext, createTestAssetContext } from "./create-test-asset-context";
 import { MockFlareDataConnectorClient } from "../../src/mock/MockFlareDataConnectorClient";
 import { MockHandshakeAddressVerifier } from "../../src/mock/MockHandshakeAddressVerifier";
+import { requiredEventArgs } from "../../src/utils/events/truffle";
+import { time } from "../../src/utils/testing/test-helpers";
 
 const FakeERC20 = artifacts.require("FakeERC20");
 const IERC20 = artifacts.require("IERC20");
@@ -272,4 +274,29 @@ export async function runWithManualFDCFinalization(context: IAssetAgentContext, 
         await fdcClient.finalizeRound();
     }
     fdcClient.finalizationType = "auto";
+}
+
+export async function claimTransferFees(agent: Agent, recipient: string, maxClaimEpochs: BNish) {
+    const res = await agent.assetManager.claimTransferFees(agent.vaultAddress, recipient, maxClaimEpochs, { from: agent.owner.workAddress });
+    return requiredEventArgs(res, "TransferFeesClaimed");
+}
+
+export async function claimAndSendTransferFee(agent: Agent, recipient: string) {
+    if ((await agent.assetManager.transferFeeMillionths()).eqn(0)) return;
+    const transferFeeEpoch = await agent.assetManager.currentTransferFeeEpoch();
+    // get epoch duration
+    const settings = await agent.assetManager.transferFeeSettings();
+    const epochDuration = settings.epochDuration;
+    // move to next epoch
+    await time.increase(epochDuration);
+    // agent claims fee to redeemer address
+    const args = await claimTransferFees(agent, recipient, transferFeeEpoch);
+    const poolClaimedFee = args.poolClaimedUBA;
+    // agent withdraws transfer fee from the pool
+    const transferFeeMillionths = await agent.assetManager.transferFeeMillionths();
+    // send more than pool claimed to cover transfer fee
+    // assuming that agent has enough pool fees (from minting, ...)
+    const withdrawAmount = poolClaimedFee.muln(1e6).div(toBN(1e6).sub(transferFeeMillionths)).addn(1);
+    await agent.withdrawPoolFees(withdrawAmount, recipient);
+    return args;
 }

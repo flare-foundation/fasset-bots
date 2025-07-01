@@ -8,5 +8,4 @@
 **/artifacts/*
 **/cache/*
 **/hardhat.config.ts
-**/test/types/*
 mikro-orm.config.ts
