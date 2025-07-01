@@ -14,7 +14,6 @@ import { ContractSettings, TransactionWaitFor } from "../../../src/utils/mini-tr
 import { expectEvent, expectRevert, time } from "../../../src/utils/testing/test-helpers";
 import { artifacts, contractSettings, web3 } from "../../../src/utils/web3";
 import { FakePriceReaderInstance, Truffle } from "../../../typechain-truffle";
-import { TransactionRevertedError } from "../../../src/utils/mini-truffle-contracts/custom-errors";
 
 describe("mini truffle and artifacts tests", () => {
     const TEST_LOCK_DIR = "./test-data/locks";
