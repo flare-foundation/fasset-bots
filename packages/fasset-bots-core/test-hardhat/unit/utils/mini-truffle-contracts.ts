@@ -31,16 +31,16 @@ describe("mini truffle and artifacts tests", () => {
                 .to.equal("contracts/ftso/mock/FakePriceReader.sol");
         });
 
-        // it("require with directory should work", async () => {// TODO
-        //     const GovernanceSettings = artifacts.require("flattened/FlareSmartContracts.sol:GovernanceSettings" as "GovernanceSettings");
-        //     expect((GovernanceSettings as MiniTruffleContract)._contractJson?.sourceName)
-        //         .to.equal("flattened/FlareSmartContracts.sol");
-        // });
+        it("require with directory should work", async () => {// TODO
+            const GovernanceSettings = artifacts.require("contracts/ftso/mock/FakePriceReader.sol:FakePriceReader" as "FakePriceReader");
+            expect((GovernanceSettings as MiniTruffleContract)._contractJson?.sourceName)
+                .to.equal("contracts/ftso/mock/FakePriceReader.sol");
+        });
 
-        // it("require with wrong directory should fail", async () => { // TODO
-        //     expect(() => artifacts.require("flare-smart-contracts/FlareSmartContracts.sol:GovernanceSettings" as "GovernanceSettings"))
-        //         .to.throw("Unknown artifact flare-smart-contracts/FlareSmartContracts.sol:GovernanceSettings");
-        // });
+        it("require with wrong directory should fail", async () => { // TODO
+            expect(() => artifacts.require("contracts/ftso/mock/FtsoV2PriceStoreMock.sol:FakePriceReader" as "FakePriceReader"))
+                .to.throw("Unknown artifact contracts/ftso/mock/FtsoV2PriceStoreMock.sol:FakePriceReader");
+        });
     });
 
     describe("contract calling and deploying", () => {
@@ -391,7 +391,8 @@ describe("mini truffle and artifacts tests", () => {
             expect(() => wnat.send(10_000)).to.throw('The send transactions "from" field must be defined!');
             // send transaction
             const wnatMT = wnat as unknown as MiniTruffleContractInstance;
-            const calldata = web3.eth.abi.encodeFunctionCall(requireNotNull(wnatMT.abi.find((it) => it.name === "withdraw")), ["5000"]);
+            const withdrawAbi = requireNotNull(wnatMT.abi.find((it) => it.name === "withdraw"));
+            const calldata = web3.eth.abi.encodeFunctionCall(withdrawAbi, ["5000"]);
             await wnat.sendTransaction({ data: calldata, from: accounts[0] });
             expect(await web3.eth.getBalance(wnat.address)).equals("5000");
         });
