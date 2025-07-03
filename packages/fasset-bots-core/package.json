@@ -120,7 +120,7 @@
         "@nomicfoundation/hardhat-network-helpers": "1.0.12",
         "@nomiclabs/hardhat-web3": "2.0.1",
         "@typechain/truffle-v5": "7.0.0",
-        "@types/chai": "5.2.2",
+        "@types/chai": "4.3.6",
         "@types/chai-as-promised": "7.1.6",
         "@types/chai-spies": "1.0.4",
         "axios-mock-adapter": "1.22.0",
