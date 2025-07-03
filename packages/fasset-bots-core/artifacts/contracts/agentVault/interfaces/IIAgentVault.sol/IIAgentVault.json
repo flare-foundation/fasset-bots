@@ -5,6 +5,26 @@
   "abi": [
     {
       "inputs": [],
+      "name": "AlreadyInitialized",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "OnlyAssetManager",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "OnlyNonCollateralTokens",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "OnlyOwner",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "assetManager",
       "outputs": [
         {
@@ -34,47 +54,6 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "contract IVPToken",
-          "name": "_token",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_to",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_bips",
-          "type": "uint256"
-        }
-      ],
-      "name": "delegate",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "contract IVPToken",
-          "name": "_token",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_to",
-          "type": "address"
-        }
-      ],
-      "name": "delegateGovernance",
-      "outputs": [],
-      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -176,32 +155,6 @@
         }
       ],
       "name": "transferExternalToken",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "contract IVPToken",
-          "name": "_token",
-          "type": "address"
-        }
-      ],
-      "name": "undelegateAll",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "contract IVPToken",
-          "name": "_token",
-          "type": "address"
-        }
-      ],
-      "name": "undelegateGovernance",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

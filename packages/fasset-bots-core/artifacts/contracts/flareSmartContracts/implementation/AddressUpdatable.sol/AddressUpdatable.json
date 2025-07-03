@@ -5,6 +5,16 @@
   "abi": [
     {
       "inputs": [],
+      "name": "AUAddressZero",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "OnlyAddressUpdater",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "getAddressUpdater",
       "outputs": [
         {

@@ -4,6 +4,116 @@
   "sourceName": "contracts/userInterfaces/ICollateralPool.sol",
   "abi": [
     {
+      "inputs": [],
+      "name": "AlreadyInitialized",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "AmountOfCollateralTooLow",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "AmountOfNatTooLow",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "CannotDestroyPoolWithIssuedTokens",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "CollateralAfterExitTooLow",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "CollateralRatioFallsBelowExitCR",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "DepositResultsInZeroTokens",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "FAssetAllowanceTooSmall",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "FreeFAssetBalanceTooSmall",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidRecipientAddress",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "OnlyAgent",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "OnlyAssetManager",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "OnlyInternalUse",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "PaymentLargerThanFeeDebt",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "PoolTokenAlreadySet",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "RedemptionRequiresClosingTooManyTickets",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "SentAmountTooLow",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "TokenBalanceTooLow",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "TokenShareIsZero",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "TokenSupplyAfterExitTooLow",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "WithdrawZeroFAsset",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ZeroFAssetDebtPayment",
+      "type": "error"
+    },
+    {
       "anonymous": false,
       "inputs": [
         {

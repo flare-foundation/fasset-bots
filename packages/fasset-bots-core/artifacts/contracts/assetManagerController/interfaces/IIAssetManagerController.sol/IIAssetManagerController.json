@@ -4,6 +4,51 @@
   "sourceName": "contracts/assetManagerController/interfaces/IIAssetManagerController.sol",
   "abi": [
     {
+      "inputs": [],
+      "name": "AUAddressZero",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "AlreadyInProductionMode",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "GovernedAddressZero",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "GovernedAlreadyInitialized",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "OnlyAddressUpdater",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "OnlyExecutor",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "OnlyGovernance",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "TimelockInvalidSelector",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "TimelockNotAllowedYet",
+      "type": "error"
+    },
+    {
       "anonymous": false,
       "inputs": [
         {
@@ -583,24 +628,6 @@
         }
       ],
       "name": "setAgentVaultFactory",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "contract IIAssetManager[]",
-          "name": "_assetManagers",
-          "type": "address[]"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_value",
-          "type": "uint256"
-        }
-      ],
-      "name": "setAnnouncedUnderlyingConfirmationMinSeconds",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -1212,24 +1239,6 @@
         }
       ],
       "name": "setVaultCollateralBuyForFlareFactorBIPS",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "contract IIAssetManager[]",
-          "name": "_assetManagers",
-          "type": "address[]"
-        },
-        {
-          "internalType": "address",
-          "name": "_value",
-          "type": "address"
-        }
-      ],
-      "name": "setWhitelist",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

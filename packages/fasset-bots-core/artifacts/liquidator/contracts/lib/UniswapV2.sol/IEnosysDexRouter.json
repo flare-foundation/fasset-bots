@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
   "contractName": "IEnosysDexRouter",
-  "sourceName": "contracts/lib/UniswapV2.sol",
+  "sourceName": "liquidator/contracts/lib/UniswapV2.sol",
   "abi": [
     {
       "inputs": [

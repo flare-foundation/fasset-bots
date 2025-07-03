@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
   "contractName": "IUniswapV2Router",
-  "sourceName": "contracts/interfaces/IUniswapV2/IUniswapV2Router.sol",
+  "sourceName": "liquidator/contracts/interfaces/IUniswapV2/IUniswapV2Router.sol",
   "abi": [
     {
       "inputs": [
