@@ -78,9 +78,7 @@ Example:
     "mintingPoolCollateralRatioConstant": 1.2,
     "poolExitCollateralRatioConstant": 1.3,
     "buyFAssetByAgentFactorBIPS": 9000,
-    "poolTopupCollateralRatioConstant": 1.1,
-    "poolTopupTokenPriceFactorBIPS": 8000,
-    "handshakeType": 0
+    "redemptionPoolFeeShareBIPS": 4000,
 }
 ```
 
