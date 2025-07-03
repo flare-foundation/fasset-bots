@@ -15,9 +15,7 @@ export interface AgentVaultInitSettings {
     mintingPoolCollateralRatioBIPS: BN;
     poolExitCollateralRatioBIPS: BN;
     buyFAssetByAgentFactorBIPS: BN;
-    poolTopupCollateralRatioBIPS: BN;
-    poolTopupTokenPriceFactorBIPS: BN;
-    handshakeType: BN;
+    redemptionPoolFeeShareBIPS: BN;
 }
 
 export const agentSettingsLoader: IJsonLoader<AgentSettingsConfig> =
@@ -58,9 +56,7 @@ export async function createAgentVaultInitSettings(
         mintingPoolCollateralRatioBIPS: toBIPS(agentSettings.mintingPoolCollateralRatio),
         poolExitCollateralRatioBIPS: toBIPS(agentSettings.poolExitCollateralRatio),
         buyFAssetByAgentFactorBIPS: toBIPS(agentSettings.buyFAssetByAgentFactor),
-        poolTopupCollateralRatioBIPS: toBIPS(agentSettings.poolTopupCollateralRatio),
-        poolTopupTokenPriceFactorBIPS: toBIPS(agentSettings.poolTopupTokenPriceFactor),
-        handshakeType: toBN(agentSettings.handshakeType),
+        redemptionPoolFeeShareBIPS: toBIPS(agentSettings.redemptionPoolFeeShare),
     };
     return agentBotSettings;
 }

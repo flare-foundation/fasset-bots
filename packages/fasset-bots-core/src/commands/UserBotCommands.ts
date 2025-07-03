@@ -161,36 +161,8 @@ export class UserBotCommands {
         const minter = new Minter(this.context, this.nativeAddress, this.underlyingAddress, this.context.wallet);
         console.log("Reserving collateral...");
         logger.info(`User ${this.nativeAddress} is reserving collateral with agent ${agentVault} and ${lots} lots.`);
-        const info = await this.context.assetManager.getAgentInfo(agentVault);
-        let crt;
-        if (toBN(info.handshakeType).eq(BN_ZERO)) {
-            crt = await minter.reserveCollateral(agentVault, lots, executorAddress, executorFeeNatWei);
-            logger.info(`User ${this.nativeAddress} reserved collateral ${formatArgs(crt)} with agent ${agentVault} and ${lots} lots.`);
-        } else {
-            const fromBlock = await web3.eth.getBlockNumber();
-            const hs = await minter.reserveCollateralHandshake(agentVault, lots, executorAddress, executorFeeNatWei);
-            logger.info(`User ${this.nativeAddress} reserved collateral (started handshake request) ${formatArgs(hs)} with agent ${agentVault} and ${lots} lots.`);
-            console.log("Handshake started...");
-            const settings = await this.context.assetManager.getSettings();
-            logger.info(`User ${this.nativeAddress} waiting for agent ${agentVault} approval or rejection before cancelling the request.`);
-            // wait for approval or rejection for `cancelCollateralReservationAfterSeconds + 10 seconds`
-            const event = await minter.waitForEvent(this.context.assetManager, fromBlock, toBN(settings.cancelCollateralReservationAfterSeconds).addn(10).muln(1000).toNumber(),
-                (ev) => eventIs(ev, this.context.assetManager, "CollateralReserved") && ev.args.collateralReservationId.eq(hs.collateralReservationId) ||
-                    eventIs(ev, this.context.assetManager, "CollateralReservationRejected") && ev.args.collateralReservationId.eq(hs.collateralReservationId));
-            if (event == null) {
-                logger.info(`User ${this.nativeAddress} timed out waiting for agent ${agentVault} approval or rejection, cancelling the request.`);
-                await minter.cancelCollateralReservation(hs.collateralReservationId);
-                console.log("Handshake cancelled.");
-                return null;
-            } else if (eventIs(event, this.context.assetManager, "CollateralReserved")) {
-                console.log("Handshake approved.");
-                crt = event.args;
-            } else {
-                logger.info(`User ${this.nativeAddress} received rejection for collateral reservation ${hs.collateralReservationId} from agent ${agentVault}.`);
-                console.log("Handshake rejected.");
-                return null;
-            }
-        }
+        const crt = await minter.reserveCollateral(agentVault, lots, executorAddress, executorFeeNatWei);
+        logger.info(`User ${this.nativeAddress} reserved collateral ${formatArgs(crt)} with agent ${agentVault} and ${lots} lots.`);
         console.log(`Paying on the underlying chain for reservation ${crt.collateralReservationId} to address ${crt.paymentAddress}...`);
         logger.info(`User ${this.nativeAddress} is paying on underlying chain for reservation ${crt.collateralReservationId} to agent's ${agentVault} address ${crt.paymentAddress}.`);
         const txHash = await minter.performMintingPayment(crt);

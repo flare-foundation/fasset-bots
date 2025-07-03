@@ -90,12 +90,6 @@ export class Redeemer {
         return requiredEventArgs(res, 'RedemptionDefault');
     }
 
-    async executeRejectedPaymentDefault(requestId: BNish, executorAddress: string) {
-        const executor = executorAddress !== ZERO_ADDRESS ? executorAddress : this.address;
-        const res = await this.assetManager.rejectedRedemptionPaymentDefault(requestId, { from: executor });
-        return requiredEventArgs(res, 'RedemptionDefault');
-    }
-
     async requestRedemptionFromCoreVault(lots: BNish): Promise<EventArgs<CoreVaultRedemptionRequested>[]> {
         const res = await this.assetManager.redeemFromCoreVault(lots, this.underlyingAddress, { from: this.address });
         const redemptionRequest = filterEvents(res, 'CoreVaultRedemptionRequested').map(e => e.args);

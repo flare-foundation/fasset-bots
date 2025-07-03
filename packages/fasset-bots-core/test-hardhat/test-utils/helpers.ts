@@ -31,8 +31,6 @@ import { IERC20Instance } from "../../typechain-truffle";
 import { TestAssetBotContext, createTestAssetContext } from "./create-test-asset-context";
 import { MockFlareDataConnectorClient } from "../../src/mock/MockFlareDataConnectorClient";
 import { MockHandshakeAddressVerifier } from "../../src/mock/MockHandshakeAddressVerifier";
-import { requiredEventArgs } from "../../src/utils/events/truffle";
-import { time } from "../../src/utils/testing/test-helpers";
 
 const FakeERC20 = artifacts.require("FakeERC20");
 const IERC20 = artifacts.require("IERC20");
@@ -61,7 +59,7 @@ export async function createTestAgentBot(
     notifiers: NotifierTransport[] = testNotifierTransports,
     options?: AgentVaultInitSettings,
 ): Promise<AgentBot> {
-    await automaticallySetWorkAddress(context, autoSetWorkAddress, ownerManagementAddress);
+    await automaticallySetWorkAddressAndWhitelistAgent(context, autoSetWorkAddress, ownerManagementAddress);
     const owner = await Agent.getOwnerAddressPair(context, ownerManagementAddress);
     ownerUnderlyingAddress ??= `underlying_${ownerManagementAddress}`;
     await fundUnderlying(context, ownerUnderlyingAddress, depositUnderlying);
@@ -111,7 +109,7 @@ export async function createTestAgent(
     underlyingAddress: string = agentUnderlyingAddress,
     autoSetWorkAddress: boolean = true,
 ): Promise<Agent> {
-    await automaticallySetWorkAddress(context, autoSetWorkAddress, ownerManagementAddress);
+    await automaticallySetWorkAddressAndWhitelistAgent(context, autoSetWorkAddress, ownerManagementAddress);
     const owner = await Agent.getOwnerAddressPair(context, ownerManagementAddress);
     const agentBotSettings: AgentVaultInitSettings = await createAgentVaultInitSettings(context, loadAgentSettings(DEFAULT_AGENT_SETTINGS_PATH_HARDHAT));
     agentBotSettings.poolTokenSuffix = DEFAULT_POOL_TOKEN_SUFFIX();
@@ -121,7 +119,8 @@ export async function createTestAgent(
     return agent;
 }
 
-async function automaticallySetWorkAddress(context: TestAssetBotContext, autoSetWorkAddress: boolean, ownerManagementAddress: string) {
+async function automaticallySetWorkAddressAndWhitelistAgent(context: TestAssetBotContext, autoSetWorkAddress: boolean, ownerManagementAddress: string) {
+    await context.agentOwnerRegistry.whitelistAndDescribeAgent(ownerManagementAddress, "Agent Name", "Agent Description", "Icon", "URL");
     if (autoSetWorkAddress) {
         const workAddress = await context.agentOwnerRegistry.getWorkAddress(ownerManagementAddress);
         if (workAddress === ZERO_ADDRESS) {
@@ -258,9 +257,7 @@ export async function fromAgentInfoToInitialAgentData(agent: Agent): Promise<Ini
             mintingPoolCollateralRatioBIPS: toBN(agentInfo.mintingPoolCollateralRatioBIPS),
             buyFAssetByAgentFactorBIPS: toBN(agentInfo.buyFAssetByAgentFactorBIPS),
             poolExitCollateralRatioBIPS: toBN(agentInfo.poolExitCollateralRatioBIPS),
-            poolTopupCollateralRatioBIPS: toBN(agentInfo.poolTopupCollateralRatioBIPS),
-            poolTopupTokenPriceFactorBIPS: toBN(agentInfo.poolTopupTokenPriceFactorBIPS),
-            handshakeType: toBN(agentInfo.handshakeType),
+            redemptionPoolFeeShareBIPS: toBN(agentInfo.redemptionPoolFeeShareBIPS),
         }
     };
     return initialAgentData;
@@ -274,29 +271,4 @@ export async function runWithManualFDCFinalization(context: IAssetAgentContext, 
         await fdcClient.finalizeRound();
     }
     fdcClient.finalizationType = "auto";
-}
-
-export async function claimTransferFees(agent: Agent, recipient: string, maxClaimEpochs: BNish) {
-    const res = await agent.assetManager.claimTransferFees(agent.vaultAddress, recipient, maxClaimEpochs, { from: agent.owner.workAddress });
-    return requiredEventArgs(res, "TransferFeesClaimed");
-}
-
-export async function claimAndSendTransferFee(agent: Agent, recipient: string) {
-    if ((await agent.assetManager.transferFeeMillionths()).eqn(0)) return;
-    const transferFeeEpoch = await agent.assetManager.currentTransferFeeEpoch();
-    // get epoch duration
-    const settings = await agent.assetManager.transferFeeSettings();
-    const epochDuration = settings.epochDuration;
-    // move to next epoch
-    await time.increase(epochDuration);
-    // agent claims fee to redeemer address
-    const args = await claimTransferFees(agent, recipient, transferFeeEpoch);
-    const poolClaimedFee = args.poolClaimedUBA;
-    // agent withdraws transfer fee from the pool
-    const transferFeeMillionths = await agent.assetManager.transferFeeMillionths();
-    // send more than pool claimed to cover transfer fee
-    // assuming that agent has enough pool fees (from minting, ...)
-    const withdrawAmount = poolClaimedFee.muln(1e6).div(toBN(1e6).sub(transferFeeMillionths)).addn(1);
-    await agent.withdrawPoolFees(withdrawAmount, recipient);
-    return args;
 }

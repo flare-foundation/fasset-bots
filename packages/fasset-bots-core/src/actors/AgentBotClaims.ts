@@ -2,7 +2,6 @@ import { BN_ZERO, ZERO_ADDRESS, toBN } from "../utils/helpers";
 import { logger } from "../utils/logger";
 import { artifacts } from "../utils/web3";
 import { AgentBot } from "./AgentBot";
-import { ClaimType } from "./AgentBotCollateralWithdrawal";
 
 export class AgentBotClaims {
     static deepCopyWithObjectCreate = true;
@@ -15,19 +14,16 @@ export class AgentBotClaims {
     context = this.agent.context;
 
     /**
-     * Checks if there are any claims for agent vault and collateral pool.
+     * Checks if there are any claims for collateral pool.
      */
     async checkForClaims(): Promise<void> {
         // delegation rewards
-        await this.checkDelegationRewards(ClaimType.VAULT);
-        await this.checkDelegationRewards(ClaimType.POOL);
+        await this.checkDelegationRewards();
         // airdrop distribution rewards
-        await this.checkAirdropClaims(ClaimType.VAULT);
-        await this.checkAirdropClaims(ClaimType.POOL);
-        await this.checkTransferFeesClaims();
+        await this.checkAirdropClaims();
     }
 
-    async checkDelegationRewards(type: ClaimType) {
+    async checkDelegationRewards() {
         /* istanbul ignore next */
         if (this.bot.stopRequested()) return;
         try {
@@ -35,7 +31,7 @@ export class AgentBotClaims {
             const IRewardManager = artifacts.require("IRewardManager");
             const rewardManagerAddress = await this.context.addressUpdater.getContractAddress("RewardManager");
             const rewardManager = await IRewardManager.at(rewardManagerAddress);
-            const addressToClaim = type === ClaimType.VAULT ? this.agent.vaultAddress : this.agent.collateralPool.address;
+            const addressToClaim = this.agent.collateralPool.address;
             const stateOfRewards = await rewardManager.getStateOfRewards(addressToClaim);
             let lastRewardEpoch = -1;
             for (let i = 0; i < stateOfRewards.length; i++) {
@@ -57,20 +53,16 @@ export class AgentBotClaims {
             }
             if (lastRewardEpoch >= 0) {
                 logger.info(`Agent ${this.agent.vaultAddress} is claiming delegation rewards for ${addressToClaim} for epoch ${lastRewardEpoch}`);
-                if (type === ClaimType.VAULT) {
-                    await this.agent.agentVault.claimDelegationRewards(rewardManager.address, lastRewardEpoch, this.agent.owner.workAddress, [], { from: this.agent.owner.workAddress });
-                } else {
-                    await this.agent.collateralPool.claimDelegationRewards(rewardManager.address, lastRewardEpoch, [], { from: this.agent.owner.workAddress });
-                }
+                await this.agent.collateralPool.claimDelegationRewards(rewardManager.address, lastRewardEpoch, [], { from: this.agent.owner.workAddress });
             }
             logger.info(`Agent ${this.agent.vaultAddress} finished checking for delegation claims.`);
         } catch (error) {
-            console.error(`Error handling delegation rewards for ${type} for agent ${this.agent.vaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agent.vaultAddress} run into error while handling delegation rewards for ${type}:`, error);
+            console.error(`Error handling delegation rewards for collateral pool for agent ${this.agent.vaultAddress}: ${error}`);
+            logger.error(`Agent ${this.agent.vaultAddress} run into error while handling delegation rewards for collateral pool:`, error);
         }
     }
 
-    async checkAirdropClaims(type: ClaimType) {
+    async checkAirdropClaims() {
         /* istanbul ignore next */
         if (this.bot.stopRequested()) return;
         try {
@@ -79,40 +71,17 @@ export class AgentBotClaims {
             const distributionToDelegatorsAddress = await this.context.addressUpdater.getContractAddress("DistributionToDelegators");
             if (distributionToDelegatorsAddress === ZERO_ADDRESS) return;   // DistributionToDelegators does not exist on Songbird/Coston
             const distributionToDelegators = await IDistributionToDelegators.at(distributionToDelegatorsAddress);
-            const addressToClaim = type === ClaimType.VAULT ? this.agent.vaultAddress : this.agent.collateralPool.address;
+            const addressToClaim = this.agent.collateralPool.address;
             const { 1: endMonth } = await distributionToDelegators.getClaimableMonths({ from: addressToClaim });
             const claimable = await distributionToDelegators.getClaimableAmountOf(addressToClaim, endMonth);
             if (toBN(claimable).gtn(0)) {
                 logger.info(`Agent ${this.agent.vaultAddress} is claiming airdrop distribution for ${addressToClaim} for month ${endMonth}.`);
-                if (type === ClaimType.VAULT) {
-                    await this.agent.agentVault.claimAirdropDistribution(distributionToDelegators.address, endMonth, this.agent.owner.workAddress, { from: this.agent.owner.workAddress });
-                } else {
-                    await this.agent.collateralPool.claimAirdropDistribution(distributionToDelegators.address, endMonth, { from: this.agent.owner.workAddress });
-                }
+                await this.agent.collateralPool.claimAirdropDistribution(distributionToDelegators.address, endMonth, { from: this.agent.owner.workAddress });
             }
             logger.info(`Agent ${this.agent.vaultAddress} finished checking for airdrop distribution.`);
         } catch (error) {
-            console.error(`Error handling airdrop distribution for ${type} for agent ${this.agent.vaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agent.vaultAddress} run into error while handling airdrop distribution for ${type}:`, error);
-        }
-    }
-
-    async checkTransferFeesClaims() {
-        /* istanbul ignore next */
-        if (this.bot.stopRequested()) return;
-        try {
-            logger.info(`Agent ${this.agent.vaultAddress} started checking for transfer fees.`);
-            const { 0: firstUnclaimedEpoch, 1: count } = await this.agent.assetManager.agentUnclaimedTransferFeeEpochs(this.agent.vaultAddress);
-            const maxEpochs = count.ltn(11) ? count : toBN(10);
-            if (toBN(count).gtn(0)) {
-                logger.info(`Agent ${this.agent.vaultAddress} is claiming transferFees for epochs ${String(firstUnclaimedEpoch)} - ${String(firstUnclaimedEpoch.add(maxEpochs).subn(1))}.`);
-                await this.agent.assetManager.claimTransferFees(this.agent.vaultAddress, this.agent.owner.workAddress, maxEpochs, { from: this.agent.owner.workAddress });
-
-            }
-            logger.info(`Agent ${this.agent.vaultAddress} finished checking for transfer fees.`);
-        } catch (error) {
-            console.error(`Error handling transfer fees for agent ${this.agent.vaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agent.vaultAddress} run into error while handling transfer fees:`, error);
+            console.error(`Error handling airdrop distribution for collateral pool for agent ${this.agent.vaultAddress}: ${error}`);
+            logger.error(`Agent ${this.agent.vaultAddress} run into error while handling airdrop distribution for collateral pool:`, error);
         }
     }
 }

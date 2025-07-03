@@ -27,9 +27,7 @@ const agentCreated: InitialAgentData = {
         mintingPoolCollateralRatioBIPS: toBN(26400),
         buyFAssetByAgentFactorBIPS: toBN(9000),
         poolExitCollateralRatioBIPS: toBN(28600),
-        poolTopupCollateralRatioBIPS: toBN(24200),
-        poolTopupTokenPriceFactorBIPS: toBN(8000),
-        handshakeType: toBN(0),
+        redemptionPoolFeeShareBIPS: toBN(4000),
     }
 };
 

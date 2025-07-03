@@ -12,7 +12,7 @@ import { testChainInfo } from "../../test/test-utils/TestChainInfo";
 import { createTestOrm } from "../../test/test-utils/create-test-orm";
 import { TestAssetBotContext, TestAssetTrackedStateContext, createTestAssetContext, getTestAssetTrackedStateContext } from "../test-utils/create-test-asset-context";
 import { loadFixtureCopyVars } from "../test-utils/hardhat-test-helpers";
-import { claimTransferFees, createCRAndPerformMintingAndRunSteps, createTestAgentAndMakeAvailable, createTestAgentBotAndMakeAvailable, createTestChallenger, createTestLiquidator, createTestMinter, getAgentStatus } from "../test-utils/helpers";
+import { createCRAndPerformMintingAndRunSteps, createTestAgentAndMakeAvailable, createTestAgentBotAndMakeAvailable, createTestChallenger, createTestLiquidator, createTestMinter, getAgentStatus } from "../test-utils/helpers";
 import { assetPriceForAgentCr } from "../test-utils/calculations";
 use(spies);
 
@@ -208,7 +208,7 @@ describe("Liquidator tests", () => {
         expect(cBalanceAfter.gt(cBalanceBefore)).to.be.true;
     });
 
-    it("Should liquidate agent due to price change - liquidate everything", async () => {
+    it("Should liquidate agent due to price change - liquidate everything", async () => {// TODO
         const liquidator = await createTestLiquidator(trackedStateContext, liquidatorAddress, state);
         const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, accounts[81]);
         // vaultCollateralToken
@@ -241,17 +241,18 @@ describe("Liquidator tests", () => {
         const info = await agentBot.agent.getAgentInfo();
         if (!toBN(info.mintedUBA).eq(fBalanceBefore)) {
             let balanceAfter: BN = toBN(0);
-            // get epoch duration
-            const settings = await agentBot.agent.assetManager.transferFeeSettings();
-            const epochDuration = settings.epochDuration;
+            // // get epoch duration
+            // const settings = await agentBot.agent.assetManager.transferFeeSettings();
+            // const epochDuration = settings.epochDuration;
             while (balanceAfter < toBN(info.mintedUBA)) {
-                const transferFeeEpoch = await agentBot.agent.assetManager.currentTransferFeeEpoch();
-                // move to next epoch
-                await time.increase(epochDuration);
-                // agent claims fee to redeemer address
-                const args = await claimTransferFees(agentBot.agent, liquidatorAddress, transferFeeEpoch);
-                if (args.poolClaimedUBA.gt(toBN(0))) {
-                    await agentBot.agent.withdrawPoolFees(args.poolClaimedUBA, liquidatorAddress);
+            //     const transferFeeEpoch = await agentBot.agent.assetManager.currentTransferFeeEpoch();
+            //     // move to next epoch
+            //     await time.increase(epochDuration);
+            //     // agent claims fee to redeemer address
+                // const args = await claimTransferFees(agentBot.agent, liquidatorAddress, transferFeeEpoch);
+                const poolFees = await agentBot.agent.poolFeeBalance();
+                if (poolFees.gt(toBN(0))) {
+                    await agentBot.agent.withdrawPoolFees(poolFees, liquidatorAddress);
                 }
                 balanceAfter = await context.fAsset.balanceOf(liquidatorAddress);
             }
@@ -272,7 +273,7 @@ describe("Liquidator tests", () => {
         expect(cBalanceAfter.gt(cBalanceBefore)).to.be.true;
     });
 
-    it("Should liquidate agent due to price change - liquidate everything (buy missing fAssets)", async () => {
+    it("Should liquidate agent due to price change - liquidate everything (buy missing fAssets)", async () => {// TODO
         const liquidator = await createTestLiquidator(trackedStateContext, liquidatorAddress, state);
         const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, accounts[81]);
         // vaultCollateralToken
@@ -312,10 +313,10 @@ describe("Liquidator tests", () => {
         // liquidator buys missing fAssets
         // liquidator address will have fBalance the same as number of minted fAssets and will be able to liquidate everything
         const mintedFAssets = (await agentBot.agent.getAgentInfo()).mintedUBA;
-        const missingFAssets = toBN(mintedFAssets).sub(fBalanceBefore)
-        const transferFeeMillionths = await agentBot.agent.assetManager.transferFeeMillionths();
-        const amount = toBN(missingFAssets).muln(1e6).div(toBN(1e6).sub(transferFeeMillionths)).addn(1);
-        await context.fAsset.transfer(liquidator.address, amount, { from: minter.address });
+        // const missingFAssets = toBN(mintedFAssets).sub(fBalanceBefore)
+        // const transferFeeMillionths = await agentBot.agent.assetManager.transferFeeMillionths();
+        // const amount = toBN(missingFAssets).muln(1e6).div(toBN(1e6).sub(transferFeeMillionths)).addn(1);
+        // await context.fAsset.transfer(liquidator.address, amount, { from: minter.address });
         // liquidate agent
         await liquidator.runStep();
         // check agent status
@@ -331,7 +332,7 @@ describe("Liquidator tests", () => {
         expect(cBalanceAfter.gt(cBalanceBefore)).to.be.true;
     });
 
-    it("Should liquidate agent due to collateral token invalidation", async () => {
+    it("Should liquidate agent due to collateral token invalidation", async () => {//TODO
         const liquidator = await createTestLiquidator(trackedStateContext, liquidatorAddress, state);
         const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, accounts[81]);
         // vaultCollateralToken
@@ -366,16 +367,17 @@ describe("Liquidator tests", () => {
         if (!toBN(info1.mintedUBA).eq(fBalanceBefore)) {
             let balanceAfter: BN = toBN(0);
             while (balanceAfter < toBN(info1.mintedUBA)) {
-                const transferFeeEpoch = await agentBot.agent.assetManager.currentTransferFeeEpoch();
+                // const transferFeeEpoch = await agentBot.agent.assetManager.currentTransferFeeEpoch();
                 // get epoch duration
-                const settings = await agentBot.agent.assetManager.transferFeeSettings();
-                const epochDuration = settings.epochDuration;
+                // const settings = await agentBot.agent.assetManager.transferFeeSettings();
+                // const epochDuration = settings.epochDuration;
                 // move to next epoch
-                await time.increase(epochDuration);
+                // await time.increase(epochDuration);
                 // agent claims fee to redeemer address
-                const args = await claimTransferFees(agentBot.agent, liquidatorAddress, transferFeeEpoch);
-                if (args.poolClaimedUBA.gt(toBN(0))) {
-                    await agentBot.agent.withdrawPoolFees(args.poolClaimedUBA, liquidatorAddress);
+                const poolFees = await agentBot.agent.poolFeeBalance()
+                // const args = await claimTransferFees(agentBot.agent, liquidatorAddress, transferFeeEpoch);
+                if (poolFees.gt(toBN(0))) {
+                    await agentBot.agent.withdrawPoolFees(poolFees, liquidatorAddress);
                 }
                 balanceAfter = await context.fAsset.balanceOf(liquidatorAddress);
             }

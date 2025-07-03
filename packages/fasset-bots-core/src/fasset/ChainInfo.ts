@@ -7,7 +7,6 @@ export interface ChainInfo {
     symbol: string;     // chain token symbol
     decimals: number;
     amgDecimals: number;
-    requireEOAProof: boolean;
     minimumAccountBalance: BN; // only needed for XRP
     useOwnerUnderlyingAddressForPayingFees?: boolean;
 }

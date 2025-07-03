@@ -1,5 +1,5 @@
 import BN from "bn.js";
-import { RedemptionRequested, RedemptionRequestRejected, UnderlyingWithdrawalAnnounced } from "../../typechain-truffle/IIAssetManager";
+import { RedemptionRequested, UnderlyingWithdrawalAnnounced } from "../../typechain-truffle/IIAssetManager";
 import { BotFAssetConfigWithIndexer, KeeperBotConfig, createChallengerContext } from "../config";
 import { ActorBase, ActorBaseKind } from "../fasset-bots/ActorBase";
 import { IChallengerContext } from "../fasset-bots/IAssetBotContext";
@@ -107,10 +107,6 @@ export class Challenger extends ActorBase {
                     logger.info(`Challenger ${this.address} received event 'RedemptionRequested' with data ${formatArgs(event.args)}.`);
                     await this.handleRedemptionRequested(event.args);
                     logger.info(`Challenger ${this.address} stored active redemption: ${formatArgs(event.args)}.`);
-                } else if (eventIs(event, this.context.assetManager, "RedemptionRequestRejected")) {
-                    logger.info(`Challenger ${this.address} received event 'RedemptionRequestRejected' with data ${formatArgs(event.args)}.`);
-                    await this.handleRedemptionRejected(event.args);
-                    logger.info(`Challenger ${this.address} updated active redemption: ${formatArgs(event.args)}.`);
                 } else if (eventIs(event, this.context.assetManager, "RedemptionPerformed")) {
                     logger.info(`Challenger ${this.address} received event 'RedemptionPerformed' with data ${formatArgs(event.args)}.`);
                     await this.handleRedemptionFinished(event.args);
@@ -202,26 +198,6 @@ export class Challenger extends ActorBase {
             endTimestamp:toBN(args.lastUnderlyingTimestamp),
             rejected: false,
         });
-    }
-
-    /**
-     * @param args event's RedemptionRequestRejected arguments
-     */
-    async handleRedemptionRejected(args: EventArgs<RedemptionRequestRejected>): Promise<void> {
-        const reference = PaymentReference.redemption(args.requestId);
-        const redemption = this.activeRedemptions.get(reference);
-        if (redemption == null) return;
-        // mark as rejected
-        redemption.rejected = true;
-        // check if there was a payment for this redemption
-        const txHash = this.transactionForPaymentReference.get(reference);
-        if (txHash) {
-            // illegal transaction challenge
-            const agent = await this.state.getAgentTriggerAdd(redemption.agentAddress);
-            if (agent && agent.status !== AgentStatus.FULL_LIQUIDATION) {
-                this.runner.startThread((scope) => this.illegalTransactionChallenge(scope, txHash, agent));
-            }
-        }
     }
 
     /**

@@ -1,4 +1,4 @@
-import { AddressUpdaterInstance, AgentOwnerRegistryInstance, IIAssetManagerControllerInstance, CoreVaultManagerInstance, FAssetInstance, IIAssetManagerInstance, IPriceChangeEmitterInstance, WNatInstance } from "../../typechain-truffle";
+import { AgentOwnerRegistryInstance, IIAssetManagerControllerInstance, CoreVaultManagerInstance, FAssetInstance, IIAssetManagerInstance, IPriceChangeEmitterInstance, IIAddressUpdaterInstance, IWNatInstance } from "../../typechain-truffle";
 import { ChallengerBotStrategyDefinition, LiquidatorBotStrategyDefinition } from "../config";
 import { ChainInfo } from "../fasset/ChainInfo";
 import { NativeChainInfo } from "../fasset/ChainInfo";
@@ -8,8 +8,8 @@ import { IBlockChainWallet } from "../underlying-chain/interfaces/IBlockChainWal
 import { IVerificationApiClient } from "../underlying-chain/interfaces/IVerificationApiClient";
 import { ContractWithEvents } from "../utils/events/truffle";
 
-export type AddressUpdaterEvents = import("../../typechain-truffle/AddressUpdater").AllEvents;
-export type WNatEvents = import("../../typechain-truffle/WNat").AllEvents;
+export type AddressUpdaterEvents = import("../../typechain-truffle/IIAddressUpdater").AllEvents;
+export type WNatEvents = import("../../typechain-truffle/IWNat").AllEvents;
 export type IIAssetManagerControllerEvents = import("../../typechain-truffle/IIAssetManagerController").AllEvents;
 export type AssetManagerEvents = import("../../typechain-truffle/IIAssetManager").AllEvents;
 export type FAssetEvents = import("../../typechain-truffle/FAsset").AllEvents;
@@ -22,11 +22,11 @@ export interface IAssetNativeChainContext {
     fAssetSymbol: string;
     nativeChainInfo: NativeChainInfo;
     priceChangeEmitter: ContractWithEvents<IPriceChangeEmitterInstance, IPriceChangeEmitterEvents>;
-    wNat: ContractWithEvents<WNatInstance, WNatEvents>;
+    wNat: ContractWithEvents<IWNatInstance, WNatEvents>;
     fAsset: ContractWithEvents<FAssetInstance, FAssetEvents>;
     assetManager: ContractWithEvents<IIAssetManagerInstance, AssetManagerEvents>;
     assetManagerController: ContractWithEvents<IIAssetManagerControllerInstance, IIAssetManagerControllerEvents>;
-    addressUpdater: ContractWithEvents<AddressUpdaterInstance, AddressUpdaterEvents>;
+    addressUpdater: ContractWithEvents<IIAddressUpdaterInstance, AddressUpdaterEvents>;
     agentOwnerRegistry: ContractWithEvents<AgentOwnerRegistryInstance, AgentOwnerRegistryEvents>;
     coreVaultManager: ContractWithEvents<CoreVaultManagerInstance, CoreVaultManagerEvents> | undefined;
 }

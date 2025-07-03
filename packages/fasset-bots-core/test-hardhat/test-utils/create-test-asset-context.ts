@@ -5,7 +5,7 @@ import { ChainId, TimekeeperTimingConfig } from "../../src";
 import { Secrets } from "../../src/config";
 import { ChainAccount, SecretsFile } from "../../src/config/config-files/SecretsFile";
 import { ChainContracts, newContract } from "../../src/config/contracts";
-import { IAssetAgentContext, IAssetNativeChainContext, IERC20Events } from "../../src/fasset-bots/IAssetBotContext";
+import { IAssetAgentContext, IAssetNativeChainContext, IERC20Events, WNatEvents } from "../../src/fasset-bots/IAssetBotContext";
 import { CollateralClass, CollateralType } from "../../src/fasset/AssetManagerTypes";
 import { ChainInfo } from "../../src/fasset/ChainInfo";
 import { MockChain, MockChainWallet } from "../../src/mock/MockChain";
@@ -19,20 +19,20 @@ import { BNish, DAYS, HOURS, MAX_BIPS, MINUTES, Modify, requireNotNull, toBIPS, 
 import { artifacts } from "../../src/utils/web3";
 import { web3DeepNormalize } from "../../src/utils/web3normalize";
 import { testChainInfo, TestChainInfo, testNativeChainInfo } from "../../test/test-utils/TestChainInfo";
-import { AddressUpdaterInstance, FakeERC20Instance, FtsoV2PriceStoreMockInstance, IIAssetManagerControllerInstance, IIAssetManagerInstance } from "../../typechain-truffle";
+import {  AddressUpdaterMockInstance, FakeERC20Instance, FtsoV2PriceStoreMockInstance, IIAssetManagerControllerInstance, IIAssetManagerInstance, IWNatInstance, WNatMockInstance } from "../../typechain-truffle";
 import { FaultyWallet } from "./FaultyWallet";
 import { AssetManagerInitSettings, newAssetManager, newAssetManagerController, waitForTimelock } from "./new-asset-manager";
+import { AllEvents } from "../../typechain-truffle/IIAssetManager";
 
 const AgentVault = artifacts.require("AgentVault");
 const AgentVaultFactory = artifacts.require("AgentVaultFactory");
 const FdcVerification = artifacts.require("FdcVerificationMock");
 const IIAssetManagerController = artifacts.require("IIAssetManagerController");
-const AddressUpdater = artifacts.require("AddressUpdater");
-const WNat = artifacts.require("WNat");
+const AddressUpdater = artifacts.require("AddressUpdaterMock");
+const WNat = artifacts.require("WNatMock");
 const Relay = artifacts.require("RelayMock");
 const FdcHub = artifacts.require("FdcHubMock");
-const GovernanceSettings = artifacts.require("GovernanceSettings");
-const VPContract = artifacts.require("VPContract");
+const GovernanceSettings = artifacts.require("GovernanceSettingsMock");
 const CollateralPool = artifacts.require("CollateralPool");
 const CollateralPoolFactory = artifacts.require("CollateralPoolFactory");
 const CollateralPoolToken = artifacts.require("CollateralPoolToken");
@@ -61,7 +61,7 @@ export type TestAssetBotContext = Modify<
         assetManagerController: ContractWithEvents<IIAssetManagerControllerInstance, IIAssetManagerControllerEvents>;
         stablecoins: Record<string, ContractWithEvents<FakeERC20Instance, IERC20Events>>;
         collaterals: CollateralType[];
-        priceStore: ContractWithEvents<FtsoV2PriceStoreMockInstance, FtsoV2PriceStoreMockEvents>;
+        priceStore: ContractWithEvents<FtsoV2PriceStoreMockInstance, FtsoV2PriceStoreMockEvents>
     }
 >;
 
@@ -75,6 +75,7 @@ export type TestAssetTrackedStateContext = Modify<
         priceStore: ContractWithEvents<FtsoV2PriceStoreMockInstance, FtsoV2PriceStoreMockEvents>;
         liquidationStrategy?: { className: string; config?: any; };
         challengeStrategy?: { className: string; config?: any; };
+        // wNat: ContractWithEvents<WNatMockInstance, WNatEvents>;
     }
 >;
 
@@ -94,7 +95,7 @@ export async function createTestChainContracts(governance: string, updateExecuto
     const agentVaultImplementation = await AgentVault.new(ZERO_ADDRESS);
     const agentVaultFactory = await AgentVaultFactory.new(agentVaultImplementation.address);
     // create collateral pool factory
-    const collateralPoolImplementation = await CollateralPool.new(ZERO_ADDRESS, ZERO_ADDRESS, ZERO_ADDRESS, 0, 0, 0);
+    const collateralPoolImplementation = await CollateralPool.new(ZERO_ADDRESS, ZERO_ADDRESS, ZERO_ADDRESS, 0);
     const collateralPoolFactory = await CollateralPoolFactory.new(collateralPoolImplementation.address);
     // create collateral pool token factory
     const collateralPoolTokenImplementation = await CollateralPoolToken.new(ZERO_ADDRESS, "", "");
@@ -103,23 +104,19 @@ export async function createTestChainContracts(governance: string, updateExecuto
     const fdcVerification = await FdcVerification.new(relay.address, FDC_PROTOCOL_ID);
     // create WNat token
     const wNat = await WNat.new(governance, "Wrapped Native", "WNAT");
-    const vpContract = await VPContract.new(wNat.address, false);
-    await wNat.setWriteVpContract(vpContract.address, { from: governance });
-    await wNat.setReadVpContract(vpContract.address, { from: governance });
     // create stablecoins
     const testUSDC = await FakeERC20.new(governanceSettings.address, governance, "Test USDCoin", "testUSDC", 6);
     const testUSDT = await FakeERC20.new(governanceSettings.address, governance, "Test Tether", "testUSDT", 6);
     const testETH = await FakeERC20.new(governanceSettings.address, governance, "Test Ethereum", "testETH", 18);
     // create address updater
-    const addressUpdater = await AddressUpdater.new(governance); // don't switch to production
+    const addressUpdater = await AddressUpdater.new(governanceSettings.address, governance); // don't switch to production
     // create asset manager controller
     const assetManagerController = await newAssetManagerController(governanceSettings.address, governance, addressUpdater.address)
     await assetManagerController.switchToProductionMode({ from: governance });
     // create ftsov2 price store
     const priceStore = await createMockFtsoV2PriceStore(governanceSettings.address, governance, addressUpdater.address, supportedChains);
     // create allow-all agent owner registry
-    const agentOwnerRegistry = await AgentOwnerRegistry.new(governanceSettings.address, governance, true);
-    await agentOwnerRegistry.setAllowAll(true, { from: governance });
+    const agentOwnerRegistry = await AgentOwnerRegistry.new(governanceSettings.address, governance);
     // add some contracts to address updater
     await addressUpdater.addOrUpdateContractNamesAndAddresses(
         ["GovernanceSettings", "AddressUpdater", "FdcHub", "Relay", "FdcVerification", "WNat"],
@@ -192,7 +189,6 @@ export async function createTestChain(chainInfo: TestChainInfo) {
 
 type CreateTestAssetContextOptions = {
     contracts?: ChainContracts;
-    requireEOAAddressProof?: boolean;
     customParameters?: any;
     updateExecutor?: string;
     useAlwaysFailsProver?: boolean;
@@ -214,7 +210,7 @@ export async function createTestAssetContext(
     const relay = await Relay.at(contracts.Relay.address);
     const fdcHub = await FdcHub.at(contracts.FdcHub.address);
     const assetManagerController = await IIAssetManagerController.at(contracts.AssetManagerController.address);
-    const wNat = await WNat.at(contracts.WNat.address);
+    const wNat = await WNat.at(contracts.WNat.address) as any as ContractWithEvents<IWNatInstance, WNatEvents>
     const addressUpdater = await AddressUpdater.at(contracts.AddressUpdater.address);
     const agentOwnerRegistry = await AgentOwnerRegistry.at(contracts.AgentOwnerRegistry.address);
     // stablecoins
@@ -239,7 +235,7 @@ export async function createTestAssetContext(
     // create asset manager
     const parameterFilename = chainInfo.parameterFile ?? `./fasset-config/hardhat/f-${chainInfo.symbol.toLowerCase()}.json`;
     const parameters = JSON.parse(fs.readFileSync(parameterFilename).toString());
-    const settings = createTestAssetManagerSettings(contracts, options.customParameters ?? parameters, chainInfo, options.requireEOAAddressProof);
+    const settings = createTestAssetManagerSettings(contracts, options.customParameters ?? parameters, chainInfo);
     const fAssetName = parameters.fAssetName ?? `F${chainInfo.name}`;
     const fAssetSymbol = parameters.fAssetSymbol ?? `F${chainInfo.symbol}`;
     // web3DeepNormalize is required when passing structs, otherwise BN is incorrectly serialized
@@ -328,7 +324,6 @@ function createTestAssetManagerSettings(
     contracts: ChainContracts,
     parameters: any,
     chainInfo: TestChainInfo,
-    requireEOAAddressProof?: boolean
 ): AssetManagerInitSettings {
     if (!contracts.AssetManagerController || !contracts.AgentVaultFactory || !contracts.FdcVerification) {
         throw new Error("Missing contracts");
@@ -341,7 +336,7 @@ function createTestAssetManagerSettings(
         collateralPoolTokenFactory: contracts.CollateralPoolTokenFactory.address,
         fdcVerification: contracts.FdcVerification.address,
         priceReader: contracts.PriceReader.address,
-        whitelist: contracts.AssetManagerWhitelist?.address ?? ZERO_ADDRESS,
+        __whitelist: ZERO_ADDRESS,
         agentOwnerRegistry: contracts.AgentOwnerRegistry.address ?? ZERO_ADDRESS,
         burnAddress: parameters.burnAddress,
         chainId: chainInfo.chainId.sourceId,
@@ -350,16 +345,16 @@ function createTestAssetManagerSettings(
         assetUnitUBA: toBNExp(1, chainInfo.decimals),
         assetMintingDecimals: chainInfo.amgDecimals,
         assetMintingGranularityUBA: toBNExp(1, chainInfo.decimals - chainInfo.amgDecimals),
-        minUnderlyingBackingBIPS: MAX_BIPS,
+        __minUnderlyingBackingBIPS: 0,
         mintingCapAMG: 0, // minting cap disabled
         lotSizeAMG: toBNExp(chainInfo.lotSize, chainInfo.amgDecimals),
-        requireEOAAddressProof: typeof requireEOAAddressProof !== "undefined" ? requireEOAAddressProof : chainInfo.requireEOAProof,
+        __requireEOAAddressProof: false,
         collateralReservationFeeBIPS: parameters.collateralReservationFeeBIPS,
         mintingPoolHoldingsRequiredBIPS: toBIPS("50%"),
         maxRedeemedTickets: bnToString(parameters.maxRedeemedTickets),
         redemptionFeeBIPS: bnToString(parameters.redemptionFeeBIPS),
         redemptionDefaultFactorVaultCollateralBIPS: toBIPS(1.1),
-        redemptionDefaultFactorPoolBIPS: toBIPS(0.1),
+        __redemptionDefaultFactorPoolBIPS: 0,
         underlyingBlocksForPayment: chainInfo.underlyingBlocksForPayment,
         underlyingSecondsForPayment: chainInfo.underlyingBlocksForPayment,
         attestationWindowSeconds: bnToString(parameters.attestationWindowSeconds),
@@ -371,15 +366,15 @@ function createTestAssetManagerSettings(
         ccbTimeSeconds: bnToString(parameters.ccbTimeSeconds),
         maxTrustedPriceAgeSeconds: bnToString(parameters.maxTrustedPriceAgeSeconds),
         withdrawalWaitMinSeconds: bnToString(parameters.withdrawalWaitMinSeconds),
-        announcedUnderlyingConfirmationMinSeconds: bnToString(parameters.announcedUnderlyingConfirmationMinSeconds),
-        buybackCollateralFactorBIPS: bnToString(parameters.buybackCollateralFactorBIPS),
+        __announcedUnderlyingConfirmationMinSeconds: 0,
+        __buybackCollateralFactorBIPS: 0,
         vaultCollateralBuyForFlareFactorBIPS: toBIPS(1.05),
         minUpdateRepeatTimeSeconds: bnToString(parameters.minUpdateRepeatTimeSeconds),
         tokenInvalidationTimeMinSeconds: 1 * DAYS,
         agentExitAvailableTimelockSeconds: 10 * MINUTES,
         agentFeeChangeTimelockSeconds: 6 * HOURS,
         agentMintingCRChangeTimelockSeconds: bnToString(parameters.agentMintingCRChangeTimelockSeconds),
-        poolExitAndTopupChangeTimelockSeconds: bnToString(parameters.poolExitAndTopupChangeTimelockSeconds),
+        poolExitCRChangeTimelockSeconds: bnToString(parameters.poolExitCRChangeTimelockSeconds),
         agentTimelockedOperationWindowSeconds: bnToString(parameters.agentTimelockedOperationWindowSeconds),
         collateralPoolTokenTimelockSeconds: bnToString(parameters.collateralPoolTokenTimelockSeconds),
         liquidationStepSeconds: bnToString(parameters.liquidationStepSeconds),
@@ -389,12 +384,12 @@ function createTestAssetManagerSettings(
         maxEmergencyPauseDurationSeconds: bnToString(parameters.maxEmergencyPauseDurationSeconds),
         emergencyPauseDurationResetAfterSeconds: bnToString(parameters.emergencyPauseDurationResetAfterSeconds),
         redemptionPaymentExtensionSeconds: bnToString(15),
-        cancelCollateralReservationAfterSeconds: 30,
-        rejectOrCancelCollateralReservationReturnFactorBIPS: toBIPS(0.95),
-        rejectRedemptionRequestWindowSeconds: 120,
-        takeOverRedemptionRequestWindowSeconds: 120,
-        rejectedRedemptionDefaultFactorVaultCollateralBIPS: toBIPS(1.05),
-        rejectedRedemptionDefaultFactorPoolBIPS: toBIPS(0.05),
+        __cancelCollateralReservationAfterSeconds: 0,
+        __rejectOrCancelCollateralReservationReturnFactorBIPS: 0,
+        __rejectRedemptionRequestWindowSeconds: 0,
+        __takeOverRedemptionRequestWindowSeconds: 0,
+        __rejectedRedemptionDefaultFactorVaultCollateralBIPS: 0,
+        __rejectedRedemptionDefaultFactorPoolBIPS: 0,
         transferFeeMillionths: 200,
         transferFeeClaimFirstEpochStartTs: Math.floor(new Date("2024-09-01").getTime() / 1000),
         transferFeeClaimEpochDurationSeconds: 1 * WEEKS,
@@ -467,7 +462,7 @@ export function testTimekeeperTimingConfig(overrides?: Partial<TimekeeperTimingC
     };
 }
 
-export async function assignCoreVaultManager(assetManager: IIAssetManagerInstance, addressUpdater: AddressUpdaterInstance, coreVaultUnderlyingAddress: string, coreVaultCustodian?: string, initialNonce: BNish = 1, triggeringAccount?: string) {
+export async function assignCoreVaultManager(assetManager: IIAssetManagerInstance, addressUpdater: AddressUpdaterMockInstance, coreVaultUnderlyingAddress: string, coreVaultCustodian?: string, initialNonce: BNish = 1, triggeringAccount?: string) {
     const coreVaultManagerImpl = await CoreVaultManager.new();
     const settings = await assetManager.getSettings();
     const governanceSettings = await assetManager.governanceSettings();

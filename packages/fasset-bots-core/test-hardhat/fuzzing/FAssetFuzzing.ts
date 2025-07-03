@@ -247,9 +247,7 @@ describe("Fuzzing tests", () => {
             mintingPoolCollateralRatioBIPS: mintingPoolCollateralRatioBIPS,
             poolExitCollateralRatioBIPS: mulDecimal(mintingPoolCollateralRatioBIPS, randomNum(1, 1.25)),
             buyFAssetByAgentFactorBIPS: toBIPS(0.9),
-            poolTopupCollateralRatioBIPS: toBN(randomInt(Number(poolCollateral.minCollateralRatioBIPS), Number(mintingPoolCollateralRatioBIPS))),
-            poolTopupTokenPriceFactorBIPS: toBIPS(0.8),
-            handshakeType: toBN(0),
+            redemptionPoolFeeShareBIPS: toBIPS("40%"),
         };
     }
 

@@ -21,10 +21,7 @@ export type AgentSetting =
     | "mintingVaultCollateralRatioBIPS"
     | "mintingPoolCollateralRatioBIPS"
     | "buyFAssetByAgentFactorBIPS"
-    | "poolExitCollateralRatioBIPS"
-    | "poolTopupCollateralRatioBIPS"
-    | "poolTopupTokenPriceFactorBIPS"
-    | "handshakeType";
+    | "poolExitCollateralRatioBIPS";
 
 export enum TokenExitType {
     MAXIMIZE_FEE_WITHDRAWAL,

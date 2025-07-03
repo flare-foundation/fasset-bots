@@ -1,5 +1,5 @@
 import BN from "bn.js";
-import { IERC20Instance, IFtsoInstance, IPriceReaderInstance } from "../../typechain-truffle";
+import { IERC20Instance, IPriceReaderInstance } from "../../typechain-truffle";
 import { IERC20Events } from "../fasset-bots/IAssetBotContext";
 import { ContractWithEvents } from "../utils/events/truffle";
 import { BNish, getOrCreateAsync, requireNotNull, toBN } from "../utils/helpers";
@@ -35,7 +35,6 @@ export class TokenPrice {
 }
 
 export class TokenPriceReader {
-    ftsoCache: Map<string, IFtsoInstance> = new Map();
     priceCache: Map<string, TokenPrice> = new Map();
 
     constructor(public priceReader: IPriceReaderInstance) {}

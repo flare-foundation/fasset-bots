@@ -3,14 +3,6 @@ export const ADDRESS_LENGTH = 42;
 export const BYTES32_LENGTH = 66;
 
 // enums
-
-export enum AgentHandshakeState {
-    STARTED = "started",
-    APPROVED = "approved",
-    REJECTED = "rejected",
-    CANCELLED = "cancelled",
-}
-
 export enum AgentMintingState {
     DONE = "done",
     STARTED = "started",
@@ -66,15 +58,7 @@ export enum AgentSettingName {
     MINTING_POOL_CR = "mintingPoolCollateralRatioBIPS",
     BUY_FASSET_FACTOR = "buyFAssetByAgentFactorBIPS",
     POOL_EXIT_CR = "poolExitCollateralRatioBIPS",
-    POOL_TOP_UP_CR = "poolTopupCollateralRatioBIPS",
-    POOL_TOP_UP_TOKEN_PRICE_FACTOR = "poolTopupTokenPriceFactorBIPS",
-    HAND_SHAKE_TYPE = "handshakeType",
     REDEMPTION_POOL_FEE_SHARE = "redemptionPoolFeeShareBIPS"
-}
-
-export enum RejectedRedemptionRequestState {
-    DONE = "done",
-    STARTED = "started"
 }
 
 export enum TransferToCoreVaultState {

@@ -33,6 +33,7 @@ describe("Agent bot runner tests", () => {
     async function initialize() {
         orm = await createTestOrm();
         context = await createTestAssetContext(accounts[0], testChainInfo.xrp);
+        await context.agentOwnerRegistry.whitelistAndDescribeAgent(ownerAddress, "Agent Name", "Agent Description", "Icon", "URL");
         await context.agentOwnerRegistry.setWorkAddress(accounts[4], { from: ownerAddress });
         contexts.set(context.fAssetSymbol, context);
         return { orm, context, contexts };

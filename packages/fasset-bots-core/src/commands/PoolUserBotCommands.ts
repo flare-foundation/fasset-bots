@@ -59,14 +59,14 @@ export class PoolUserBotCommands {
 
     async enterPool(poolAddress: string, collateralAmountWei: BNish) {
         const pool = await CollateralPool.at(poolAddress);
-        const res = await pool.enter(0, false, { from: this.nativeAddress, value: collateralAmountWei.toString() });
-        return requiredEventArgs(res, "Entered");
+        const res = await pool.enter({ from: this.nativeAddress, value: collateralAmountWei.toString() });
+        return requiredEventArgs(res, "CPEntered");
     }
 
     async exitPool(poolAddress: string, tokenAmountWei: BNish) {
         const pool = await CollateralPool.at(poolAddress);
-        const res = await pool.exit(tokenAmountWei, TokenExitType.MINIMIZE_FEE_DEBT, { from: this.nativeAddress });
-        return requiredEventArgs(res, "Exited");
+        const res = await pool.exit(tokenAmountWei, { from: this.nativeAddress });
+        return requiredEventArgs(res, "CPExited");
     }
 
     infoBot(): InfoBotCommands {

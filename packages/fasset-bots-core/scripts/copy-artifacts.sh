@@ -29,22 +29,26 @@ rm -rf artifacts; mkdir -p artifacts
 rm -rf typechain-truffle; mkdir -p typechain-truffle
 
 # copy fasset artifacts
+echo "***** artifacts... "
 cd ${fassetsdir}/artifacts
-find -name '*.json' -not -name '*.dbg.json' -not -path './build-info/*' -not -path './cache/*' -not -path './flattened/*' | xargs cp -t ${projdir}/artifacts --parents
+gfind -name '*.json' -not -name '*.dbg.json' -not -path './build-info/*' -not -path './cache/*' -not -path './flattened/*' | xargs gcp -t ${projdir}/artifacts --parents
 cd ${fassetsdir}
 
 # copy liquidator artifacts
+echo "***** liquidator... "
 cd ${liquidatordir}/artifacts
 mkdir -p ${projdir}/artifacts/liquidator
-find -name '*.json' -not -name '*.dbg.json' -path './contracts/*' -not -path './contracts/mock/*' | xargs cp -t ${projdir}/artifacts/liquidator --parents
+gfind -name '*.json' -not -name '*.dbg.json' -path './contracts/*' -not -path './contracts/mock/*' | xargs gcp -t ${projdir}/artifacts/liquidator --parents
 
 # fix some paths so that sourceName always matches the actual dir
+echo "***** flat... "
 cd ${projdir}
 mkdir -p artifacts/flattened
-mv artifacts/flare-sc artifacts/flattened/FlareSmartContracts.sol
+# mv artifacts/flare-sc artifacts/flattened/FlareSmartContracts.sol
 
 # fix source paths in liquidator jsons
-find -name '*.json' -path './artifacts/liquidator/*' | xargs sed -i -e 's/"sourceName": "contracts\//"sourceName": "liquidator\/contracts\//'
+echo "***** fix... "
+gfind -name '*.json' -path './artifacts/liquidator/*' | xargs gsed -i -e 's/"sourceName": "contracts\//"sourceName": "liquidator\/contracts\//'
 
 # copy some fixed mocks
 cd scripts && cp -r test-mocks/ ../artifacts && cd ..

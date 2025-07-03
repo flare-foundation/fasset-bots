@@ -4,9 +4,9 @@ import BN from "bn.js";
 import { CollateralReservationDeleted, CollateralReserved, MintingExecuted, SelfMint } from "../../typechain-truffle/IIAssetManager";
 import { EM } from "../config/orm";
 import { AgentMinting } from "../entities/agent";
-import { AgentHandshakeState, AgentMintingState } from "../entities/common";
+import { AgentMintingState } from "../entities/common";
 import { Agent } from "../fasset/Agent";
-import { AttestationHelper, AttestationHelperError, attestationProved } from "../underlying-chain/AttestationHelper";
+import { AttestationHelperError, attestationProved } from "../underlying-chain/AttestationHelper";
 import { ITransaction, TX_SUCCESS } from "../underlying-chain/interfaces/IBlockChain";
 import { AttestationNotProved } from "../underlying-chain/interfaces/IFlareDataConnectorClient";
 import { EventArgs } from "../utils/events/common";
@@ -15,7 +15,7 @@ import { logger } from "../utils/logger";
 import { AgentNotifier } from "../utils/notifier/AgentNotifier";
 import { web3DeepNormalize } from "../utils/web3normalize";
 import { AgentBot } from "./AgentBot";
-import { formatArgs, squashSpace } from "../utils/formatting";
+import { formatArgs } from "../utils/formatting";
 import { lastFinalizedUnderlyingBlock } from "../utils";
 
 type MintingId = { id: number } | { requestId: BN };
@@ -38,10 +38,6 @@ export class AgentBotMinting {
      */
     async mintingStarted(rootEm: EM, request: EventArgs<CollateralReserved>): Promise<void> {
         await this.bot.runInTransaction(rootEm, async (em) => {
-            const handshake = await this.bot.handshake.findHandshake(em, { requestId: request.collateralReservationId });
-            if (handshake != null) {
-                handshake.state = AgentHandshakeState.APPROVED;
-            }
             em.create(
                 AgentMinting,
                 {
@@ -55,7 +51,6 @@ export class AgentBotMinting {
                     lastUnderlyingBlock: toBN(request.lastUnderlyingBlock),
                     lastUnderlyingTimestamp: toBN(request.lastUnderlyingTimestamp),
                     paymentReference: request.paymentReference,
-                    handshake: handshake
                 } as RequiredEntityData<AgentMinting>,
                 { persist: true }
             );
@@ -218,13 +213,11 @@ export class AgentBotMinting {
 
     isSuccessfulPayment(minting: Readonly<AgentMinting>, tx: ITransaction) {
         const targetAmount = tx.outputs
-            .filter(([dst, amount]) => dst === minting.agentUnderlyingAddress)
-            .reduce((x, [dst, amount]) => x.add(toBN(amount)), BN_ZERO);
-        const checkSourceAddresses = minting.handshake != null;
+            .filter(([dst, _amount]) => dst === minting.agentUnderlyingAddress)
+            .reduce((x, [_dst, amount]) => x.add(toBN(amount)), BN_ZERO);
         return tx.status === TX_SUCCESS
             && targetAmount.gte(minting.valueUBA.add(minting.feeUBA))
             && tx.reference?.toLowerCase() === minting.paymentReference?.toLowerCase()
-            && (!checkSourceAddresses || AttestationHelper.merkleRootOfAddresses(tx.inputs.map(input => input[0])) === AttestationHelper.merkleRootOfAddresses(minting.handshake?.minterUnderlyingAddresses));
     }
 
     /**
@@ -283,8 +276,7 @@ export class AgentBotMinting {
             const request = await this.bot.locks.nativeChainLock(this.bot.requestSubmitterAddress()).lockAndRun(async () => {
                 return await this.context.attestationProvider.requestReferencedPaymentNonexistenceProof(
                     minting.agentUnderlyingAddress, minting.paymentReference, toBN(minting.valueUBA).add(toBN(minting.feeUBA)),
-                    Number(minting.firstUnderlyingBlock), Number(minting.lastUnderlyingBlock), Number(minting.lastUnderlyingTimestamp),
-                    minting.handshake?.minterUnderlyingAddresses);
+                    Number(minting.firstUnderlyingBlock), Number(minting.lastUnderlyingBlock), Number(minting.lastUnderlyingTimestamp));
             });
             minting = await this.updateMinting(rootEm, minting, {
                 state: AgentMintingState.REQUEST_NON_PAYMENT_PROOF,
@@ -428,9 +420,9 @@ export class AgentBotMinting {
      */
     async findMinting(em: EM, mintingId: MintingId): Promise<AgentMinting> {
         if ("id" in mintingId) {
-            return await em.findOneOrFail(AgentMinting, { id: mintingId.id }, { refresh: true, populate: ["handshake"] });
+            return await em.findOneOrFail(AgentMinting, { id: mintingId.id }, { refresh: true });
         } else {
-            return await em.findOneOrFail(AgentMinting, { agentAddress: this.agent.vaultAddress, requestId: mintingId.requestId }, { refresh: true, populate: ["handshake"]  });
+            return await em.findOneOrFail(AgentMinting, { agentAddress: this.agent.vaultAddress, requestId: mintingId.requestId }, { refresh: true });
         }
     }
 }

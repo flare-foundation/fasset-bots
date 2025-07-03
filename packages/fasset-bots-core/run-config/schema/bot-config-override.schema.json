@@ -10,7 +10,7 @@
                     "description": "Settings that are prefilled in new agent creation settings file/form (per-FAsset overrides)."
                 },
                 "feeSafetyFactorPerKB": {
-                    "description": "A factor used to increase the minimum safety fee per KB. If set to 0, the minimum safety fee will not be applied.",
+                    "description": "A multiplier used to adjust the suggested minimum fee per KB for UTXO redemption payments, preventing transactions from getting pinned.\nIf set to 0, the suggested minimum fee won't be calculated.\nDefault: 2 for UTXO chains (e.g., BTC, DOGE), 0 for XRP (as it is not relevant for XRP).\nNote: Before changing values, it is advised to perform calculations to balance pinning prevention with the max transaction fee allocated by the smart contract.",
                     "type": "number"
                 },
                 "minimumFreeUnderlyingBalance": {
@@ -156,10 +156,6 @@
                     "pattern": "^\\d+(\\.\\d+)?%?$",
                     "type": "string"
                 },
-                "handshakeType": {
-                    "description": "The handshake type required by the agent. Currently supported values are\n- 0 - no handshake is performed\n- 1 - handshake is performed by external service api (configured further in bot config)",
-                    "type": "integer"
-                },
                 "mintingPoolCollateralRatio": {
                     "description": "Agent's minting collateral ratio for pool collateral (minimum CR at which the minting can happen).",
                     "pattern": "^\\d+(\\.\\d+)?%?$",
@@ -180,13 +176,8 @@
                     "pattern": "^\\d+(\\.\\d+)?%?$",
                     "type": "string"
                 },
-                "poolTopupCollateralRatio": {
-                    "description": "Pool collateral ratio below which the providers can enter at discounted rate.",
-                    "pattern": "^\\d+(\\.\\d+)?%?$",
-                    "type": "string"
-                },
-                "poolTopupTokenPriceFactor": {
-                    "description": "Discounted price factor at which providers can enter when topup is active (i.e. the pool CR is below poolTopupCollateralRatio).",
+                "redemptionPoolFeeShare": {
+                    "description": "The percentage of the redemption fee that goes to the collateral pool.",
                     "pattern": "^\\d+(\\.\\d+)?%?$",
                     "type": "string"
                 }
@@ -194,13 +185,11 @@
             "required": [
                 "buyFAssetByAgentFactor",
                 "fee",
-                "handshakeType",
                 "mintingPoolCollateralRatio",
                 "mintingVaultCollateralRatio",
                 "poolExitCollateralRatio",
                 "poolFeeShare",
-                "poolTopupCollateralRatio",
-                "poolTopupTokenPriceFactor"
+                "redemptionPoolFeeShare"
             ],
             "type": "object"
         },
@@ -404,7 +393,7 @@
                     "description": "Settings that are prefilled in new agent creation settings file/form (per-FAsset overrides)."
                 },
                 "feeSafetyFactorPerKB": {
-                    "description": "A factor used to increase the minimum safety fee per KB. If set to 0, the minimum safety fee will not be applied.",
+                    "description": "A multiplier used to adjust the suggested minimum fee per KB for UTXO redemption payments, preventing transactions from getting pinned.\nIf set to 0, the suggested minimum fee won't be calculated.\nDefault: 2 for UTXO chains (e.g., BTC, DOGE), 0 for XRP (as it is not relevant for XRP).\nNote: Before changing values, it is advised to perform calculations to balance pinning prevention with the max transaction fee allocated by the smart contract.",
                     "type": "number"
                 },
                 "minimumFreeUnderlyingBalance": {
@@ -433,10 +422,6 @@
                     "pattern": "^\\d+(\\.\\d+)?%?$",
                     "type": "string"
                 },
-                "handshakeType": {
-                    "description": "The handshake type required by the agent. Currently supported values are\n- 0 - no handshake is performed\n- 1 - handshake is performed by external service api (configured further in bot config)",
-                    "type": "number"
-                },
                 "mintingPoolCollateralRatio": {
                     "description": "Agent's minting collateral ratio for pool collateral (minimum CR at which the minting can happen).",
                     "pattern": "^\\d+(\\.\\d+)?%?$",
@@ -457,13 +442,8 @@
                     "pattern": "^\\d+(\\.\\d+)?%?$",
                     "type": "string"
                 },
-                "poolTopupCollateralRatio": {
-                    "description": "Pool collateral ratio below which the providers can enter at discounted rate.",
-                    "pattern": "^\\d+(\\.\\d+)?%?$",
-                    "type": "string"
-                },
-                "poolTopupTokenPriceFactor": {
-                    "description": "Discounted price factor at which providers can enter when topup is active (i.e. the pool CR is below poolTopupCollateralRatio).",
+                "redemptionPoolFeeShare": {
+                    "description": "The percentage of the redemption fee that goes to the collateral pool.",
                     "pattern": "^\\d+(\\.\\d+)?%?$",
                     "type": "string"
                 }

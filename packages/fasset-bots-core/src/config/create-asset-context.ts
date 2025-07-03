@@ -4,7 +4,7 @@ import { ZERO_ADDRESS } from "../utils";
 import { artifacts } from "../utils/web3";
 import { AgentBotConfig, BotConfig, BotFAssetConfig, BotFAssetConfigWithIndexer, BotFAssetConfigWithWallet, KeeperBotConfig, UserBotConfig } from "./BotConfig";
 
-const WNat = artifacts.require("WNat");
+const WNat = artifacts.require("IWNat");
 const IPriceChangeEmitter = artifacts.require("IPriceChangeEmitter");
 const FAsset = artifacts.require("FAsset");
 const AgentOwnerRegistry = artifacts.require("AgentOwnerRegistry");

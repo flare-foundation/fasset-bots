@@ -386,7 +386,7 @@ export class AgentBotUnderlyingManagement {
                     await this.bot.minting.executeSelfMinting(proof, requireNotNull(underlyingPayment.selfMintLots));
                     await this.sendUnderlyingPaymentConfirmed(rootEm, underlyingPayment, proof);
                 } else {
-                    const allowedAt = confirmationAllowedAt(underlyingPayment.announcedAtTimestamp, await this.bot.agent.assetManager.getSettings())
+                    const allowedAt = confirmationAllowedAt(underlyingPayment.announcedAtTimestamp)
                     const latestTimestamp = await latestBlockTimestampBN();
                     if (allowedAt && allowedAt.lt(latestTimestamp)) {
                         await this.context.assetManager.confirmUnderlyingWithdrawal(web3DeepNormalize(proof), this.agent.vaultAddress,

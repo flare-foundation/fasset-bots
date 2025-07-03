@@ -15,10 +15,6 @@
             "pattern": "^\\d+(\\.\\d+)?%?$",
             "type": "string"
         },
-        "handshakeType": {
-            "description": "The handshake type required by the agent. Currently supported values are\n- 0 - no handshake is performed\n- 1 - handshake is performed by external service api (configured further in bot config)",
-            "type": "integer"
-        },
         "mintingPoolCollateralRatio": {
             "description": "Agent's minting collateral ratio for pool collateral (minimum CR at which the minting can happen).",
             "pattern": "^\\d+(\\.\\d+)?%?$",
@@ -44,13 +40,8 @@
             "pattern": "^[A-Z0-9](?:[A-Z0-9\\-]{0,18}[A-Z0-9])?$",
             "type": "string"
         },
-        "poolTopupCollateralRatio": {
-            "description": "Pool collateral ratio below which the providers can enter at discounted rate.",
-            "pattern": "^\\d+(\\.\\d+)?%?$",
-            "type": "string"
-        },
-        "poolTopupTokenPriceFactor": {
-            "description": "Discounted price factor at which providers can enter when topup is active (i.e. the pool CR is below poolTopupCollateralRatio).",
+        "redemptionPoolFeeShare": {
+            "description": "The percentage of the redemption fee that goes to the collateral pool.",
             "pattern": "^\\d+(\\.\\d+)?%?$",
             "type": "string"
         },
@@ -63,15 +54,14 @@
     "required": [
         "buyFAssetByAgentFactor",
         "fee",
-        "handshakeType",
         "mintingPoolCollateralRatio",
         "mintingVaultCollateralRatio",
         "poolExitCollateralRatio",
         "poolFeeShare",
         "poolTokenSuffix",
-        "poolTopupCollateralRatio",
-        "poolTopupTokenPriceFactor",
+        "redemptionPoolFeeShare",
         "vaultCollateralFtsoSymbol"
     ],
     "type": "object"
 }
+

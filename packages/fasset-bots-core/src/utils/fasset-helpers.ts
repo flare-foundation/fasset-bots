@@ -1,7 +1,7 @@
 import BN from "bn.js";
-import { IAssetManagerContract, IIAssetManagerInstance } from "../../typechain-truffle";
+import { IIAssetManagerInstance } from "../../typechain-truffle";
 import { AssetManagerEvents, IAssetAgentContext, IAssetNativeChainContext } from "../fasset-bots/IAssetBotContext";
-import { AgentInfo, AgentSettings, AssetManagerSettings } from "../fasset/AssetManagerTypes";
+import { AgentInfo, AgentSettings } from "../fasset/AssetManagerTypes";
 import { AttestationHelper } from "../underlying-chain/AttestationHelper";
 import { BlockchainIndexerHelper } from "../underlying-chain/BlockchainIndexerHelper";
 import { IBlock } from "../underlying-chain/interfaces/IBlockChain";
@@ -22,9 +22,7 @@ export function getAgentSettings(agentInfo: AgentInfo): AgentSettings {
     agentSettings.mintingPoolCollateralRatioBIPS = toBN(agentInfo.mintingPoolCollateralRatioBIPS);
     agentSettings.poolExitCollateralRatioBIPS = toBN(agentInfo.poolExitCollateralRatioBIPS);
     agentSettings.buyFAssetByAgentFactorBIPS = toBN(agentInfo.buyFAssetByAgentFactorBIPS);
-    agentSettings.poolTopupCollateralRatioBIPS = toBN(agentInfo.poolTopupCollateralRatioBIPS);
-    agentSettings.poolTopupTokenPriceFactorBIPS = toBN(agentInfo.poolTopupTokenPriceFactorBIPS);
-    agentSettings.handshakeType = toBN(agentInfo.handshakeType);
+    agentSettings.redemptionPoolFeeShareBIPS = toBN(agentInfo.redemptionPoolFeeShareBIPS);
     return agentSettings;
 }
 
@@ -105,7 +103,7 @@ export async function checkEvmNativeFunds(context: IAssetAgentContext, sourceAdd
 }
 
 export function isPriceChangeEvent(context: IAssetNativeChainContext, event: EvmEvent) {
-    return eventIs(event, context.priceChangeEmitter, "PriceEpochFinalized") || eventIs(event, context.priceChangeEmitter, "PricesPublished");
+    return eventIs(event, context.priceChangeEmitter, "PricesPublished");
 }
 
 export function isCollateralRatiosChangedEvent(context: IAssetNativeChainContext, event: EvmEvent) {
@@ -126,10 +124,9 @@ export function maxFeeMultiplier(chainId: ChainId): number {
     }
 }
 
-export function confirmationAllowedAt(announcedAt: BN, assetManagerSettings: AssetManagerSettings): BN | null {
+export function confirmationAllowedAt(announcedAt: BN): BN | null {
     if (toBN(announcedAt).gt(BN_ZERO)) {
-        const announcedUnderlyingConfirmationMinSeconds = toBN(assetManagerSettings.announcedUnderlyingConfirmationMinSeconds);
-        return toBN(announcedAt).add(announcedUnderlyingConfirmationMinSeconds);
+        return toBN(announcedAt);
     } else {
         return null;
     }

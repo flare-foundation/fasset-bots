@@ -6,7 +6,7 @@ import { findEvent } from "../../src/utils/events/truffle";
 import { BNish, requireNotNull, ZERO_ADDRESS } from "../../src/utils/helpers";
 import { artifacts, web3 } from "../../src/utils/web3";
 import { web3DeepNormalize } from "../../src/utils/web3normalize";
-import { AssetManagerInitInstance, FAssetInstance, GovernanceSettingsInstance, IDiamondLoupeInstance, IIAssetManagerControllerInstance, IIAssetManagerInstance, Truffle } from "../../typechain-truffle";
+import { AssetManagerInitInstance, FAssetInstance, IDiamondLoupeInstance, IGovernanceSettingsInstance, IIAssetManagerControllerInstance, IIAssetManagerInstance, Truffle } from "../../typechain-truffle";
 import { GovernanceCallTimelocked } from "../../typechain-truffle/AssetManagerController";
 import { DiamondCut, FacetCutAction } from "./diamond";
 
@@ -52,7 +52,7 @@ export async function newAssetManager(
     assetManagerSettings: AssetManagerInitSettings,
     collateralTokens: CollateralType[],
     options?: {
-        governanceSettings?: string | GovernanceSettingsInstance,
+        governanceSettings?: string | IGovernanceSettingsInstance
         updateExecutor?: string,
     }
 ): Promise<[IIAssetManagerInstance, FAssetInstance]> {
@@ -75,13 +75,10 @@ export async function newAssetManager(
     // extra facets
     await deployAndInitFacet(governanceAddress, assetManager, artifacts.require("RedemptionTimeExtensionFacet"), ["IRedemptionTimeExtension"],
         "initRedemptionTimeExtensionFacet", [assetManagerSettings.redemptionPaymentExtensionSeconds]);
-    await deployAndInitFacet(governanceAddress, assetManager, artifacts.require("TransferFeeFacet"), ["ITransferFees"],
-        "initTransferFeeFacet", [assetManagerSettings.transferFeeMillionths, assetManagerSettings.transferFeeClaimFirstEpochStartTs,
-            assetManagerSettings.transferFeeClaimEpochDurationSeconds, assetManagerSettings.transferFeeClaimMaxUnexpiredEpochs]);
-    await deployAndInitFacet(governanceAddress, assetManager, artifacts.require("CoreVaultFacet"), ["ICoreVault"]);
-    await deployAndInitFacet(governanceAddress, assetManager, artifacts.require("CoreVaultSettingsFacet"), ["ICoreVaultSettings"],
+    await deployAndInitFacet(governanceAddress, assetManager, artifacts.require("CoreVaultClientFacet"), ["ICoreVaultClient"]);
+    await deployAndInitFacet(governanceAddress, assetManager, artifacts.require("CoreVaultClientSettingsFacet"), ["ICoreVaultClientSettings"],
         "initCoreVaultFacet", [ZERO_ADDRESS, assetManagerSettings.coreVaultNativeAddress,
-            assetManagerSettings.coreVaultTransferFeeBIPS, assetManagerSettings.coreVaultTransferTimeExtensionSeconds, assetManagerSettings.coreVaultRedemptionFeeBIPS,
+            assetManagerSettings.coreVaultTransferTimeExtensionSeconds, assetManagerSettings.coreVaultRedemptionFeeBIPS,
             assetManagerSettings.coreVaultMinimumAmountLeftBIPS, assetManagerSettings.coreVaultMinimumRedeemLots]);
     // verify interface implementation
     await checkAllMethodsImplemented(assetManager, interfaceSelectors);
@@ -97,7 +94,7 @@ export async function newAssetManager(
     return [assetManager, fAsset];
 }
 
-export async function newAssetManagerDiamond(diamondCuts: DiamondCut[], assetManagerInit: AssetManagerInitInstance, governanceSettings: string | GovernanceSettingsInstance,
+export async function newAssetManagerDiamond(diamondCuts: DiamondCut[], assetManagerInit: AssetManagerInitInstance, governanceSettings: string | IGovernanceSettingsInstance,
     governanceAddress: string, assetManagerSettings: AssetManagerSettings, collateralTokens: CollateralType[]) {
     const governanceSettingsAddress = typeof governanceSettings === 'string' ? governanceSettings : governanceSettings.address;
     const initParameters = abiEncodeCall(assetManagerInit, "init",
@@ -147,8 +144,8 @@ export async function deployAssetManagerFacets(): Promise<[DiamondCut[], AssetMa
         await deployFacet('AvailableAgentsFacet', interfaceSelectors),
         await deployFacet('CollateralReservationsFacet', interfaceSelectors),
         await deployFacet('MintingFacet', interfaceSelectors),
+        await deployFacet('MintingDefaultsFacet', interfaceSelectors),
         await deployFacet('RedemptionRequestsFacet', interfaceSelectors),
-        await deployFacet('RedemptionHandshakeFacet', interfaceSelectors),
         await deployFacet('RedemptionConfirmationsFacet', interfaceSelectors),
         await deployFacet('RedemptionDefaultsFacet', interfaceSelectors),
         await deployFacet('LiquidationFacet', interfaceSelectors),

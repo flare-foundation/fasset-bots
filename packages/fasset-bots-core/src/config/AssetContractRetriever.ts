@@ -1,4 +1,4 @@
-import { AddressUpdaterInstance, FAssetInstance, IIAssetManagerControllerInstance, IIAssetManagerInstance, Truffle } from "../../typechain-truffle";
+import { FAssetInstance, IIAddressUpdaterInstance, IIAssetManagerControllerInstance, IIAssetManagerInstance, Truffle } from "../../typechain-truffle";
 import { CommandLineError, requireNotNullCmd } from "../utils/command-line-errors";
 import { ZERO_ADDRESS } from "../utils/helpers";
 import { artifacts } from "../utils/web3";
@@ -6,13 +6,13 @@ import { ChainContracts, loadContracts } from "./contracts";
 
 const IIAssetManager = artifacts.require("IIAssetManager");
 const IIAssetManagerController = artifacts.require("IIAssetManagerController");
-const AddressUpdater = artifacts.require("AddressUpdater");
+const AddressUpdater = artifacts.require("IIAddressUpdater");
 const FAsset = artifacts.require("FAsset");
 
 export class ContractRetriever {
     constructor(
         public prioritizeAddressUpdater: boolean,
-        public addressUpdater: AddressUpdaterInstance,
+        public addressUpdater: IIAddressUpdaterInstance,
         public contracts?: ChainContracts,
     ) {}
 
@@ -43,7 +43,7 @@ type FAssetPair = { assetManager: IIAssetManagerInstance; fasset: FAssetInstance
 export class AssetContractRetriever extends ContractRetriever {
     constructor(
         prioritizeAddressUpdater: boolean,
-        addressUpdater: AddressUpdaterInstance,
+        addressUpdater: IIAddressUpdaterInstance,
         contracts: ChainContracts | undefined,
         public assetManagerController: IIAssetManagerControllerInstance,
         public assetManagers: Map<string, FAssetPair>,
@@ -54,7 +54,7 @@ export class AssetContractRetriever extends ContractRetriever {
     static async create(prioritizeAddressUpdater: boolean, contractsJsonFile?: string, assetManagerControllerAddress?: string) {
         const contracts = contractsJsonFile ? loadContracts(contractsJsonFile) : undefined;
         let assetManagerController: IIAssetManagerControllerInstance;
-        let addressUpdater: AddressUpdaterInstance;
+        let addressUpdater: IIAddressUpdaterInstance;
         if (assetManagerControllerAddress) {
             assetManagerController = await IIAssetManagerController.at(assetManagerControllerAddress);
             addressUpdater = await AddressUpdater.at(await assetManagerController.getAddressUpdater());

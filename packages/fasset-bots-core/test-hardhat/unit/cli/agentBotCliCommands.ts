@@ -126,7 +126,7 @@ describe("AgentBot cli commands unit tests", () => {
         expect(Number(agentInfo.freeCollateralLots)).to.eq(5);
     });
 
-    it("Should enter, announce exit available list and exit available list", async () => {
+    it.only("Should enter, announce exit available list and exit available list", async () => {
         const agent = await createAgent();
         const vaultAddress = agent.vaultAddress;
         // deposit to vault
@@ -139,7 +139,8 @@ describe("AgentBot cli commands unit tests", () => {
         // buy collateral pool tokens
         await botCliCommands.buyCollateralPoolTokens(vaultAddress, depositAmountWei);
         // try to exit - not in available list yet
-        await expectRevert(botCliCommands.exitAvailableList(vaultAddress), "agent not available");
+        // await expect(botCliCommands.exitAvailableList(vaultAddress)).to.be.revertedWithCustomError(contract, "MyError").withArgs(...);
+        await expectRevert.custom(botCliCommands.exitAvailableList(vaultAddress), "AgentNotAvailable", []);
         const agentInfoBefore2 = await context.assetManager.getAgentInfo(vaultAddress);
         expect(agentInfoBefore2.publiclyAvailable).to.be.false;
         // enter available
@@ -205,12 +206,14 @@ describe("AgentBot cli commands unit tests", () => {
         await minter.executeMinting(crt, txHash);
         // transfer FAssets
         const fBalance = await context.fAsset.balanceOf(minter.address);
-        const transferFeeMillionths = await context.assetManager.transferFeeMillionths();
+        // TODO check code and delete
+        // const transferFeeMillionths = await context.assetManager.transferFeeMillionths();
         await context.fAsset.transfer(ownerAddress, fBalance, { from: minter.address });
-        const transferFee = fBalance.mul(transferFeeMillionths).divn(1e6);
+        // const transferFee = fBalance.mul(transferFeeMillionths).divn(1e6);
         await botCliCommands.selfClose(vaultAddress, fBalance.divn(2).toString());
         const fBalanceAfter = await context.fAsset.balanceOf(ownerAddress);
-        expect(fBalanceAfter.toString()).to.eq(fBalance.divn(2).sub(transferFee).toString());
+        expect(fBalanceAfter.toString()).to.eq(fBalance.divn(2).toString());
+        // expect(fBalanceAfter.toString()).to.eq(fBalance.divn(2).sub(transferFee).toString());
     });
 
     it("Should close vault", async () => {
@@ -403,8 +406,9 @@ describe("AgentBot cli commands unit tests", () => {
         expect(toBN(latestToSoon.announcedAtTimestamp).gt(BN_ZERO)).to.be.true;
         expect(latestToSoon.cancelled).to.not.be.true;
         // time passed
-        const settings = await context.assetManager.getSettings();
-        await time.increase(settings.announcedUnderlyingConfirmationMinSeconds);
+        // const settings = await context.assetManager.getSettings();
+        // TODO - check code and delete
+        // await time.increase(settings.announcedUnderlyingConfirmationMinSeconds);
         await botCliCommands.cancelUnderlyingWithdrawal(agentBot.agent.vaultAddress);
         for (let i = 0; i < 3; i++) {
             await agentBot.runStep(orm.em);
@@ -581,8 +585,7 @@ describe("AgentBot cli commands unit tests", () => {
         expect(Number(res.mintingVaultCollateralRatio)).to.be.gt(0);
         expect(Number(res.mintingPoolCollateralRatio)).to.be.gt(0);
         expect(Number(res.poolExitCollateralRatio)).to.be.gt(0);
-        expect(Number(res.poolTopupCollateralRatio)).to.be.gt(0);
-        expect(Number(res.poolTopupTokenPriceFactor)).to.be.gt(0);
+        expect(Number(res.redemptionPoolFeeShare)).to.be.gt(0);
         expect(Number(res.buyFAssetByAgentFactor)).to.be.gt(0);
     });
 

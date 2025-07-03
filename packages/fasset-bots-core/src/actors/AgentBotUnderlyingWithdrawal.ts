@@ -41,7 +41,7 @@ export class AgentBotUnderlyingWithdrawal {
                 return;
             }
             // cancel underlying withdrawal
-            const allowedAt = confirmationAllowedAt(latestUnderlyingWithdrawal.announcedAtTimestamp, await this.agent.assetManager.getSettings());
+            const allowedAt = confirmationAllowedAt(latestUnderlyingWithdrawal.announcedAtTimestamp);
             if (allowedAt != null && readAgentEnt.underlyingWithdrawalWaitingForCancelation) {
                 logger.info(`Agent ${this.agent.vaultAddress} is waiting for canceling underlying withdrawal.`);
                 const latestTimestamp = await latestBlockTimestampBN();

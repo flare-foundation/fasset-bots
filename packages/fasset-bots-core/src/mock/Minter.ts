@@ -49,11 +49,6 @@ export class Minter {
         return requiredEventArgs(res, 'CollateralReserved');
     }
 
-    async reserveCollateralHandshake(agent: string, lots: BNish, executorAddress?: string, executorFeeNatWei?: BNish, checkUnderlyingAddressFunds: boolean = true) {
-        const res = await this._reserveCollateral(agent, lots, checkUnderlyingAddressFunds, executorAddress, executorFeeNatWei);
-        return requiredEventArgs(res, 'HandshakeRequired');
-    }
-
     async _reserveCollateral(agent: string, lots: BNish, checkUnderlyingAddressFunds: boolean, executorAddress?: string, executorFeeNatWei?: BNish) {
         const agentInfo = await this.assetManager.getAgentInfo(agent);
         const settings = await this.assetManager.getSettings();
@@ -68,12 +63,7 @@ export class Minter {
         if (checkUnderlyingAddressFunds) {
             await checkUnderlyingFunds(this.context, this.underlyingAddress, mintPayment, agentInfo.underlyingAddressString);
         }
-        return await this.assetManager.reserveCollateral(agent, lots, agentInfo.feeBIPS, executor, [this.underlyingAddress], { from: this.address, value: totalNatFee });
-    }
-
-    async cancelCollateralReservation(collateralReservationId: BNish) {
-        const res = await this.assetManager.cancelCollateralReservation(collateralReservationId, { from: this.address });
-        return requiredEventArgs(res, 'CollateralReservationCancelled');
+        return await this.assetManager.reserveCollateral(agent, lots, agentInfo.feeBIPS, executor, { from: this.address, value: totalNatFee });
     }
 
     async performMintingPayment(crt: EventArgs<CollateralReserved>): Promise<string> {

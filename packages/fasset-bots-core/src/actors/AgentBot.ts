@@ -9,7 +9,6 @@ import { AgentEntity } from "../entities/agent";
 import { AgentRedemptionState } from "../entities/common";
 import { IAssetAgentContext } from "../fasset-bots/IAssetBotContext";
 import { Agent, OwnerAddressPair } from "../fasset/Agent";
-import { PaymentReference } from "../fasset/PaymentReference";
 import { attestationProved } from "../underlying-chain/AttestationHelper";
 import { ChainId } from "../underlying-chain/ChainId";
 import { TX_SUCCESS } from "../underlying-chain/interfaces/IBlockChain";
@@ -25,7 +24,6 @@ import { AgentNotifier } from "../utils/notifier/AgentNotifier";
 import { NotifierTransport } from "../utils/notifier/BaseNotifier";
 import { artifacts, web3 } from "../utils/web3";
 import { latestBlockTimestampBN } from "../utils/web3helpers";
-import { web3DeepNormalize } from "../utils/web3normalize";
 import { AgentBotClaims } from "./AgentBotClaims";
 import { AgentBotClosing } from "./AgentBotClosing";
 import { AgentBotCollateralManagement } from "./AgentBotCollateralManagement";
@@ -37,7 +35,6 @@ import { AgentBotUnderlyingManagement } from "./AgentBotUnderlyingManagement";
 import { AgentBotUnderlyingWithdrawal } from "./AgentBotUnderlyingWithdrawal";
 import { AgentBotUpdateSettings } from "./AgentBotUpdateSettings";
 import { AgentTokenBalances } from "./AgentTokenBalances";
-import { AgentBotHandshake } from "./AgentBotHandshake";
 import { HandshakeAddressVerifier } from "./plugins/HandshakeAddressVerifier";
 import { AgentBotReturnFromCoreVault } from "./AgentBotReturnFromCoreVault";
 
@@ -109,7 +106,6 @@ export class AgentBot {
     context = this.agent.context;
     tokens = new AgentTokenBalances(this.context, this.agent.vaultAddress);
     eventReader = new AgentBotEventReader(this, this.context, this.notifier, this.agent.vaultAddress);
-    handshake = new AgentBotHandshake(this, this.agent, this.notifier, this.handshakeAddressVerifier);
     minting = new AgentBotMinting(this, this.agent, this.notifier);
     redemption = new AgentBotRedemption(this, this.agent, this.notifier);
     underlyingManagement = new AgentBotUnderlyingManagement(this, this.agent, this.agentBotSettings, this.notifier, this.ownerUnderlyingAddress, this.tokens);
@@ -144,11 +140,6 @@ export class AgentBot {
         await this.activateUnderlyingAccount(context, owner, ownerUnderlyingAddress, underlyingAddress);
         // validate address
         const addressValidityProof = await context.attestationProvider.proveAddressValidity(underlyingAddress);
-        // prove EOA if necessary
-        const settings = await context.assetManager.getSettings();
-        if (settings.requireEOAAddressProof) {
-            await this.proveEOAaddress(context, addressValidityProof.data.responseBody.standardAddress, owner);
-        }
         return addressValidityProof;
     }
 
@@ -199,24 +190,6 @@ export class AgentBot {
 
         const notifier = new AgentNotifier(agent.vaultAddress, notifierTransports);
         return new AgentBot(agent, agentBotSettings, notifier, owner, ownerUnderlyingAddress, handshakeAddressVerifier);
-    }
-
-    /**
-     * This method fixes the underlying address to be used by given AgentBot owner.
-     * @param context fasset agent bot context
-     * @param underlyingAddress agent's underlying address
-     * @param ownerAddress agent's owner native address
-     */
-    /* istanbul ignore next */
-    static async proveEOAaddress(context: IAssetAgentContext, underlyingAddress: string, owner: OwnerAddressPair): Promise<void> {
-        const reference = PaymentReference.addressOwnership(owner.managementAddress);
-        // 1 = smallest possible amount (as in 1 satoshi or 1 drop)
-        const smallest_amount = 1;
-        await checkUnderlyingFunds(context, underlyingAddress, smallest_amount, underlyingAddress);
-        const txHash = await context.wallet.addTransactionAndWaitForItsFinalization(underlyingAddress, underlyingAddress, smallest_amount, reference);
-        await context.blockchainIndexer.waitForUnderlyingTransactionFinalization(txHash);
-        const proof = await context.attestationProvider.provePayment(txHash, underlyingAddress, underlyingAddress);
-        await context.assetManager.proveUnderlyingAddressEOA(web3DeepNormalize(proof), { from: owner.workAddress });
     }
 
     /**
@@ -344,12 +317,6 @@ export class AgentBot {
             threads.push(this.startThread(rootEm, `redemptions-expired-${botId}`, true, async (threadEm) => {
                 await this.redemption.handleExpiredRedemptions(threadEm);
             }));
-            threads.push(this.startThread(rootEm, `rejected-redemption-requests-${botId}`, true, async (threadEm) => {
-                await this.redemption.handleRejectedRedemptionRequests(threadEm);
-            }));
-            threads.push(this.startThread(rootEm, `handshakes-${botId}`, true, async (threadEm) => {
-                await this.handshake.handleOpenHandshakes(threadEm);
-            }));
             threads.push(this.startThread(rootEm, `mintings-${botId}`, true, async (threadEm) => {
                 await this.minting.handleOpenMintings(threadEm);
             }));
@@ -406,8 +373,6 @@ export class AgentBot {
     async runStep(rootEm: EM): Promise<void> {
         await this.handleEvents(rootEm);
         await this.redemption.handleOpenRedemptions(rootEm);
-        await this.redemption.handleRejectedRedemptionRequests(rootEm);
-        await this.handshake.handleOpenHandshakes(rootEm);
         await this.minting.handleOpenMintings(rootEm);
         await this.handleTimelockedProcesses(rootEm);
         await this.underlyingManagement.handleOpenUnderlyingPayments(rootEm);
@@ -422,28 +387,10 @@ export class AgentBot {
     }
 
     async handleEvent(em: EM, event: EvmEvent): Promise<void> {
-
-        // handle all events for RedemptionRequestRejected and RedemptionRequestTakenOver
-        if (eventIs(event, this.context.assetManager, "RedemptionRequestRejected")) {
-            await this.redemption.redemptionRequestRejected(em, event.args, event.blockNumber);
-            return;
-        } else if (eventIs(event, this.context.assetManager, "RedemptionRequestTakenOver")) {
-            await this.redemption.redemptionRequestTakenOver(em, event.args);
-            return;
-        }
-        // all other events are events for this agent (this should already be the case due to filter in readNewEvents, but just to be sure)
+        // all events are events for this agent (this should already be the case due to filter in readNewEvents, but just to be sure)
         const agentVault = (event.args as any).agentVault;
         if (agentVault && agentVault.toLowerCase() !== this.agent.vaultAddress.toLowerCase()) return;
-        if (eventIs(event, this.context.assetManager, "HandshakeRequired")) {
-            logger.info(`Agent ${this.agent.vaultAddress} received event 'HandshakeRequired' with data ${formatArgs(event.args)}.`);
-            await this.handshake.handshakeRequired(em, event.args);
-        } else if (eventIs(event, this.context.assetManager, "CollateralReservationCancelled")) {
-            logger.info(`Agent ${this.agent.vaultAddress} received event 'CollateralReservationCancelled' with data ${formatArgs(event.args)}.`);
-            await this.handshake.mintingCancelled(em, event.args);
-        } else if (eventIs(event, this.context.assetManager, "CollateralReservationRejected")) {
-            logger.info(`Agent ${this.agent.vaultAddress} received event 'CollateralReservationRejected' with data ${formatArgs(event.args)}.`);
-            await this.handshake.mintingRejected(em, event.args);
-        } else if (eventIs(event, this.context.assetManager, "CollateralReserved")) {
+        if (eventIs(event, this.context.assetManager, "CollateralReserved")) {
             logger.info(`Agent ${this.agent.vaultAddress} received event 'CollateralReserved' with data ${formatArgs(event.args)}.`);
             await this.minting.mintingStarted(em, event.args);
         } else if (eventIs(event, this.context.assetManager, "CollateralReservationDeleted")) {

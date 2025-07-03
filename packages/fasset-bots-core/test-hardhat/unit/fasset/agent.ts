@@ -139,8 +139,9 @@ describe("Agent unit tests", () => {
         await fundUnderlying(context, agent.underlyingAddress, context.chainInfo.minimumAccountBalance);
         const tx = await agent.performPayment(underlyingAddress, 1, resAnnounce.paymentReference);
         chain.mine(chain.finalizationBlocks + 1);
-        const skipTime = (await context.assetManager.getSettings()).announcedUnderlyingConfirmationMinSeconds;
-        await time.increase(skipTime);
+        // const skipTime = (await context.assetManager.getSettings()).announcedUnderlyingConfirmationMinSeconds;
+        // await time.increase(skipTime);
+        // TODO - check test and delete
         const resConfirm = await agent.confirmUnderlyingWithdrawal(tx);
         expect(resConfirm.agentVault).to.eq(agent.vaultAddress);
     });
@@ -148,8 +149,9 @@ describe("Agent unit tests", () => {
     it("Should announce and cancel underlying withdrawal", async () => {
         const agent = await createTestAgent(context, ownerAddress, underlyingAddress);
         await agent.announceUnderlyingWithdrawal();
-        const skipTime = (await context.assetManager.getSettings()).announcedUnderlyingConfirmationMinSeconds;
-        await time.increase(skipTime);
+        // TODO - check test and delete
+        // const skipTime = (await context.assetManager.getSettings()).announcedUnderlyingConfirmationMinSeconds;
+        // await time.increase(skipTime);
         const resConfirm = await agent.cancelUnderlyingWithdrawal();
         expect(resConfirm.agentVault).to.eq(agent.vaultAddress);
     });
@@ -164,13 +166,15 @@ describe("Agent unit tests", () => {
         await minter.executeMinting(crt, txHash);
         // transfer FAssets
         const fBalance = await context.fAsset.balanceOf(minter.address);
-        const transferFeeMillionths = await context.assetManager.transferFeeMillionths();
-        const transferFee = fBalance.mul(transferFeeMillionths).divn(1e6);
+        // TODO - check test and delete
+        // const transferFeeMillionths = await context.assetManager.transferFeeMillionths();
+        // const transferFee = fBalance.mul(transferFeeMillionths).divn(1e6);
         await context.fAsset.transfer(ownerAddress, fBalance, { from: minter.address });
-        assertWeb3DeepEqual(await context.fAsset.balanceOf(context.assetManager.address), transferFee);
+        // assertWeb3DeepEqual(await context.fAsset.balanceOf(context.assetManager.address), transferFee);
         await agent.selfClose(fBalance.divn(2));
         const fBalanceAfter = await context.fAsset.balanceOf(ownerAddress);
-        expect(fBalanceAfter.toString()).to.eq(fBalance.divn(2).sub(transferFee).toString());
+        expect(fBalanceAfter.toString()).to.eq(fBalance.divn(2).toString());
+        // expect(fBalanceAfter.toString()).to.eq(fBalance.divn(2).sub(transferFee).toString());
     });
 
     it("Should exit available", async () => {
@@ -192,11 +196,13 @@ describe("Agent unit tests", () => {
         // withdraw pool fees
         const fPoolBalance = await agent.poolFeeBalance();
         await agent.withdrawPoolFees(fPoolBalance);
-        const transferFeeMillionths = await context.assetManager.transferFeeMillionths();
-        const transferFee = fPoolBalance.mul(transferFeeMillionths).divn(1e6);
+        // TODO - check test and delete
+        // const transferFeeMillionths = await context.assetManager.transferFeeMillionths();
+        // const transferFee = fPoolBalance.mul(transferFeeMillionths).divn(1e6);
         const fPoolBalanceAfterWithdraw = await agent.poolFeeBalance();
         const ownerFassets = await context.fAsset.balanceOf(agent.owner.workAddress);
-        expect(ownerFassets.eq(fPoolBalance.sub(transferFee))).to.be.true;
+        // expect(ownerFassets.eq(fPoolBalance.sub(transferFee))).to.be.true;
+        expect(ownerFassets.eq(fPoolBalance)).to.be.true;
         expect(fPoolBalanceAfterWithdraw.eqn(0)).to.be.true;
     });
 });

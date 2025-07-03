@@ -50,10 +50,8 @@ describe("Toplevel runner and commands integration test - massively parallel ver
             mintingVaultCollateralRatio: "1.6",
             mintingPoolCollateralRatio: "2.4",
             poolExitCollateralRatio: "2.6",
-            poolTopupCollateralRatio: "2.2",
-            poolTopupTokenPriceFactor: "0.8",
+            redemptionPoolFeeShare: "40%",
             buyFAssetByAgentFactor: "0.99",
-            handshakeType: 0,
         };
     }
 
@@ -69,7 +67,6 @@ describe("Toplevel runner and commands integration test - massively parallel ver
         finalizationBlocks: 3,
         underlyingBlocksForPayment: 100,
         lotSize: 10,
-        requireEOAProof: false,
         parameterFile: "./fasset-config/coston/f-testxrp.json",
     };
 
@@ -119,7 +116,7 @@ describe("Toplevel runner and commands integration test - massively parallel ver
         return new AgentBotCommands(context, agentBotSettings, ownerAddressPair, ownerUnderlyingAddress, orm, testNotifierTransports);
     }
 
-    async function createUserCommands(context: IAssetAgentContext) {
+    function createUserCommands(context: IAssetAgentContext) {
         return new UserBotCommands(context, context.fAssetSymbol, userAddress, userUnderlyingAddress, "./test-data");
     }
 
@@ -155,6 +152,7 @@ describe("Toplevel runner and commands integration test - massively parallel ver
         }
         // set work address mapping
         const context0 = firstValue(contexts)!;
+        await context0.agentOwnerRegistry.whitelistAndDescribeAgent(ownerManagementAddress, "Agent Name", "Agent Description", "Icon", "URL");
         await context0.agentOwnerRegistry.setWorkAddress(ownerWorkAddress, { from: ownerManagementAddress });
         // timekeeper
         timekeeperService = new TimeKeeperService(contexts, ownerWorkAddress, testTimekeeperTimingConfig({ loopDelayMs: loopDelay, updateIntervalMs: 10_000 }));
@@ -211,7 +209,7 @@ describe("Toplevel runner and commands integration test - massively parallel ver
         const chain = chains.get(context.chainInfo.chainId)!;
         console.log(`***** Testing for asset ${context.chainInfo.symbol} *****`);
         const agentCommands = createAgentCommands(context);
-        const userCommands = await createUserCommands(context);
+        const userCommands = createUserCommands(context);
         //
         const NAG = 5;
         const agents: Agent[] = [];

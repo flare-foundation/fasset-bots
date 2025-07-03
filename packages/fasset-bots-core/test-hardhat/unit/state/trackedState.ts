@@ -18,7 +18,7 @@ import { fundUnderlying, performRedemptionPayment } from "../../../test/test-uti
 import { AgentDestroyed, AgentVaultCreated } from "../../../typechain-truffle/IIAssetManager";
 import { TestAssetBotContext, TestAssetTrackedStateContext, createTestAssetContext, getTestAssetTrackedStateContext } from "../../test-utils/create-test-asset-context";
 import { loadFixtureCopyVars } from "../../test-utils/hardhat-test-helpers";
-import { QUERY_WINDOW_SECONDS, assertWeb3DeepEqual, claimAndSendTransferFee, createCRAndPerformMinting, createTestAgent, createTestAgentAndMakeAvailable, createTestMinter, createTestRedeemer, fromAgentInfoToInitialAgentData, mintAndDepositVaultCollateralToOwner } from "../../test-utils/helpers";
+import { QUERY_WINDOW_SECONDS, createCRAndPerformMinting, createTestAgent, createTestAgentAndMakeAvailable, createTestMinter, createTestRedeemer, fromAgentInfoToInitialAgentData, mintAndDepositVaultCollateralToOwner } from "../../test-utils/helpers";
 import { waitForTimelock } from "../../test-utils/new-asset-manager";
 use(chaiAsPromised);
 use(spies);
@@ -46,9 +46,7 @@ const agentCreatedArgs = {
         mintingPoolCollateralRatioBIPS: toBN(0),
         buyFAssetByAgentFactorBIPS: toBN(0),
         poolExitCollateralRatioBIPS: toBN(0),
-        poolTopupCollateralRatioBIPS: toBN(0),
-        poolTopupTokenPriceFactorBIPS: toBN(0),
-        handshakeType: toBN(0),
+        redemptionPoolFeeShareBIPS: toBN(0),
     }
 } as EventArgs<AgentVaultCreated>;
 
@@ -305,7 +303,7 @@ describe("Tracked state tests", () => {
         const agentBefore = Object.assign({}, await trackedState.getAgentTriggerAdd(agentB.vaultAddress));
         const minter = await createTestMinter(context, minterAddress, chain);
         // minter enters pool
-        await agentB.collateralPool.enter(0, false, { value: toBNExp(100_000, 18), from: minter.address });
+        await agentB.collateralPool.enter({ value: toBNExp(100_000, 18), from: minter.address });
         // tweak some pool settings
         const validAtFee = await agentB.announceAgentSettingUpdate("poolFeeShareBIPS", 9999);
         await time.increaseTo(validAtFee);
@@ -334,7 +332,7 @@ describe("Tracked state tests", () => {
         const agentBefore = Object.assign({}, await trackedState.getAgentTriggerAdd(agentB.vaultAddress));
         const minter = await createTestMinter(context, minterAddress, chain);
         // minter enters pool
-        await agentB.collateralPool.enter(0, false, { value: toBNExp(100_000, 18), from: minter.address });
+        await agentB.collateralPool.enter({ value: toBNExp(100_000, 18), from: minter.address });
         // tweak some pool settings
         const validAt1 = await agentB.announceAgentSettingUpdate("poolFeeShareBIPS", 9999);
         await time.increaseTo(validAt1);
@@ -366,15 +364,15 @@ describe("Tracked state tests", () => {
         const spyRedemption = spy.on(trackedState.getAgent(agentB.vaultAddress)!, "handleRedemptionPerformed");
         const redeemer = await createTestRedeemer(context, redeemerAddress);
         const fBalance = await context.fAsset.balanceOf(minter.address);
-        const transferFeeMillionths = await context.assetManager.transferFeeMillionths();
-        const transferFee = fBalance.mul(transferFeeMillionths).divn(1e6);
+        // const transferFeeMillionths = await context.assetManager.transferFeeMillionths();
+        // const transferFee = fBalance.mul(transferFeeMillionths).divn(1e6);
         await context.fAsset.transfer(redeemer.address, fBalance, { from: minter.address });
-        assertWeb3DeepEqual(await context.fAsset.balanceOf(context.assetManager.address), transferFee);
-
-        const balanceBefore = await context.fAsset.balanceOf(redeemer.address);
-        await claimAndSendTransferFee(agentB, redeemer.address);
-        const balanceAfter = await context.fAsset.balanceOf(redeemer.address);
-        assertWeb3DeepEqual(balanceAfter, balanceBefore.add(transferFee));
+        // assertWeb3DeepEqual(await context.fAsset.balanceOf(context.assetManager.address), transferFee);
+        // TODO - check test and delete
+        // const balanceBefore = await context.fAsset.balanceOf(redeemer.address);
+        // await claimAndSendTransferFee(agentB, redeemer.address);
+        // const balanceAfter = await context.fAsset.balanceOf(redeemer.address);
+        // assertWeb3DeepEqual(balanceAfter, balanceBefore.add(transferFee));
 
         const [rdReqs] = await redeemer.requestRedemption(lots);
         const tx1Hash = await performRedemptionPayment(agentB, rdReqs[0]);
@@ -393,10 +391,11 @@ describe("Tracked state tests", () => {
         const spyRedemption = spy.on(trackedState.getAgent(agentB.vaultAddress)!, "handleRedemptionPerformed");
         const redeemer = await createTestRedeemer(context, redeemerAddress);
         const fBalance = await context.fAsset.balanceOf(minter.address);
-        const transferFeeMillionths = await context.assetManager.transferFeeMillionths();
-        const transferFee = fBalance.mul(transferFeeMillionths).divn(1e6);
+        // TODO - check test and delete
+        // const transferFeeMillionths = await context.assetManager.transferFeeMillionths();
+        // const transferFee = fBalance.mul(transferFeeMillionths).divn(1e6);
         await context.fAsset.transfer(redeemer.address, fBalance, { from: minter.address });
-        assertWeb3DeepEqual(await context.fAsset.balanceOf(context.assetManager.address), transferFee);
+        // assertWeb3DeepEqual(await context.fAsset.balanceOf(context.assetManager.address), transferFee);
 
         // create another agent and mint some FAssets
         const agent2 = await createTestAgentAndMakeAvailable(context, accounts[321], "UNDERLYING_ADDRESS_1");
@@ -407,8 +406,8 @@ describe("Tracked state tests", () => {
         chain.mine(chain.finalizationBlocks + 1);
         await minter2.executeMinting(crt1, txHash1);
         // agent buys missing fAssets
-        const amount = toBN(transferFee).muln(1e6).div(toBN(1e6).sub(transferFeeMillionths)).addn(1);
-        await context.fAsset.transfer(redeemerAddress, amount, { from: minter.address });
+        // const amount = toBN(transferFee).muln(1e6).div(toBN(1e6).sub(transferFeeMillionths)).addn(1);
+        // await context.fAsset.transfer(redeemerAddress, amount, { from: minter.address });
 
         const [rdReqs] = await redeemer.requestRedemption(lots);
         const tx1Hash = await performRedemptionPayment(agentB, rdReqs[0]);
@@ -449,8 +448,9 @@ describe("Tracked state tests", () => {
         await agentBLocal.announceUnderlyingWithdrawal();
         await trackedState.readUnhandledEvents();
         const agentMiddle = Object.assign({}, trackedState.getAgent(agentBLocal.vaultAddress));
-        const skipTime = (await context.assetManager.getSettings()).announcedUnderlyingConfirmationMinSeconds;
-        await time.increase(skipTime);
+        // const skipTime = (await context.assetManager.getSettings()).announcedUnderlyingConfirmationMinSeconds;
+        // await time.increase(skipTime);
+        // TODO - check test and delete
         await agentBLocal.cancelUnderlyingWithdrawal();
         await trackedState.readUnhandledEvents();
         const agentAfter = Object.assign({}, trackedState.getAgent(agentBLocal.vaultAddress));
@@ -465,8 +465,9 @@ describe("Tracked state tests", () => {
         await trackedState.readUnhandledEvents();
         const agentBefore = trackedState.agents.get(agentBLocal.vaultAddress);
         expect(agentBefore?.underlyingBalanceUBA.eqn(0));
-        const skipTime = (await context.assetManager.getSettings()).announcedUnderlyingConfirmationMinSeconds;
-        await time.increase(skipTime);
+        // const skipTime = (await context.assetManager.getSettings()).announcedUnderlyingConfirmationMinSeconds;
+        // await time.increase(skipTime);
+        // TODO - check test and delete
         const underlyingAddress: string = "RANDOM_UNDERLYING_ADDRESS";
         const deposit = toBN(200);
         await fundUnderlying(context, underlyingAddress, deposit);
@@ -503,8 +504,9 @@ describe("Tracked state tests", () => {
         await context.priceStore.setCurrentPrice(context.chainInfo.symbol, toBNExp(1, 5), 0);
         await context.priceStore.setCurrentPriceFromTrustedProviders(context.chainInfo.symbol, toBNExp(1, 5), 0);
         // liquidator "buys" f-assets
-        const transferFeeMillionths = await context.assetManager.transferFeeMillionths();
-        const transferFee = minted.mintedAmountUBA.mul(transferFeeMillionths).divn(1e6);
+        // TODO - check test and delete
+        // const transferFeeMillionths = await context.assetManager.transferFeeMillionths();
+        // const transferFee = minted.mintedAmountUBA.mul(transferFeeMillionths).divn(1e6);
         await context.fAsset.transfer(liquidatorAddress, minted.mintedAmountUBA, { from: minter.address });
         // liquidate agent (partially)
         const liquidateMaxUBA = minted.mintedAmountUBA.divn(lots);

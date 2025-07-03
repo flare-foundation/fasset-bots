@@ -41,7 +41,6 @@ describe("Toplevel runner and commands integration test", () => {
     let timekeeperService: TimeKeeperService;
     let botRunner: AgentBotRunner;
     let usdcCurrency: Currency;
-    let natCurrency: Currency;
     let xrpCurrency: Currency;
 
     const newAgentSettings: AgentSettingsConfig = {
@@ -52,10 +51,8 @@ describe("Toplevel runner and commands integration test", () => {
         mintingVaultCollateralRatio: "1.6",
         mintingPoolCollateralRatio: "2.4",
         poolExitCollateralRatio: "2.6",
-        poolTopupCollateralRatio: "2.2",
-        poolTopupTokenPriceFactor: "0.8",
+        redemptionPoolFeeShare: "40%",
         buyFAssetByAgentFactor: "0.99",
-        handshakeType: 0,
     };
 
     const testXrpChainInfo: TestChainInfo = {
@@ -70,7 +67,6 @@ describe("Toplevel runner and commands integration test", () => {
         finalizationBlocks: 3,
         underlyingBlocksForPayment: 100,
         lotSize: 10,
-        requireEOAProof: false,
         parameterFile: "./fasset-config/coston/f-testxrp.json",
     };
 
@@ -149,6 +145,7 @@ describe("Toplevel runner and commands integration test", () => {
         }
         // set work address mapping
         const context0 = firstValue(contexts)!;
+        await context0.agentOwnerRegistry.whitelistAndDescribeAgent(ownerManagementAddress, "Agent Name", "Agent Description", "Icon", "URL");
         await context0.agentOwnerRegistry.setWorkAddress(ownerWorkAddress, { from: ownerManagementAddress });
         // timekeeper
         timekeeperService = new TimeKeeperService(contexts, ownerWorkAddress, testTimekeeperTimingConfig({ loopDelayMs: loopDelay }));
@@ -157,7 +154,6 @@ describe("Toplevel runner and commands integration test", () => {
         // currencies
         const usdc = context0.stablecoins.usdc as FakeERC20Instance;
         usdcCurrency = await Currencies.erc20(usdc as IERC20MetadataInstance);
-        natCurrency = await Currencies.evmNative(context0);
         xrpCurrency = Currencies.chain(testXrpChainInfo);
         // mint some collaterals to owner
         await usdc.mintAmount(ownerWorkAddress, usdcCurrency.parse("1000"));

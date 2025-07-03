@@ -17,7 +17,7 @@ describe("Web3 event decoder unit tests", () => {
     it("Should filter out one event", async () => {
         const eventDecoder = new Web3ContractEventDecoder(
             { assetManager: context.assetManager, priceChangeEmitter: context.priceChangeEmitter },
-            { filter: ["PriceEpochFinalized"], requireKnownAddress: true }
+            { filter: ["PricesPublished"], requireKnownAddress: true }
         );
         expect(eventDecoder.eventTypes.size).to.eq(1);
     });

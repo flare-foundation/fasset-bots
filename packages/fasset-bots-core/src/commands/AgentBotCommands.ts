@@ -627,9 +627,7 @@ export class AgentBotCommands {
         console.log(`mintingPoolCollateralRatioBIPS: ${settings.mintingPoolCollateralRatioBIPS.toString()}`);
         console.log(`poolExitCollateralRatioBIPS: ${settings.poolExitCollateralRatioBIPS.toString()}`);
         console.log(`buyFAssetByAgentFactorBIPS: ${settings.buyFAssetByAgentFactorBIPS.toString()}`);
-        console.log(`poolTopupCollateralRatioBIPS: ${settings.poolTopupCollateralRatioBIPS.toString()}`);
-        console.log(`poolTopupTokenPriceFactorBIPS: ${settings.poolTopupTokenPriceFactorBIPS.toString()}`);
-        console.log(`handshakeType: ${settings.handshakeType.toString()}`);
+        console.log(`redemptionPoolFeeShareBIPS: ${settings.redemptionPoolFeeShareBIPS.toString()}`);
         return settings;
     }
 
@@ -875,10 +873,8 @@ export class AgentBotCommands {
             throw new CommandLineError(squashSpace`Cannot transfer funds. Not enough free underlying ${currency.formatValue(safeToWithdraw)} to pay for underlying transaction fee ${currency.formatValue(underlyingFee)}.
                 Note that the "minimumFreeUnderlyingBalance" is set to ${currency.formatValue(agentBot.agentBotSettings.minimumFreeUnderlyingBalance)}.`);
         }
-        // get transfer fee
-        const fee = await this.context.assetManager.transferToCoreVaultFee(amount);
         // request transfer
-        const res = await this.context.assetManager.transferToCoreVault(agentVault, amount,  { from: agentBot.agent.owner.workAddress, value: fee });
+        const res = await this.context.assetManager.transferToCoreVault(agentVault, amount,  { from: agentBot.agent.owner.workAddress });
         const event = requiredEventArgs(res, "TransferToCoreVaultStarted");
         logger.info(`Agent ${agentVault} successfully initiated transfer of underlying to core vault.`);
         await this.notifierFor(agentVault).sendTransferToCVStarted(event.transferRedemptionRequestId);

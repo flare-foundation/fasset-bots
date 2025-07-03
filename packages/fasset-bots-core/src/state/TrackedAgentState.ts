@@ -39,9 +39,7 @@ export class TrackedAgentState {
         this.agentSettings.mintingPoolCollateralRatioBIPS = toBN(data.creationData.mintingPoolCollateralRatioBIPS);
         this.agentSettings.poolExitCollateralRatioBIPS = toBN(data.creationData.poolExitCollateralRatioBIPS);
         this.agentSettings.buyFAssetByAgentFactorBIPS = toBN(data.creationData.buyFAssetByAgentFactorBIPS);
-        this.agentSettings.poolTopupCollateralRatioBIPS = toBN(data.creationData.poolTopupCollateralRatioBIPS);
-        this.agentSettings.poolTopupTokenPriceFactorBIPS = toBN(data.creationData.poolTopupTokenPriceFactorBIPS);
-        this.agentSettings.handshakeType = toBN(data.creationData.handshakeType);
+        this.agentSettings.redemptionPoolFeeShareBIPS = toBN(data.creationData.redemptionPoolFeeShareBIPS);
         this.totalVaultCollateralWei[this.agentSettings.vaultCollateralToken] = BN_ZERO;
     }
 
@@ -94,7 +92,8 @@ export class TrackedAgentState {
     // calculated getters
     get requiredUnderlyingBalanceUBA(): BN {
         const backedUBA = this.mintedUBA.add(this.redeemingUBA);
-        return backedUBA.mul(toBN(this.parent.settings.minUnderlyingBackingBIPS)).divn(MAX_BIPS);
+        return backedUBA
+        // TODO -check with Iztok -> before: backedUBA.mul(toBN(this.parent.settings.minUnderlyingBackingBIPS)).divn(MAX_BIPS);
     }
 
     get freeUnderlyingBalanceUBA(): BN {
@@ -124,9 +123,7 @@ export class TrackedAgentState {
         this.agentSettings.mintingPoolCollateralRatioBIPS = toBN(agentInfo.mintingPoolCollateralRatioBIPS);
         this.agentSettings.poolExitCollateralRatioBIPS = toBN(agentInfo.poolExitCollateralRatioBIPS);
         this.agentSettings.buyFAssetByAgentFactorBIPS = toBN(agentInfo.buyFAssetByAgentFactorBIPS);
-        this.agentSettings.poolTopupCollateralRatioBIPS = toBN(agentInfo.poolTopupCollateralRatioBIPS);
-        this.agentSettings.poolTopupTokenPriceFactorBIPS = toBN(agentInfo.poolTopupTokenPriceFactorBIPS);
-        this.agentSettings.handshakeType = toBN(agentInfo.handshakeType);
+        this.agentSettings.redemptionPoolFeeShareBIPS = toBN(agentInfo.redemptionPoolFeeShareBIPS);
         logger.info(`Tracked State Agent initialized with info ${formatArgs(agentInfo)}.`);
     }
 

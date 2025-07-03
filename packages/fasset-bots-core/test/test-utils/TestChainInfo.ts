@@ -45,8 +45,7 @@ export const testChainInfo: Record<TestChainType, TestChainInfo> = {
         blockTime: 12,
         finalizationBlocks: 6,
         underlyingBlocksForPayment: 10,
-        lotSize: 30,
-        requireEOAProof: true,
+        lotSize: 30
     },
     btc: {
         chainId: ChainId.testBTC,
@@ -59,9 +58,7 @@ export const testChainInfo: Record<TestChainType, TestChainInfo> = {
         blockTime: 600,
         finalizationBlocks: 6,
         underlyingBlocksForPayment: 8,
-        lotSize: 2,
-        requireEOAProof: false,
-    },
+        lotSize: 2,    },
     doge: {
         chainId: ChainId.testBTC,
         name: "DOGECoin",
@@ -74,7 +71,6 @@ export const testChainInfo: Record<TestChainType, TestChainInfo> = {
         finalizationBlocks: 50,
         underlyingBlocksForPayment: 60,
         lotSize: 20,
-        requireEOAProof: false,
     },
     xrp: {
         chainId: ChainId.testXRP,
@@ -88,7 +84,6 @@ export const testChainInfo: Record<TestChainType, TestChainInfo> = {
         finalizationBlocks: 3,
         underlyingBlocksForPayment: 10,
         lotSize: 10,
-        requireEOAProof: false,
     },
 };
 
@@ -98,10 +93,8 @@ export const defaultCreateAgentSettings: AgentSettingsConfigDefaults = {
     mintingVaultCollateralRatio: "1.6",
     mintingPoolCollateralRatio: "2.3",
     poolExitCollateralRatio: "2.3",
-    poolTopupCollateralRatio: "2.1",
-    poolTopupTokenPriceFactor: "0.9",
+    redemptionPoolFeeShare: "40%",
     buyFAssetByAgentFactor: "0.99",
-    handshakeType: 0
 };
 
 export const parallelBots = false;
