@@ -29,7 +29,7 @@
     },
     "agentBotSettings": {
         "parallel": false,
-        "liquidationPreventionFactor": "1.2",
+        "liquidationPreventionFactor": "1.1",
         "vaultCollateralReserveFactor": "0.1",
         "poolCollateralReserveFactor": "0.1",
         "trustedPingSenders": [],

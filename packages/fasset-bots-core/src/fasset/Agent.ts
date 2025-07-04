@@ -92,7 +92,7 @@ export class Agent {
         try {
             return await this.assetManager.getAgentInfo(this.agentVault.address);
         } catch (error) {
-            expectErrors(error, ["invalid agent vault address"]);
+            expectErrors(error, ["InvalidAgentVaultAddress"]);
             return null;
         }
     }

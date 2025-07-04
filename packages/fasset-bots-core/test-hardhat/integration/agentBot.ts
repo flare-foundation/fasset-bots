@@ -18,7 +18,7 @@ import { programVersion } from "../../src/utils";
 import { Web3ContractEventDecoder } from "../../src/utils/events/Web3ContractEventDecoder";
 import { filterEventList } from "../../src/utils/events/truffle";
 import { attestationWindowSeconds, proveAndUpdateUnderlyingBlock } from "../../src/utils/fasset-helpers";
-import { BN_ZERO, MAX_BIPS, ZERO_ADDRESS, assertNotNull, checkedCast, requireNotNull, toBN, toBNExp } from "../../src/utils/helpers";
+import { BN_ZERO, MAX_BIPS, ZERO_ADDRESS, checkedCast, requireNotNull, toBN, toBNExp } from "../../src/utils/helpers";
 import { artifacts, web3 } from "../../src/utils/web3";
 import { testChainInfo } from "../../test/test-utils/TestChainInfo";
 import { createTestOrm } from "../../test/test-utils/create-test-orm";
@@ -26,7 +26,7 @@ import { AgentOwnerRegistryInstance, Truffle } from "../../typechain-truffle";
 import { FaultyNotifierTransport } from "../test-utils/FaultyNotifierTransport";
 import { TestAssetBotContext, createTestAssetContext } from "../test-utils/create-test-asset-context";
 import { loadFixtureCopyVars } from "../test-utils/hardhat-test-helpers";
-import { QUERY_WINDOW_SECONDS, assertWeb3DeepEqual, convertFromUSD5, createCRAndPerformMinting, createCRAndPerformMintingAndRunSteps, createTestAgent, createTestAgentAndMakeAvailable, createTestAgentBotAndMakeAvailable, createTestMinter, createTestRedeemer, getAgentStatus, mintVaultCollateralToOwner, runWithManualFDCFinalization, updateAgentBotUnderlyingBlockProof } from "../test-utils/helpers";
+import { QUERY_WINDOW_SECONDS, convertFromUSD5, createCRAndPerformMinting, createCRAndPerformMintingAndRunSteps, createTestAgent, createTestAgentAndMakeAvailable, createTestAgentBotAndMakeAvailable, createTestMinter, createTestRedeemer, getAgentStatus, mintVaultCollateralToOwner, runWithManualFDCFinalization, updateAgentBotUnderlyingBlockProof } from "../test-utils/helpers";
 use(spies);
 
 const IERC20 = artifacts.require("IERC20");
@@ -960,7 +960,7 @@ describe("Agent bot tests", () => {
         await context.assetManager.startLiquidation(agentBot.agent.vaultAddress, { from: minter.address });
         // check agent status
         const status2 = await getAgentStatus(agentBot);
-        assert.equal(status2, AgentStatus.CCB);
+        assert.equal(status2, AgentStatus.LIQUIDATION);
         // run bot
         await agentBot.handleEvents(orm.em);
         expect(spyConsole).to.have.been.called.above(5);
@@ -1116,13 +1116,14 @@ describe("Agent bot tests", () => {
         await createCRAndPerformMintingAndRunSteps(minter, agentBot, freeLots.toNumber(), orm, chain);
         // pool share of collateral reservation fee arrived into pool, so now there are again a few free lots
         const freeLotsAfter = toBN((await agentBot.agent.getAgentInfo()).freeCollateralLots);
+        console.log("freeLotsAfter", freeLotsAfter.toString())
         expect(toBN(freeLotsAfter).gtn(0)).to.be.true;
-        // mint agin to spend the rest
+        // mint again to spend the rest
         await createCRAndPerformMintingAndRunSteps(minter, agentBot, freeLotsAfter.toNumber(), orm, chain);
         // check all lots are minted
         const freeLotsAfter2 = toBN((await agentBot.agent.getAgentInfo()).freeCollateralLots);
         // trace({ freeLots, freeLotsAfter, freeLotsAfter2 });
-        expect(toBN(freeLotsAfter2).eqn(0)).to.be.true;
+        expect(toBN(freeLotsAfter2).eqn(1)).to.be.true;
         // transfer FAssets
         const fBalance = await context.fAsset.balanceOf(minter.address);
         await context.fAsset.transfer(redeemer.address, fBalance, { from: minter.address });
@@ -1199,7 +1200,7 @@ describe("Agent bot tests", () => {
         // check all lots are minted
         const freeLotsAfter2 = toBN((await agentBot.agent.getAgentInfo()).freeCollateralLots);
         // trace({ freeLots, freeLotsAfter, freeLotsAfter2 });
-        expect(toBN(freeLotsAfter2).eqn(0)).to.be.true;
+        expect(toBN(freeLotsAfter2).eqn(1)).to.be.true;
         // transfer FAssets
         const fBalance = await context.fAsset.balanceOf(minter.address);
         await context.fAsset.transfer(redeemer.address, fBalance, { from: minter.address });

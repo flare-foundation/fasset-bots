@@ -595,7 +595,7 @@ toplevelRun(async () => {
     try {
         await program.parseAsync();
     } catch (error: any) {
-        if (errorIncluded(error, ["InvalidAgentVaultAddress", "AgentEntity not found"])) {
+        if (errorIncluded(error, ["InvalidAgentVaultAddress", "AgentEntity not found"])) {//TODO
             const fAsset = program.opts().fasset;
             throw new CommandLineError(squashSpace`Invalid agent vault address: specified agent vault address has to be one of the agent vaults created by you.
                 To see them run \`yarn agent-bot listAgents -f ${fAsset}\`.`);

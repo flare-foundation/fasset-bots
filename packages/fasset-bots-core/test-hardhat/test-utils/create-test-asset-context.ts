@@ -5,7 +5,7 @@ import { ChainId, TimekeeperTimingConfig } from "../../src";
 import { Secrets } from "../../src/config";
 import { ChainAccount, SecretsFile } from "../../src/config/config-files/SecretsFile";
 import { ChainContracts, newContract } from "../../src/config/contracts";
-import { IAssetAgentContext, IAssetNativeChainContext, IERC20Events, WNatEvents } from "../../src/fasset-bots/IAssetBotContext";
+import { AddressUpdaterEvents, IAssetAgentContext, IAssetNativeChainContext, IERC20Events, WNatEvents } from "../../src/fasset-bots/IAssetBotContext";
 import { CollateralClass, CollateralType } from "../../src/fasset/AssetManagerTypes";
 import { ChainInfo } from "../../src/fasset/ChainInfo";
 import { MockChain, MockChainWallet } from "../../src/mock/MockChain";
@@ -61,7 +61,7 @@ export type TestAssetBotContext = Modify<
         assetManagerController: ContractWithEvents<IIAssetManagerControllerInstance, IIAssetManagerControllerEvents>;
         stablecoins: Record<string, ContractWithEvents<FakeERC20Instance, IERC20Events>>;
         collaterals: CollateralType[];
-        priceStore: ContractWithEvents<FtsoV2PriceStoreMockInstance, FtsoV2PriceStoreMockEvents>
+        priceStore: ContractWithEvents<FtsoV2PriceStoreMockInstance, FtsoV2PriceStoreMockEvents>,
     }
 >;
 
@@ -363,7 +363,7 @@ function createTestAssetManagerSettings(
         confirmationByOthersRewardUSD5: toBNExp(100, 5), // 100 USD
         paymentChallengeRewardBIPS: bnToString(parameters.paymentChallengeRewardBIPS),
         paymentChallengeRewardUSD5: toBNExp(300, 5), // 300 USD
-        ccbTimeSeconds: bnToString(parameters.ccbTimeSeconds),
+        __ccbTimeSeconds: 0,
         maxTrustedPriceAgeSeconds: bnToString(parameters.maxTrustedPriceAgeSeconds),
         withdrawalWaitMinSeconds: bnToString(parameters.withdrawalWaitMinSeconds),
         __announcedUnderlyingConfirmationMinSeconds: 0,
@@ -413,7 +413,6 @@ export function createTestCollaterals(contracts: ChainContracts, chainInfo: Chai
         assetFtsoSymbol: chainInfo.symbol,
         tokenFtsoSymbol: "NAT",
         minCollateralRatioBIPS: toBIPS(2.2),
-        ccbMinCollateralRatioBIPS: toBIPS(1.9),
         safetyMinCollateralRatioBIPS: toBIPS(2.3),
     };
     const usdcCollateral: CollateralType = {
@@ -425,7 +424,6 @@ export function createTestCollaterals(contracts: ChainContracts, chainInfo: Chai
         assetFtsoSymbol: chainInfo.symbol,
         tokenFtsoSymbol: "testUSDC",
         minCollateralRatioBIPS: toBIPS(1.4),
-        ccbMinCollateralRatioBIPS: toBIPS(1.3),
         safetyMinCollateralRatioBIPS: toBIPS(1.5),
     };
     const usdtCollateral: CollateralType = {
@@ -437,7 +435,6 @@ export function createTestCollaterals(contracts: ChainContracts, chainInfo: Chai
         assetFtsoSymbol: chainInfo.symbol,
         tokenFtsoSymbol: "testUSDT",
         minCollateralRatioBIPS: toBIPS(1.5),
-        ccbMinCollateralRatioBIPS: toBIPS(1.4),
         safetyMinCollateralRatioBIPS: toBIPS(1.6),
     };
     return [poolCollateral, usdcCollateral, usdtCollateral];

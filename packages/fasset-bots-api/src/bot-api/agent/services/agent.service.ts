@@ -637,10 +637,6 @@ export class AgentService {
                         status = `Healthy`;
                         break;
                     }
-                    case AgentStatus.CCB: {
-                        status = `CCB`;
-                        break;
-                    }
                     case AgentStatus.LIQUIDATION: {
                         status = `In Liquidation`;
                         break;

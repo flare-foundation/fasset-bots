@@ -39,7 +39,7 @@ export class FuzzingAgentBot {
         const proof = await this.agentBot.context.attestationProvider.provePayment(txHash, null, agent.underlyingAddress);
         await this.agentBot.context.assetManager.selfMint(proof, agent.vaultAddress, lots, { from: this.agentBot.agent.owner.workAddress })
             .catch((e) => scope.exitOnExpectedError(e,
-                ["cannot mint 0 lots", "not enough free collateral", "self-mint payment too small", "self-mint invalid agent status", "invalid self-mint reference", "self-mint payment too old"],
+                ["CannotMintZeroLots", "NotEnoughFreeCollateral", "SelfMintPaymentTooSmall", "SelfMintInvalidAgentStatus", "InvalidSelfMintReference", "SelfMintPaymentTooOld"],
                 "AGENT", this.agentBot.agent.vaultAddress));
         // 'self-mint payment too small' can happen after lot size change
         // 'invalid self-mint reference' can happen if agent is destroyed and re-created
@@ -60,7 +60,7 @@ export class FuzzingAgentBot {
         const amountUBA = randomBN(ownersAssets);
         if (this.runner.avoidErrors && amountUBA.isZero()) return;
         await this.agentBot.agent.selfClose(amountUBA)
-            .catch((e) => scope.exitOnExpectedError(e, ["f-asset balance too low", "redeem 0 lots"], "AGENT", this.agentBot.agent.vaultAddress));
+            .catch((e) => scope.exitOnExpectedError(e, ["FAssetBalanceTooLow", "RedeemZeroLots"], "AGENT", this.agentBot.agent.vaultAddress));
         this.runner.comment(`self closed successfully`, `${this.runner.eventFormatter.formatAddress(this.agentBot.agent.vaultAddress)}`);
     }
 

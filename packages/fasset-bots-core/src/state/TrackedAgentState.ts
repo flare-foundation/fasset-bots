@@ -56,7 +56,6 @@ export class TrackedAgentState {
     //state
     totalVaultCollateralWei: { [key: string]: BN } = {};
     totalPoolCollateralNATWei: BN = BN_ZERO;
-    ccbStartTimestamp: BN = BN_ZERO; // 0 - not in ccb/liquidation
     liquidationStartTimestamp: BN = BN_ZERO; // 0 - not in liquidation
     announcedUnderlyingWithdrawalId: BN = BN_ZERO; // 0 - not announced
 
@@ -92,8 +91,7 @@ export class TrackedAgentState {
     // calculated getters
     get requiredUnderlyingBalanceUBA(): BN {
         const backedUBA = this.mintedUBA.add(this.redeemingUBA);
-        return backedUBA
-        // TODO -check with Iztok -> before: backedUBA.mul(toBN(this.parent.settings.minUnderlyingBackingBIPS)).divn(MAX_BIPS);
+        return backedUBA;
     }
 
     get freeUnderlyingBalanceUBA(): BN {
@@ -106,7 +104,6 @@ export class TrackedAgentState {
         this.publiclyAvailable = agentInfo.publiclyAvailable;
         this.totalPoolCollateralNATWei = toBN(agentInfo.totalPoolCollateralNATWei);
         this.totalVaultCollateralWei[agentInfo.vaultCollateralToken] = toBN(agentInfo.totalVaultCollateralWei);
-        this.ccbStartTimestamp = toBN(agentInfo.ccbStartTimestamp);
         this.liquidationStartTimestamp = toBN(agentInfo.liquidationStartTimestamp);
         this.announcedUnderlyingWithdrawalId = toBN(agentInfo.announcedUnderlyingWithdrawalId);
         this.reservedUBA = toBN(agentInfo.reservedUBA);
@@ -128,11 +125,7 @@ export class TrackedAgentState {
     }
 
     handleStatusChange(status: AgentStatus, timestamp?: BN): void {
-        const ccbStarted = this.status === AgentStatus.NORMAL && status === AgentStatus.CCB;
-        if (timestamp && ccbStarted) {
-            this.ccbStartTimestamp = timestamp;
-        }
-        const liquidationStarted = (this.status === AgentStatus.NORMAL || this.status === AgentStatus.CCB) &&
+        const liquidationStarted = (this.status === AgentStatus.NORMAL) &&
             (status === AgentStatus.LIQUIDATION || status === AgentStatus.FULL_LIQUIDATION);
         if (timestamp && liquidationStarted) {
             this.liquidationStartTimestamp = timestamp;
@@ -386,17 +379,8 @@ export class TrackedAgentState {
 
     private possibleLiquidationTransitionForCollateral(collateral: CollateralType, timestamp: BN): AgentStatus {
         const cr = this.collateralRatioBIPS(collateral, timestamp);
-        const settings = this.parent.settings;
         if (this.status === AgentStatus.NORMAL) {
-            if (cr.lt(toBN(collateral.ccbMinCollateralRatioBIPS))) {
-                return AgentStatus.LIQUIDATION;
-            } else if (cr.lt(toBN(collateral.minCollateralRatioBIPS))) {
-                return AgentStatus.CCB;
-            }
-        } else if (this.status === AgentStatus.CCB) {
-            if (cr.gte(toBN(collateral.minCollateralRatioBIPS))) {
-                return AgentStatus.NORMAL;
-            } else if (cr.lt(toBN(collateral.ccbMinCollateralRatioBIPS)) || timestamp.gte(this.ccbStartTimestamp.add(toBN(settings.ccbTimeSeconds)))) {
+            if (cr.lt(toBN(collateral.minCollateralRatioBIPS))) {
                 return AgentStatus.LIQUIDATION;
             }
         } else if (this.status === AgentStatus.LIQUIDATION) {
@@ -418,21 +402,6 @@ export class TrackedAgentState {
         );
         // return the higher status (more severe)
         return vaultTransition >= poolTransition ? vaultTransition : poolTransition;
-    }
-
-    // should start the CCB liquidation countdown
-    candidateForCcbRegister(timestamp: BN): boolean {
-        if (this.status >= AgentStatus.CCB) {
-            // already registered or in liquidation
-            return false
-        }
-        const calculatedStatus = this.possibleLiquidationTransition(timestamp);
-        return calculatedStatus === AgentStatus.CCB;
-    }
-
-    // should liquidate the agent already registered for CCB
-    candidateForCcbLiquidation(timestamp: BN): boolean {
-        return this.status === AgentStatus.CCB && timestamp.gte(this.ccbStartTimestamp.add(toBN(this.parent.settings.ccbTimeSeconds)));
     }
 
     calculatePoolFee(mintingFeeUBA: BN): BN {
@@ -459,7 +428,6 @@ export class TrackedAgentState {
             publiclyAvailable: this.publiclyAvailable,
             totalVaultCollateralWei: this.totalVaultCollateralWei,
             totalPoolCollateralNATWei: this.totalPoolCollateralNATWei,
-            ccbStartTimestamp: this.ccbStartTimestamp,
             liquidationStartTimestamp: this.liquidationStartTimestamp,
             announcedUnderlyingWithdrawalId: this.announcedUnderlyingWithdrawalId,
             reservedUBA: this.reservedUBA,

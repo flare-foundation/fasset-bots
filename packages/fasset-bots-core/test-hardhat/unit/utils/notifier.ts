@@ -34,12 +34,6 @@ describe("Notifier tests", () => {
         expect(spySend).to.have.been.called.with.exactly(NotificationLevel.CRITICAL, AgentNotificationKey.ACTIVE_WITHDRAWAL, message);
     });
 
-    it("Should send CCB alert", async () => {
-        const spySend = spy.on(notifier, "sendCCBAlert");
-        await notifier.sendCCBAlert("0");
-        expect(spySend).to.have.been.called.once;
-    });
-
     it("Should send liquidation started alert", async () => {
         const spySend = spy.on(notifier, "sendLiquidationStartAlert");
         await notifier.sendLiquidationStartAlert("0");

@@ -69,57 +69,122 @@ describe("mini truffle and artifacts tests", () => {
             await expectRevertWithCorrectStack(fpr.setPrice.estimateGas("BTC", 1000, { from: accounts[0] }), "price not initialized");
         });
 
-        // it("methods .call, .sendTransaction and .estimateGas should work", async () => { // TODO
-        //     const FtsoMock = artifacts.require("FtsoMock");
-        //     const FtsoRegistryMock = artifacts.require("FtsoRegistryMock");
-        //     const registry = await FtsoRegistryMock.new();
-        //     const ftso1 = await FtsoMock.new("BTC", 5);
-        //     const ftso2 = await FtsoMock.new("XRP", 5);
-        //     // test .sendTransaction
-        //     const res = await registry.addFtso.sendTransaction(ftso1.address);
-        //     const ftsosStep1 = await registry.getSupportedSymbols();
-        //     expect(ftsosStep1).deep.equals(["BTC"]);
-        //     // test .call
-        //     const index = await registry.addFtso.call(ftso2.address);
-        //     expect(Number(index)).equals(1);
-        //     const ftsosStep2 = await registry.getSupportedSymbols();
-        //     expect(ftsosStep2).deep.equals(["BTC"]);
-        //     // test .estimateGas
-        //     const gas = await registry.addFtso.estimateGas(ftso2.address);
-        //     expect(typeof gas).equals("number");
-        //     expect(gas).greaterThan(20_000);
-        //     // test direct
-        //     const res2 = await registry.addFtso(ftso2.address);
-        //     expect((res2.receipt as TransactionReceipt).gasUsed).equals(gas);
-        //     const ftsosStep3 = await registry.getSupportedSymbols();
-        //     expect(ftsosStep3).deep.equals(["BTC", "XRP"]);
-        // });
+        it("methods .call, .sendTransaction and .estimateGas should work", async () => {
+            const FtsoV2PriceStoreMock = artifacts.require("FtsoV2PriceStoreMock");
+            const governanceSettings = accounts[0];
+            const initialGovernance = accounts[0];
+            const addressUpdater = accounts[0];
+            const startTs = 0;
+            const epochDuration = 120;
+            const ftsoProtocolId = 0;
+            const priceStore = await FtsoV2PriceStoreMock.new(
+                governanceSettings,
+                initialGovernance,
+                addressUpdater,
+                startTs,
+                epochDuration,
+                ftsoProtocolId
+            );
+            const symbol = "BTC";
+            const feedId = "0x" + "42".padStart(42, "0");
+            const price = 42;
+            const age = 1;
+            const decimals = 5;
+            await priceStore.updateSettings([feedId], [symbol],[decimals], 100, { from: initialGovernance });
+            // test .sendTransaction
+            const transaction = await priceStore.setCurrentPrice.sendTransaction(symbol, price, age);
+            expect(transaction).to.not.be.null;
+            // test .call
+            const callResult = await priceStore.setCurrentPrice.call(symbol, price, age);
+            expect(callResult).to.deep.equal({});
+            // test .estimateGas
+            const estimatedGas = await priceStore.setCurrentPrice.estimateGas(symbol, price, age);
+            expect(estimatedGas).to.be.a("number").and.to.be.greaterThan(20000);
+            // test direct
+            const txReceipt = await priceStore.setCurrentPrice(symbol, price, age);
+            expect(estimatedGas).to.be.a("number").and.to.be.greaterThan(20000);
+            // test effect
+            const priceData = await priceStore.getPrice(symbol);
+            expect(priceData[0].eqn(price)).to.be.true;
+        });
 
-        // it("methods .call, .sendTransaction and .estimateGas should work through .methods", async () => { // TODO
-        //     const FtsoMock = artifacts.require("FtsoMock");
-        //     const FtsoRegistryMock = artifacts.require("FtsoRegistryMock");
-        //     const registry = await FtsoRegistryMock.new();
-        //     const ftso1 = await FtsoMock.new("BTC", 5);
-        //     const ftso2 = await FtsoMock.new("XRP", 5);
-        //     // test .sendTransaction
-        //     const res = await registry.methods.addFtso.sendTransaction(ftso1.address);
-        //     const ftsosStep1 = await registry.getSupportedSymbols();
-        //     expect(ftsosStep1).deep.equals(["BTC"]);
-        //     // test .call
-        //     const index = await registry.methods.addFtso.call(ftso2.address);
-        //     expect(Number(index)).equals(1);
-        //     const ftsosStep2 = await registry.getSupportedSymbols();
-        //     expect(ftsosStep2).deep.equals(["BTC"]);
-        //     // test .estimateGas
-        //     const gas = await registry.methods.addFtso.estimateGas(ftso2.address);
-        //     expect(typeof gas).equals("number");
-        //     expect(gas).greaterThan(20_000);
-        //     // test direct
-        //     const res2 = await registry.methods.addFtso(ftso2.address);
-        //     expect((res2.receipt as TransactionReceipt).gasUsed).equals(gas);
-        //     const ftsosStep3 = await registry.getSupportedSymbols();
-        //     expect(ftsosStep3).deep.equals(["BTC", "XRP"]);
-        // });
+        it("methods .call, .sendTransaction and .estimateGas should work", async () => {
+            const FtsoV2PriceStoreMock = artifacts.require("FtsoV2PriceStoreMock");
+            const governanceSettings = accounts[0];
+            const initialGovernance = accounts[0];
+            const addressUpdater = accounts[0];
+            const startTs = 0;
+            const epochDuration = 120;
+            const ftsoProtocolId = 0;
+            const priceStore = await FtsoV2PriceStoreMock.new(
+                governanceSettings,
+                initialGovernance,
+                addressUpdater,
+                startTs,
+                epochDuration,
+                ftsoProtocolId
+            );
+            const symbol = "BTC";
+            const feedId = "0x" + "42".padStart(42, "0");
+            const price = 42;
+            const age = 1;
+            const decimals = 5;
+            await priceStore.updateSettings([feedId], [symbol],[decimals], 100, { from: initialGovernance });
+            // test .sendTransaction
+            const transaction = await priceStore.setCurrentPrice.sendTransaction(symbol, price, age);
+            expect(transaction).to.not.be.null;
+            // test .call
+            const callResult = await priceStore.setCurrentPrice.call(symbol, price, age);
+            expect(callResult).to.deep.equal({});
+            // test .estimateGas
+            const estimatedGas = await priceStore.setCurrentPrice.estimateGas(symbol, price, age);
+            expect(estimatedGas).to.be.a("number").and.to.be.greaterThan(20000);
+            // test direct
+            const txReceipt = await priceStore.setCurrentPrice(symbol, price, age);
+            expect(estimatedGas).to.be.a("number").and.to.be.greaterThan(20000);
+            // test effect
+            const priceData = await priceStore.getPrice(symbol);
+            expect(priceData[0].eqn(price)).to.be.true;
+        });
+
+        it("methods .call, .sendTransaction and .estimateGas should work through .methods", async () => {
+            const FtsoV2PriceStoreMock = artifacts.require("FtsoV2PriceStoreMock");
+            const governanceSettings = accounts[0];
+            const initialGovernance = accounts[0];
+            const addressUpdater = accounts[0];
+            const startTs = 0;
+            const epochDuration = 120;
+            const ftsoProtocolId = 0;
+            const priceStore = await FtsoV2PriceStoreMock.new(
+                governanceSettings,
+                initialGovernance,
+                addressUpdater,
+                startTs,
+                epochDuration,
+                ftsoProtocolId
+            );
+            const symbol = "BTC";
+            const feedId = "0x" + "42".padStart(42, "0");
+            const price = 42;
+            const age = 1;
+            const decimals = 5;
+            await priceStore.updateSettings([feedId], [symbol],[decimals], 100, { from: initialGovernance });
+            // test .sendTransaction
+            const transaction = await priceStore.methods.setCurrentPrice.sendTransaction(symbol, price, age);
+            expect(transaction).to.not.be.null;
+            // test .call
+            const callResult = await priceStore.methods.setCurrentPrice.call(symbol, price, age);
+            expect(callResult).to.deep.equal({});
+            // test .estimateGas
+            const estimatedGas = await priceStore.methods.setCurrentPrice.estimateGas(symbol, price, age);
+            expect(estimatedGas).to.be.a("number").and.to.be.greaterThan(20000);
+            // test direct
+            const txReceipt = await priceStore.methods.setCurrentPrice(symbol, price, age);
+            expect(estimatedGas).to.be.a("number").and.to.be.greaterThan(20000);
+            // test effect
+            const priceData = await priceStore.methods.getPrice(symbol);
+            expect(priceData[0].eqn(price)).to.be.true;
+        });
 
         it("at should work", async () => {
             const WNat = artifacts.require("WNatMock");

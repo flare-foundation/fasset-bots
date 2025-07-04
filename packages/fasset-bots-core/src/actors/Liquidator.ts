@@ -10,7 +10,6 @@ import { ScopedRunner } from "../utils/events/ScopedRunner";
 import { logger } from "../utils/logger";
 import { NotifierTransport } from "../utils/notifier/BaseNotifier";
 import { LiquidatorNotifier } from "../utils/notifier/LiquidatorNotifier";
-import { web3 } from "../utils/web3";
 import { latestBlockTimestampBN } from "../utils/web3helpers";
 import { DefaultLiquidationStrategy, LiquidationStrategy } from "./plugins/LiquidationStrategy";
 
@@ -84,23 +83,7 @@ export class Liquidator extends ActorBase {
         const timestamp = await latestBlockTimestampBN();
         const agentCandidates = Array.from(this.state.agents.values()).filter(agent => agent.mintedUBA.gt(BN_ZERO));
         const liquidatingAgents = agentCandidates.filter(agent => this.checkAgentForLiquidation(agent, timestamp));
-        const nonLiquidatingAgents = agentCandidates.filter(agent => !liquidatingAgents.includes(agent));
-        const ccbAgents = nonLiquidatingAgents.filter(agent => agent.candidateForCcbLiquidation(timestamp));
-        await this.liquidationStrategy.performLiquidations([...liquidatingAgents, ...ccbAgents]);
-        const agentsInCcb = nonLiquidatingAgents.filter(agent => agent.candidateForCcbRegister(timestamp));
-        await this.registerCCBs(agentsInCcb);
-    }
-
-    async registerCCBs(agents: TrackedAgentState[]) {
-        for (const agent of agents) {
-            try {
-                logger.info(`Liquidator ${this.address} registering ${this.context.fAssetSymbol} CCB liquidation of agent ${agent.vaultAddress}.`);
-                await this.context.assetManager.startLiquidation(agent.vaultAddress, { from: this.address });
-            } catch (e) {
-                logger.error(`Liquidator ${this.address} failed to register CCB liquidation of agent ${agent.vaultAddress}: ${e}`);
-                console.error(`Liquidator ${this.address} failed to register CCB liquidation of agent ${agent.vaultAddress}`);
-            }
-        }
+        await this.liquidationStrategy.performLiquidations(liquidatingAgents);
     }
 
     /**

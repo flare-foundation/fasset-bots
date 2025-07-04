@@ -269,7 +269,6 @@ export class AgentController {
                         redeemingUBA: { type: 'string', example: '0' },
                         poolRedeemingUBA: { type: 'string', example: '0' },
                         dustUBA: { type: 'string', example: '0' },
-                        ccbStartTimestamp: { type: 'string', example: '0' },
                         liquidationStartTimestamp: { type: 'string', example: '0' },
                         maxLiquidationAmountUBA: { type: 'string', example: '0' },
                         liquidationPaymentFactorVaultBIPS: { type: 'string', example: '0' },

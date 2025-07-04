@@ -36,11 +36,7 @@ export class FuzzingStateAgent extends TrackedAgentState {
         // dust
         problems += checker.checkEquality(`${agentName}.dustUBA`, this.dustUBA, agentInfo.dustUBA);
         // status
-        if (!(this.status === AgentStatus.CCB && Number(agentInfo.status) === Number(AgentStatus.LIQUIDATION))) {
-            problems += checker.checkStringEquality(`${agentName}.status`, agentInfo.status, this.status);
-        } else {
-            console.log(`    ${agentName}.status: CCB -> LIQUIDATION issue, time=${(await latestBlockTimestamp()) - Number(this.ccbStartTimestamp)}`);
-        }
+        problems += checker.checkStringEquality(`${agentName}.status`, agentInfo.status, this.status);
         // log
         if (problems > 0) {
             console.log("PROBLEMS:", problems);

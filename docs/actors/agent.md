@@ -41,8 +41,6 @@ The **runStep** method is responsible for managing all relevant Agent events and
 - **PriceEpochFinalized**:
   - automatically tops up both or one of the collaterals if both or either CR is too low due to price changes
   - sends a notification to Owner about successful or unsuccessful collateral top up or about low funds on Owner's native address
-- **AgentInCCB**:
-  - sends a notification to Owner about Agent being in Collateral Call Band
 - **LiquidationStarted**:
   - sends a notification to Owner about liquidation being started
 - **LiquidationPerformed**:

@@ -189,7 +189,6 @@ async function addCollateralToken(secretsFile: string, configFileName: string, p
         assetFtsoSymbol: parameters.assetFtsoSymbol,
         tokenFtsoSymbol: parameters.tokenFtsoSymbol,
         minCollateralRatioBIPS: parameters.minCollateralRatioBIPS,
-        ccbMinCollateralRatioBIPS: parameters.ccbMinCollateralRatioBIPS,
         safetyMinCollateralRatioBIPS: parameters.safetyMinCollateralRatioBIPS,
     };
     const controller = await IIAssetManagerController.at(contracts.AssetManagerController.address);

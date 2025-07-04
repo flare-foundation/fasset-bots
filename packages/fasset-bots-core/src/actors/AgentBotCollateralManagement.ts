@@ -42,7 +42,7 @@ export class AgentBotCollateralManagement {
     async checkForVaultCollateralTopup(agentInfo: AgentInfo) {
         try {
             const vaultCollateralPrice = await this.agent.getVaultCollateralPrice();
-            const requiredCrVaultCollateralBIPS = toBN(vaultCollateralPrice.collateral.ccbMinCollateralRatioBIPS).muln(this.agentBotSettings.liquidationPreventionFactor);
+            const requiredCrVaultCollateralBIPS = toBN(vaultCollateralPrice.collateral.minCollateralRatioBIPS).muln(this.agentBotSettings.liquidationPreventionFactor);
             const requiredTopUpVaultCollateral = await this.requiredTopUp(requiredCrVaultCollateralBIPS, agentInfo, vaultCollateralPrice);
             const ownerBalance = await this.tokens.vaultCollateral.balance(this.agent.owner.workAddress);
             const topupVault = minBN(requiredTopUpVaultCollateral, ownerBalance);
@@ -73,7 +73,7 @@ export class AgentBotCollateralManagement {
     async checkForPoolCollateralTopup(agentInfo: AgentInfo) {
         try {
             const poolCollateralPrice = await this.agent.getPoolCollateralPrice();
-            const requiredCrPoolBIPS = toBN(poolCollateralPrice.collateral.ccbMinCollateralRatioBIPS).muln(this.agentBotSettings.liquidationPreventionFactor);
+            const requiredCrPoolBIPS = toBN(poolCollateralPrice.collateral.minCollateralRatioBIPS).muln(this.agentBotSettings.liquidationPreventionFactor);
             const requiredTopUpPool = await this.requiredTopUp(requiredCrPoolBIPS, agentInfo, poolCollateralPrice);
             const ownerBalance = await this.tokens.native.balance(this.agent.owner.workAddress);
             const topupPool = minBN(requiredTopUpPool, ownerBalance.sub(this.agentBotSettings.minBalanceOnWorkAccount));
@@ -139,23 +139,15 @@ export class AgentBotCollateralManagement {
     async checkIfCanEndLiquidation(agentInfo: AgentInfo): Promise<void> {
         try {
             const currentStatus = Number(agentInfo.status);
-            if (currentStatus != AgentStatus.CCB && currentStatus != AgentStatus.LIQUIDATION) return;
+            if (currentStatus != AgentStatus.LIQUIDATION) return;
 
             const vaultCollateral = await this.agent.getVaultCollateral();
             const poolCollateral = await this.agent.getPoolCollateral();
             const vaultCRBIPS = toBN(agentInfo.vaultCollateralRatioBIPS);
             const poolCRBIPS = toBN(agentInfo.poolCollateralRatioBIPS);
 
-            let minVaultCollateralRatio;
-            let minPoolCollateralRatio;
-
-            if (currentStatus == AgentStatus.CCB) {
-                minVaultCollateralRatio = toBN(vaultCollateral.minCollateralRatioBIPS);
-                minPoolCollateralRatio = toBN(poolCollateral.minCollateralRatioBIPS);
-            } else {
-                minVaultCollateralRatio = toBN(vaultCollateral.safetyMinCollateralRatioBIPS);
-                minPoolCollateralRatio = toBN(poolCollateral.safetyMinCollateralRatioBIPS);
-            }
+            const minVaultCollateralRatio = toBN(vaultCollateral.safetyMinCollateralRatioBIPS);
+            const minPoolCollateralRatio = toBN(poolCollateral.safetyMinCollateralRatioBIPS);
 
             if (vaultCRBIPS.gte(minVaultCollateralRatio) && poolCRBIPS.gte(minPoolCollateralRatio)) {
                 await this.bot.locks.nativeChainLock(this.bot.owner.workAddress).lockAndRun(async () => {

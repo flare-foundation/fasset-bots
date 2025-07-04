@@ -103,7 +103,7 @@ export const testAgentBotSettings: Record<TestChainType, AgentBotSettings> = {
     eth: {
         parallel: parallelBots,
         trustedPingSenders: new Set([]),
-        liquidationPreventionFactor: 1.2,
+        liquidationPreventionFactor: 1.1,
         vaultCollateralReserveFactor: 0.1,
         poolCollateralReserveFactor: 0.1,
         minimumFreeUnderlyingBalance: toBNExp(0.01, 18),
@@ -116,7 +116,7 @@ export const testAgentBotSettings: Record<TestChainType, AgentBotSettings> = {
     btc: {
         parallel: parallelBots,
         trustedPingSenders: new Set([]),
-        liquidationPreventionFactor: 1.2,
+        liquidationPreventionFactor: 1.1,
         vaultCollateralReserveFactor: 0.1,
         poolCollateralReserveFactor: 0.1,
         minimumFreeUnderlyingBalance: toBNExp(0.001, 8),
@@ -129,7 +129,7 @@ export const testAgentBotSettings: Record<TestChainType, AgentBotSettings> = {
     xrp: {
         parallel: parallelBots,
         trustedPingSenders: new Set([]),
-        liquidationPreventionFactor: 1.2,
+        liquidationPreventionFactor: 1.1,
         vaultCollateralReserveFactor: 0.1,
         poolCollateralReserveFactor: 0.1,
         minimumFreeUnderlyingBalance: toBNExp(12, 6),
@@ -142,7 +142,7 @@ export const testAgentBotSettings: Record<TestChainType, AgentBotSettings> = {
     doge: {
         parallel: parallelBots,
         trustedPingSenders: new Set([]),
-        liquidationPreventionFactor: 1.2,
+        liquidationPreventionFactor: 1.1,
         vaultCollateralReserveFactor: 0.1,
         poolCollateralReserveFactor: 0.1,
         minimumFreeUnderlyingBalance: toBNExp(12, 6),

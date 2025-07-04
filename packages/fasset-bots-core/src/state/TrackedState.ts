@@ -174,7 +174,6 @@ export class TrackedState {
             logger.info(`Tracked State received event 'CollateralRatiosChanged' with data ${formatArgs(event.args)}.`);
             const collateral = this.collaterals.get(event.args.collateralClass, event.args.collateralToken);
             collateral.minCollateralRatioBIPS = toBN(event.args.minCollateralRatioBIPS);
-            collateral.ccbMinCollateralRatioBIPS = toBN(event.args.ccbMinCollateralRatioBIPS);
             collateral.safetyMinCollateralRatioBIPS = toBN(event.args.safetyMinCollateralRatioBIPS);
         } else if (eventIs(event, this.context.assetManager, "CollateralTypeDeprecated")) {
             logger.info(`Tracked State received event 'CollateralTypeDeprecated' with data ${formatArgs(event.args)}.`);
@@ -191,9 +190,6 @@ export class TrackedState {
         } else if (eventIs(event, this.context.assetManager, "AgentDestroyed")) {
             logger.info(`Tracked State received event 'AgentDestroyed' with data ${formatArgs(event.args)}.`);
             this.destroyAgent(event.args);
-        } else if (eventIs(event, this.context.assetManager, "AgentInCCB")) {
-            logger.info(`Tracked State received event 'AgentInCCB' with data ${formatArgs(event.args)}.`);
-            (await this.getAgentTriggerAddIfUpdatable(event.args.agentVault, event.blockNumber))?.handleStatusChange(AgentStatus.CCB, event.args.timestamp);
         } else if (eventIs(event, this.context.assetManager, "LiquidationStarted")) {
             logger.info(`Tracked State received event 'LiquidationStarted' with data ${formatArgs(event.args)}.`);
             (await this.getAgentTriggerAddIfUpdatable(event.args.agentVault, event.blockNumber))?.handleStatusChange(AgentStatus.LIQUIDATION, event.args.timestamp);
@@ -345,7 +341,6 @@ export class TrackedState {
             assetFtsoSymbol: data.assetFtsoSymbol,
             tokenFtsoSymbol: data.tokenFtsoSymbol,
             minCollateralRatioBIPS: toBN(data.minCollateralRatioBIPS),
-            ccbMinCollateralRatioBIPS: toBN(data.ccbMinCollateralRatioBIPS),
             safetyMinCollateralRatioBIPS: toBN(data.safetyMinCollateralRatioBIPS),
         };
         this.collaterals.add(collateral);

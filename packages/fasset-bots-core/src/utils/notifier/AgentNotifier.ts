@@ -5,7 +5,6 @@ import { NotifierThrottlingConfigs } from "./NotifierTransports";
 
 export enum AgentNotificationKey {
     // agent status and settings,
-    CCB_STARTED = "CCB",
     LIQUIDATION_STARTED = "LIQUIDATION STARTED",
     LIQUIDATION_ENDED = "LIQUIDATION ENDED",
     FULL_LIQUIDATION_STARTED = "FULL LIQUIDATION",
@@ -129,10 +128,6 @@ export class AgentNotifier extends BaseNotifier<AgentNotificationKey> {
 
     constructor(address: string, transports: NotifierTransport[]) {
         super(BotType.AGENT, address, transports);
-    }
-
-    async sendCCBAlert(timestamp: string) {
-        await this.danger(AgentNotificationKey.CCB_STARTED, `Agent ${this.address} is in collateral call band since ${timestamp}. Agent is trying to automatically top up vaults.`);
     }
 
     async agentCreationFailed(error: string) {

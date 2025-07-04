@@ -292,7 +292,7 @@ program
             });
         }
     });
-//TODO withdraw pool fees
+//TODO do we need withdraw pool fees?
 program
     .command("exitPool")
     .description("Exit a collateral pool for specified amount or all pool tokens")
@@ -312,7 +312,6 @@ program
             tokenAmountWei = toBNExp(tokenAmountOrAll, 18);
             validate(tokenAmountWei.lte(balance), `Token amount must not exceed user's balance of pool tokens, which is ${formatFixed(balance, 18)}.`);
         }
-        const fassetDecimals = Number(await bot.context.fAsset.decimals());
         try {
             const exited = await bot.exitPool(poolAddress, tokenAmountWei);
             const burned = formatFixed(exited.burnedTokensWei, 18);

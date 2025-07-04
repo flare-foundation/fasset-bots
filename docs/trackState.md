@@ -47,7 +47,6 @@ Finally, the TrackedState populates the tracked agent variables and tracked agen
 -   CollateralTypeDeprecated
 -   AgentVaultCreated
 -   AgentDestroyed
--   AgentInCCB
 -   LiquidationStarted
 -   FullLiquidationStarted
 -   LiquidationEnded
@@ -88,7 +87,6 @@ Secondly, TrackedAgentState is initialized and following variables are set from 
 -   publiclyAvailable
 -   totalPoolCollateralNATWei
 -   totalVaultCollateralWei[agentInfo.vaultCollateralToken]
--   ccbStartTimestamp
 -   liquidationStartTimestamp
 -   announcedUnderlyingWithdrawalId
 -   reservedUBA

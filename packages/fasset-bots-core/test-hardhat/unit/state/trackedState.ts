@@ -665,17 +665,14 @@ describe("Tracked state tests", () => {
         console.log()
         const collateral = trackedState.collaterals.list[0];
         const newMinCollateralRatioBIPS = "23000";
-        const newCcbMinCollateralRatioBIPS = "18000";
         const newSafetyMinCollateralRatioBIPS = "24000";
         expect(collateral.minCollateralRatioBIPS.toString()).to.not.eq(newMinCollateralRatioBIPS);
-        expect(collateral.ccbMinCollateralRatioBIPS.toString()).to.not.eq(newCcbMinCollateralRatioBIPS);
         expect(collateral.safetyMinCollateralRatioBIPS.toString()).to.not.eq(newSafetyMinCollateralRatioBIPS);
         const resp = await context.assetManagerController.setCollateralRatiosForToken(
             [context.assetManager.address],
             collateral.collateralClass,
             collateral.token,
             newMinCollateralRatioBIPS,
-            newCcbMinCollateralRatioBIPS,
             newSafetyMinCollateralRatioBIPS,
             { from: governance }
         );
@@ -683,7 +680,6 @@ describe("Tracked state tests", () => {
         await trackedState.readUnhandledEvents();
         const getCollateral = trackedState.collaterals.list[0];
         expect(getCollateral.minCollateralRatioBIPS.toString()).to.eq(newMinCollateralRatioBIPS);
-        expect(getCollateral.ccbMinCollateralRatioBIPS.toString()).to.eq(newCcbMinCollateralRatioBIPS);
         expect(getCollateral.safetyMinCollateralRatioBIPS.toString()).to.eq(newSafetyMinCollateralRatioBIPS);
     });
 

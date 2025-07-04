@@ -26,7 +26,6 @@ const poolCollateral: CollateralType = {
     assetFtsoSymbol: "XRP",
     tokenFtsoSymbol: "",
     minCollateralRatioBIPS: toBIPS(2.2),
-    ccbMinCollateralRatioBIPS: toBIPS(1.9),
     safetyMinCollateralRatioBIPS: toBIPS(2.3),
 };
 

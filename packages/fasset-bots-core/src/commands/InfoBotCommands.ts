@@ -372,7 +372,6 @@ export class InfoBotCommands {
         function formatAgentStatus(status: AgentStatus) {
             switch (status) {
                 case AgentStatus.NORMAL: return `healthy`;
-                case AgentStatus.CCB: return `in collateral call band`;
                 case AgentStatus.LIQUIDATION: return `in liquidation`;
                 case AgentStatus.FULL_LIQUIDATION: return `in full liquidation`;
                 case AgentStatus.DESTROYING: return `closing`;

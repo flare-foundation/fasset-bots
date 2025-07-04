@@ -416,10 +416,6 @@ export class AgentBot {
         } else if (eventIs(event, this.context.assetManager, "AgentDestroyed")) {
             logger.info(`Agent ${this.agent.vaultAddress} received event 'AgentDestroyed' with data ${formatArgs(event.args)}.`);
             await this.closing.handleAgentDestroyed(em);
-        } else if (eventIs(event, this.context.assetManager, "AgentInCCB")) {
-            logger.info(`Agent ${this.agent.vaultAddress} received event 'AgentInCCB' with data ${formatArgs(event.args)}.`);
-            await this.collateralManagement.checkAgentForCollateralRatiosAndTopUp();
-            await this.notifier.sendCCBAlert(`${formatTimestamp(event.args.timestamp)} (${event.args.timestamp})`);
         } else if (eventIs(event, this.context.assetManager, "LiquidationStarted")) {
             logger.info(`Agent ${this.agent.vaultAddress} received event 'LiquidationStarted' with data ${formatArgs(event.args)}.`);
             await this.collateralManagement.checkAgentForCollateralRatiosAndTopUp();

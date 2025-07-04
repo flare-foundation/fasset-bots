@@ -96,13 +96,13 @@ export type AgentSettingsConfigDefaults = Omit<AgentSettingsConfig, "poolTokenSu
 
 export interface AgentBotFassetSettingsJson {
     /**
-     * The amount of underlying currency on woner's underlying address, below which an alert is triggered.
+     * The amount of underlying currency on owner's underlying address, below which an alert is triggered.
      * @pattern ^[0-9]+(\.[0-9]+)?$
      */
     recommendedOwnerBalance: string;
 
     /**
-     * The amount of underlying currency on woner's underlying address, below which the address should be topped-up,
+     * The amount of underlying currency on owner's underlying address, below which the address should be topped-up,
      * to prevent negative free underlying balance after redemptions.
      * @pattern ^[0-9]+(\.[0-9]+)?$
      */
@@ -131,7 +131,7 @@ export interface AgentBotSettingsJson {
 
     /**
      * Minimum amount of collateral to topup vault to, to prevent liquidation.
-     * Relative to collateral's CCB CR.
+     * Relative to min CR.
      * @pattern ^[0-9]+(\.[0-9]+)?$
      */
     liquidationPreventionFactor: string;

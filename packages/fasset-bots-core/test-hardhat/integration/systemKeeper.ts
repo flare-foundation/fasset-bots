@@ -62,7 +62,7 @@ describe("System keeper tests", () => {
         expect(spyLiquidation).to.have.been.called.once;
     });
 
-    it("Should check collateral ratio after minting and price changes - agent from normal -> ccb -> liquidation -> normal", async () => {
+    it("Should check collateral ratio after minting and price changes - agent from normal -> liquidation -> normal", async () => {
         const systemKeeper = await createTestSystemKeeper(systemKeeperAddress, state);
         const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerAddress);
         const minter = await createTestMinter(context, minterAddress, chain);
@@ -80,26 +80,12 @@ describe("System keeper tests", () => {
         await systemKeeper.runStep();
         // check agent status
         const status2 = await getAgentStatus(agentBot);
-        assert.equal(status2, AgentStatus.CCB);
+        assert.equal(status2, AgentStatus.LIQUIDATION);
         // check again to fulfill branch test
         await context.priceStore.finalizePrices();
         await systemKeeper.runStep();
         const status2_again = await getAgentStatus(agentBot);
-        assert.equal(status2_again, AgentStatus.CCB);
-        // change prices
-        await context.priceStore.setCurrentPrice(context.chainInfo.symbol, toBNExp(10, 7), 0);
-        await context.priceStore.setCurrentPriceFromTrustedProviders(context.chainInfo.symbol, toBNExp(10, 7), 0);
-        // mock price changes and run liquidation trigger
-        await context.priceStore.finalizePrices();
-        await systemKeeper.runStep();
-        // check agent status
-        const status3 = await getAgentStatus(agentBot);
-        assert.equal(status3, AgentStatus.LIQUIDATION);
-        // check again to fulfill branch test
-        await context.priceStore.finalizePrices();
-        await systemKeeper.runStep();
-        const status3_again = await getAgentStatus(agentBot);
-        assert.equal(status3_again, AgentStatus.LIQUIDATION);
+        assert.equal(status2_again, AgentStatus.LIQUIDATION);
         // change prices
         await context.priceStore.setCurrentPrice(context.chainInfo.symbol, toBNExp(10, 4), 0);
         await context.priceStore.setCurrentPriceFromTrustedProviders(context.chainInfo.symbol, toBNExp(10, 4), 0);
@@ -114,60 +100,16 @@ describe("System keeper tests", () => {
         expect(spyLiquidation).to.have.been.called.once;
     });
 
-    it("Should check price changes - agent from normal -> ccb -> liquidation (timestamp)", async () => {
+    it("Should check price changes - agent from normal -> liquidation", async () => {
         const systemKeeper = await createTestSystemKeeper(systemKeeperAddress, state);
         const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerAddress);
         const minter = await createTestMinter(context, minterAddress, chain);
-        const spyCCBAlert = spy.on(agentBot.notifier, "sendCCBAlert");
         const spyPoolTopUpAlert = spy.on(agentBot.notifier, "sendPoolCollateralTopUpAlert");
         // create collateral reservation and perform minting
         await createCRAndPerformMinting(minter, agentBot.agent.vaultAddress, 2000, chain);
         // check agent status
         const status1 = await getAgentStatus(agentBot);
         assert.equal(status1, AgentStatus.NORMAL);
-        // change prices
-        await context.priceStore.setCurrentPrice(context.chainInfo.symbol, toBNExp(10, 5), 0);
-        await context.priceStore.setCurrentPriceFromTrustedProviders(context.chainInfo.symbol, toBNExp(10, 5), 0);
-        // mock price changes and run liquidation trigger
-        await context.priceStore.finalizePrices();
-        await systemKeeper.runStep();
-        // check agent status
-        const status2 = await getAgentStatus(agentBot);
-        assert.equal(status2, AgentStatus.CCB);
-        // increase time to get liquidation
-        const settings = await context.assetManager.getSettings();
-        await time.increase(settings.ccbTimeSeconds);
-        // add trigger to execute
-        await context.priceStore.finalizePrices();
-        await systemKeeper.runStep();
-        const status3 = await getAgentStatus(agentBot);
-        assert.equal(status3, AgentStatus.LIQUIDATION);
-        // send notification
-        await agentBot.runStep(orm.em);
-        expect(spyCCBAlert).to.have.been.called.once;
-        expect(spyPoolTopUpAlert).to.have.been.called.once;
-    });
-
-    it("Should check price changes - agent from normal -> ccb -> liquidation", async () => {
-        const systemKeeper = await createTestSystemKeeper(systemKeeperAddress, state);
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerAddress);
-        const minter = await createTestMinter(context, minterAddress, chain);
-        const spyCCBAlert = spy.on(agentBot.notifier, "sendCCBAlert");
-        const spyPoolTopUpAlert = spy.on(agentBot.notifier, "sendPoolCollateralTopUpAlert");
-        // create collateral reservation and perform minting
-        await createCRAndPerformMinting(minter, agentBot.agent.vaultAddress, 2000, chain);
-        // check agent status
-        const status1 = await getAgentStatus(agentBot);
-        assert.equal(status1, AgentStatus.NORMAL);
-        // change prices
-        await context.priceStore.setCurrentPrice(context.chainInfo.symbol, toBNExp(10, 5), 0);
-        await context.priceStore.setCurrentPriceFromTrustedProviders(context.chainInfo.symbol, toBNExp(10, 5), 0);
-        // mock price changes and run liquidation trigger
-        await context.priceStore.finalizePrices();
-        await systemKeeper.runStep();
-        // check agent status
-        const status2 = await getAgentStatus(agentBot);
-        assert.equal(status2, AgentStatus.CCB);
         // change prices
         await context.priceStore.setCurrentPrice(context.chainInfo.symbol, toBNExp(15, 5), 0);
         await context.priceStore.setCurrentPriceFromTrustedProviders(context.chainInfo.symbol, toBNExp(15, 5), 0);
@@ -176,15 +118,14 @@ describe("System keeper tests", () => {
         await systemKeeper.runStep();
         // no changes
         await systemKeeper.runStep();
-        const status3 = await getAgentStatus(agentBot);
-        assert.equal(status3, AgentStatus.LIQUIDATION);
+        const status2 = await getAgentStatus(agentBot);
+        assert.equal(status2, AgentStatus.LIQUIDATION);
         // send notification
         await agentBot.runStep(orm.em);
-        expect(spyCCBAlert).to.have.been.called.once;
         expect(spyPoolTopUpAlert).to.have.been.called.once;
     });
 
-    it("Should check collateral ratio after price changes - agent from normal -> liquidation -> normal -> ccb -> normal", async () => {
+    it("Should check collateral ratio after price changes - agent from normal -> liquidation -> normal", async () => {
         const systemKeeper = await createTestSystemKeeper(systemKeeperAddress, state);
         const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerAddress);
         const minter = await createTestMinter(context, minterAddress, chain);
@@ -207,19 +148,10 @@ describe("System keeper tests", () => {
         await context.priceStore.setCurrentPriceFromTrustedProviders(context.chainInfo.symbol, toBNExp(10, 4), 0);
         // mock price changes and run liquidation trigger
         await context.priceStore.finalizePrices();
-        await systemKeeper.runStep();
+        await systemKeeper.runStep();;
         // check agent status
         const status4 = await getAgentStatus(agentBot);
         assert.equal(status4, AgentStatus.NORMAL);
-        // change prices
-        await context.priceStore.setCurrentPrice(context.chainInfo.symbol, toBNExp(10, 5), 0);
-        await context.priceStore.setCurrentPriceFromTrustedProviders(context.chainInfo.symbol, toBNExp(10, 5), 0);
-        // mock price changes and run liquidation trigger
-        await context.priceStore.finalizePrices();
-        await systemKeeper.runStep();
-        // check agent status
-        const status5 = await getAgentStatus(agentBot);
-        assert.equal(status5, AgentStatus.CCB);
         // change prices
         await context.priceStore.setCurrentPrice(context.chainInfo.symbol, toBNExp(10, 4), 0);
         await context.priceStore.setCurrentPriceFromTrustedProviders(context.chainInfo.symbol, toBNExp(10, 4), 0);
