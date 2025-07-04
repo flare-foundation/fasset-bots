@@ -9,7 +9,7 @@ import { programWithCommonOptions } from "../utils/program";
 import { toplevelRun } from "../utils/toplevel";
 
 const FakePriceReader = artifacts.require("FakePriceReader");
-const PriceReader = artifacts.require("FtsoV1PriceReader");
+const PriceReader = artifacts.require("FtsoV2PriceStore");
 
 const program = programWithCommonOptions("util", "all_fassets");
 
@@ -33,7 +33,7 @@ program
 
 program
     .command("sendEvent")
-    .description("send 'PriceEcpochFinalized' event for FakePriceReader")
+    .description("send 'PricesPublished' event for FakePriceReader")
     .action(async () => {
         const secrets = await Secrets.load(program.opts().secrets);
         await initEnvironment(secrets, true);

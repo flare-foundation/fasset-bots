@@ -60,24 +60,8 @@ export class AgentSettingsConfigDTO {
     buyFAssetByAgentFactor: string = "";
 
     /**
-     * Pool collateral ratio below which the providers can enter at discounted rate.
+     * The percentage of the redemption fee that goes to the collateral pool.
      * @pattern ^\d+(\.\d+)?%?$
      */
-    @ApiProperty()
-    poolTopupCollateralRatio: string = "";
-
-    /**
-     * Discounted price factor at which providers can enter when topup is active (i.e. the pool CR is below poolTopupCollateralRatio).
-     * @pattern ^\d+(\.\d+)?%?$
-     */
-    @ApiProperty()
-    poolTopupTokenPriceFactor: string = "";
-
-    /**
-     * The handshake type required by the agent. Currently supported values are
-     * - 0 - no handshake is performed
-     * - 1 - handshake is performed by external service api (configured further in bot config)
-     */
-    @ApiProperty()
-    handshakeType: number = 0;
+    redemptionPoolFeeShare: string = "";
 }

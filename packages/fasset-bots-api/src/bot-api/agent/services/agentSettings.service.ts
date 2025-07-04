@@ -14,9 +14,7 @@ export class AgentSettingsService {
             mintingPoolCollateralRatio,
             poolExitCollateralRatio,
             buyFAssetByAgentFactor,
-            poolTopupCollateralRatio,
-            poolTopupTokenPriceFactor,
-            handshakeType
+            redemptionPoolFeeShare
         } = dto;
         return {
             poolTokenSuffix,
@@ -27,9 +25,7 @@ export class AgentSettingsService {
             mintingPoolCollateralRatio,
             poolExitCollateralRatio,
             buyFAssetByAgentFactor,
-            poolTopupCollateralRatio,
-            poolTopupTokenPriceFactor,
-            handshakeType
+            redemptionPoolFeeShare
         };
     }
 }

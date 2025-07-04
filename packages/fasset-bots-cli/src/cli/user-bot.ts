@@ -3,7 +3,7 @@ import "source-map-support/register";
 
 import { InfoBotCommands, PoolUserBotCommands, UserBotCommands } from "@flarenetwork/fasset-bots-core";
 import { Secrets } from "@flarenetwork/fasset-bots-core/config";
-import { TokenBalances, formatFixed, toBN, toBNExp } from "@flarenetwork/fasset-bots-core/utils";
+import { formatFixed, toBN, toBNExp } from "@flarenetwork/fasset-bots-core/utils";
 import BN from "bn.js";
 import os from "os";
 import path from "path";
@@ -280,9 +280,45 @@ program
             const exited = await bot.exitPool(poolAddress, tokenAmountWei);
             const burned = formatFixed(exited.burnedTokensWei, 18);
             const collateral = formatFixed(exited.receivedNatWei, 18);
-            const fassets = formatFixed(exited.receviedFAssetFeesUBA, fassetDecimals);
             console.log(`Burned ${burned} pool tokens.`);
-            console.log(`Received ${collateral} CFLR collateral and ${fassets} ${bot.context.fAssetSymbol} fasset fees.`);
+            console.log(`Received ${collateral} CFLR collateral.`);
+        } catch (error) {
+            translateError(error, {
+                "token share is zero": "Token amount must be greater than 0",
+                "token balance too low": `Token amount must not exceed user's balance of pool tokens, which is ${formatFixed(balance, 18)}.`,
+                "collateral ratio falls below exitCR": `Cannot exit pool at this time, since it would reduce the collateral ratio to dangerously low level; try with lower token amount.`,
+                "collateral left after exit is too low and non-zero": `Should not exit with nearly all tokens - use "all" for token amount.`,
+                "insufficient non-timelocked balance": "You cannot exit pool immediately after entering, please wait a minute.",
+            });
+        }
+    });
+//TODO withdraw pool fees
+program
+    .command("exitPool")
+    .description("Exit a collateral pool for specified amount or all pool tokens")
+    .argument("<poolAddressOrTokenSymbol>", "the pool the user wants to exit; can be identified by the token symbol or by the pool address")
+    .argument("<tokenAmount>", 'the amount of collateral pool tokens to burn, can be a number or "all"')
+    .action(async (poolAddressOrTokenSymbol: string, tokenAmountOrAll: string) => {
+        const options: { config: string; secrets: string; fasset: string } = program.opts();
+        const bot = await PoolUserBotCommands.create(options.secrets, options.config, options.fasset, registerToplevelFinalizer);
+        const poolAddress = await getPoolAddress(bot, poolAddressOrTokenSymbol);
+        const balance = await bot.infoBot().getPoolTokenBalance(poolAddress, bot.nativeAddress);
+        let tokenAmountWei: BN;
+        if (tokenAmountOrAll === "all") {
+            tokenAmountWei = balance;
+            validate(tokenAmountWei.gtn(0), "Collateral pool token balance is zero.");
+        } else {
+            validateDecimal(tokenAmountOrAll, "Token amount", { strictMin: 0 });
+            tokenAmountWei = toBNExp(tokenAmountOrAll, 18);
+            validate(tokenAmountWei.lte(balance), `Token amount must not exceed user's balance of pool tokens, which is ${formatFixed(balance, 18)}.`);
+        }
+        const fassetDecimals = Number(await bot.context.fAsset.decimals());
+        try {
+            const exited = await bot.exitPool(poolAddress, tokenAmountWei);
+            const burned = formatFixed(exited.burnedTokensWei, 18);
+            const collateral = formatFixed(exited.receivedNatWei, 18);
+            console.log(`Burned ${burned} pool tokens.`);
+            console.log(`Received ${collateral} CFLR collateral.`);
         } catch (error) {
             translateError(error, {
                 "token share is zero": "Token amount must be greater than 0",

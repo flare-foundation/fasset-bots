@@ -30,9 +30,7 @@ export interface AgentSettings {
     mintingPoolCollateralRatioBIPS: string;
     poolExitCollateralRatioBIPS: string;
     buyFAssetByAgentFactorBIPS: string;
-    poolTopupCollateralRatioBIPS: string;
-    poolTopupTokenPriceFactorBIPS: string;
-    handshakeType: string;
+    redemptionPoolFeeShareBIPS: string;
 }
 
 export interface AgentData {
@@ -121,11 +119,11 @@ export interface VaultInfo {
     poolCollateralUSD: string;
     mintCount: string;
     poolFee: string;
+    redemptionPoolFee: string;
     createdAt: number;
     fasset: string;
     lotsPoolBacked: string;
     lotsVaultBacked: string;
-    handshakeType: number;
     delegates: Delegation[];
     delegationPercentage: string;
     allLots: string;
@@ -157,9 +155,7 @@ export interface AgentVaultStatus {
     agentSettingUpdateValidAtMintingPoolCrBIPS: string;
     agentSettingUpdateValidAtBuyFAssetByAgentFactorBIPS: string;
     agentSettingUpdateValidAtPoolExitCrBIPS: string;
-    agentSettingUpdateValidAtPoolTopupCrBIPS: string;
-    agentSettingUpdateValidAtPoolTopupTokenPriceFactorBIPS: string;
-    agentSettingUpdateValidAtHandshakeType: string;
+    agentSettingUpdateValidAtRedemptionPoolFeeShareBIPS: string;
 }
 
 type BNsToStrings<T> = {
@@ -181,12 +177,6 @@ export const requiredKeysForSecrets = ["wallet.encryption_password",
 export interface APIKey {
     key: string;
     hash: string;
-}
-
-export interface TransferToCVFee {
-    fee: string;
-    feeUSD: string;
-    symbol: string;
 }
 
 export interface RedemptionQueueData {

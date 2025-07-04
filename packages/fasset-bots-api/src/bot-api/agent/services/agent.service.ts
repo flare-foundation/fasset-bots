@@ -5,11 +5,10 @@ import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Inject, Injectable } from "@nestjs/common";
 import { Cache } from "cache-manager";
 import { PostAlert } from "../../../../../fasset-bots-core/src/utils/notifier/NotifierTransports";
-import { APIKey, AgentBalance, AgentCreateResponse, AgentData, AgentSettings, AgentUnderlying, AgentVaultStatus, AllBalances, AllCollaterals, CollateralTemplate, Collaterals, Delegation, DepositableVaultCVData, ExtendedAgentVaultInfo, RedeemableVaultCVData, RedemptionQueueData, RequestableVaultCVData, TransferToCVFee, UnderlyingAddress, VaultCollaterals, VaultInfo } from "../../common/AgentResponse";
+import { APIKey, AgentBalance, AgentCreateResponse, AgentData, AgentSettings, AgentUnderlying, AgentVaultStatus, AllBalances, AllCollaterals, CollateralTemplate, Collaterals, Delegation, DepositableVaultCVData, ExtendedAgentVaultInfo, RedeemableVaultCVData, RedemptionQueueData, RequestableVaultCVData, UnderlyingAddress, VaultCollaterals, VaultInfo } from "../../common/AgentResponse";
 import * as fs from 'fs';
 import Web3 from "web3";
 import { AgentSettingsDTO, Alerts, DelegateDTO } from "../../common/AgentSettingsDTO";
-import { allTemplate } from "../../common/VaultTemplates";
 import { SecretsFile } from "../../../../../fasset-bots-core/src/config/config-files/SecretsFile";
 import { EntityManager } from "@mikro-orm/core";
 import { Alert } from "../../common/entities/AlertDB";
@@ -24,8 +23,6 @@ const CollateralPoolToken = artifacts.require("CollateralPoolToken");
 const IERC20Metadata = artifacts.require("IERC20Metadata");
 
 const FASSET_BOT_CONFIG: string = requireEnv("FASSET_BOT_CONFIG");
-const AMG_TOKENWEI_PRICE_SCALE = toBNExp(1, 9);
-// const FASSET_BOT_SECRETS: string = requireEnv("FASSET_BOT_SECRETS");
 
 @Injectable()
 export class AgentService {
@@ -237,9 +234,7 @@ export class AgentService {
         result.mintingPoolCollateralRatioBIPS = settings.mintingPoolCollateralRatioBIPS.toString();
         result.poolExitCollateralRatioBIPS = settings.poolExitCollateralRatioBIPS.toString();
         result.buyFAssetByAgentFactorBIPS = settings.buyFAssetByAgentFactorBIPS.toString();
-        result.poolTopupCollateralRatioBIPS = settings.poolTopupCollateralRatioBIPS.toString();
-        result.poolTopupTokenPriceFactorBIPS = settings.poolTopupTokenPriceFactorBIPS.toString();
-        result.handshakeType = settings.handshakeType.toString();
+        result.redemptionPoolFeeShareBIPS = settings.redemptionPoolFeeShareBIPS.toString();
         return result;
     }
 
@@ -326,9 +321,7 @@ export class AgentService {
                 agentSettingUpdateValidAtMintingPoolCrBIPS: this.getUpdateSettingValidAtTimestamp(agent, AgentSettingName.MINTING_POOL_CR),
                 agentSettingUpdateValidAtBuyFAssetByAgentFactorBIPS: this.getUpdateSettingValidAtTimestamp(agent, AgentSettingName.BUY_FASSET_FACTOR),
                 agentSettingUpdateValidAtPoolExitCrBIPS: this.getUpdateSettingValidAtTimestamp(agent, AgentSettingName.POOL_EXIT_CR),
-                agentSettingUpdateValidAtPoolTopupCrBIPS: this.getUpdateSettingValidAtTimestamp(agent, AgentSettingName.POOL_TOP_UP_CR),
-                agentSettingUpdateValidAtPoolTopupTokenPriceFactorBIPS: this.getUpdateSettingValidAtTimestamp(agent, AgentSettingName.POOL_TOP_UP_TOKEN_PRICE_FACTOR),
-                agentSettingUpdateValidAtHandshakeType: this.getUpdateSettingValidAtTimestamp(agent, AgentSettingName.HAND_SHAKE_TYPE)
+                agentSettingUpdateValidAtRedemptionPoolFeeShareBIPS: this.getUpdateSettingValidAtTimestamp(agent, AgentSettingName.REDEMPTION_POOL_FEE_SHARE),
             })
         }
         return agentInfos
@@ -629,8 +622,7 @@ export class AgentService {
                 if (toBN(this.getUpdateSettingValidAtTimestamp(vault, AgentSettingName.FEE)).gt(BN_ZERO) || toBN(this.getUpdateSettingValidAtTimestamp(vault, AgentSettingName.POOL_FEE_SHARE)).gt(BN_ZERO) ||
                 toBN(this.getUpdateSettingValidAtTimestamp(vault, AgentSettingName.MINTING_VAULT_CR)).gt(BN_ZERO) || toBN(this.getUpdateSettingValidAtTimestamp(vault, AgentSettingName.MINTING_POOL_CR)).gt(BN_ZERO) ||
                 toBN(this.getUpdateSettingValidAtTimestamp(vault, AgentSettingName.BUY_FASSET_FACTOR)).gt(BN_ZERO) || toBN(this.getUpdateSettingValidAtTimestamp(vault, AgentSettingName.POOL_EXIT_CR)).gt(BN_ZERO) ||
-                toBN(this.getUpdateSettingValidAtTimestamp(vault, AgentSettingName.POOL_TOP_UP_CR)).gt(BN_ZERO) || toBN(this.getUpdateSettingValidAtTimestamp(vault, AgentSettingName.POOL_TOP_UP_TOKEN_PRICE_FACTOR)).gt(BN_ZERO) ||
-                toBN(this.getUpdateSettingValidAtTimestamp(vault, AgentSettingName.HAND_SHAKE_TYPE)).gt(BN_ZERO)) {
+                toBN(this.getUpdateSettingValidAtTimestamp(vault, AgentSettingName.REDEMPTION_POOL_FEE_SHARE)).gt(BN_ZERO)) {
                     updating = true;
                 }
                 const info = await this.getAgentVaultInfoFull(vault.vaultAddress, cli);
@@ -681,8 +673,8 @@ export class AgentService {
                     prices.push({ symbol: vaultCollateralType.tokenFtsoSymbol, price: priceVaultUSD, decimals: Number(priceVault.decimals) });
                 }
                 const totalCollateralUSDPool = formatFixed(totalPoolCollateralUSD, 18, { decimals: 3, groupDigits: true, groupSeparator: "," });
-                const totalCollateralUSDVault = formatFixed(totalVaultCollateralUSD, 18, { decimals: 3, groupDigits: true, groupSeparator: "," });
                 const feeShare = Number(info.poolFeeShareBIPS) / MAX_BIPS;
+                const redemptionFeeShare = Number(info.redemptionPoolFeeShareBIPS) / MAX_BIPS;
                 const assetManager = cli.context.assetManager;
                 const air = await AgentInfoReader.create(assetManager, vault.vaultAddress);
                 const lotsPoolBacked = toBN(info.totalPoolCollateralNATWei).div(air.poolCollateral.mintingCollateralRequired(air.lotSizeUBA()));
@@ -703,11 +695,11 @@ export class AgentService {
                     poolCollateralUSD: totalCollateralUSDPool,
                     mintCount: "0",
                     poolFee: (feeShare * 100).toString(),
+                    redemptionPoolFee: (redemptionFeeShare * 100).toString(),
                     fasset: fasset,
                     createdAt: Number(vault.createdAt),
                     lotsPoolBacked: lotsPoolBacked.toString(),
                     lotsVaultBacked: lotsVaultBacked.toString(),
-                    handshakeType: Number(info.handshakeType),
                     delegates: delegates,
                     delegationPercentage: delegationPercentage.toString(),
                     allLots: (Number(info.freeCollateralLots) + mintedLots.toNumber()).toString(),
@@ -945,23 +937,6 @@ export class AgentService {
         }
         const cli = await AgentBotCommands.create(this.secrets, FASSET_BOT_CONFIG, fAssetSymbol);
         await cli.returnFromCoreVault(agentVaultAddress, lots);
-    }
-
-    async transferToCVFee(fAssetSymbol: string, agentVaultAddress: string, amount: string): Promise<TransferToCVFee> {
-        const cli = this.infoBotMap.get(fAssetSymbol) as AgentBotCommands;
-        if(!fAssetSymbol.includes("XRP")) {
-            return {fee: "0", symbol: cli.context.nativeChainInfo.tokenSymbol, feeUSD: "0"};
-        }
-        const settings = await cli.context.assetManager.getSettings();
-        const priceReader = await TokenPriceReader.create(settings);
-        const cflrPrice = await priceReader.getPrice(cli.context.nativeChainInfo.tokenSymbol, false, settings.maxTrustedPriceAgeSeconds);
-        const priceUSD = cflrPrice.price.mul(toBNExp(1, 18));
-        const currency = await Currencies.fassetUnderlyingToken(cli.context);
-        const amountUBA = currency.parse(amount);
-        const feeWei = await cli.context.assetManager.transferToCoreVaultFee(amountUBA);
-        const feeCvUsd = toBN(feeWei).mul(priceUSD).div(toBNExp(1, 18 + Number(cflrPrice.decimals)));
-        const fee = formatFixed(feeWei, 18, { decimals: 3, groupDigits: true, groupSeparator: "," })
-        return {fee: fee, symbol: cli.context.nativeChainInfo.tokenSymbol, feeUSD: formatFixed(feeCvUsd, 18, { decimals: 3, groupDigits: true, groupSeparator: "," })};
     }
 
     async updateRedemptionQueue(): Promise<void> {
