@@ -45,7 +45,7 @@ program
             const cli = await AgentBotCommands.create(secrets, options.config, options.fasset, registerToplevelFinalizer);
             const validator = await AgentBotOwnerValidation.fromContext(cli.context, options.secrets, options.config);
             await validator.validate([options.fasset]);
-            await cli.createAgentVault(loadAgentSettings(agentSettingsPath), secrets);
+            await cli.createAgentVault(loadAgentSettings(agentSettingsPath));
         } else {
             if (agentSettingsPath != null) {
                 console.error(`File ${agentSettingsPath} does not exist.`);
@@ -595,7 +595,7 @@ toplevelRun(async () => {
     try {
         await program.parseAsync();
     } catch (error: any) {
-        if (errorIncluded(error, ["invalid agent vault address", "AgentEntity not found"])) {
+        if (errorIncluded(error, ["InvalidAgentVaultAddress", "AgentEntity not found"])) {
             const fAsset = program.opts().fasset;
             throw new CommandLineError(squashSpace`Invalid agent vault address: specified agent vault address has to be one of the agent vaults created by you.
                 To see them run \`yarn agent-bot listAgents -f ${fAsset}\`.`);

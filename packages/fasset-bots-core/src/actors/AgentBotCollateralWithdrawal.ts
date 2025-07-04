@@ -95,7 +95,7 @@ export class AgentBotCollateralWithdrawal {
                 logger.info(`Agent ${this.agent.vaultAddress} withdrew ${type} collateral ${withdrawAmount}.`);
                 return true;
             } catch (error) {
-                if (errorIncluded(error, ["withdrawal: too late", "withdrawal: CR too low"])) {
+                if (errorIncluded(error, ["WithdrawalTooLate", "WithdrawalCRTooLow"])) {
                     await this.notifier.sendAgentCannotWithdrawCollateral(await token.format(withdrawAmount), type);
                     return true;
                 }

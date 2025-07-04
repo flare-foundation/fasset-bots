@@ -221,7 +221,7 @@ describe("Challenger tests", () => {
         expect(spyAgent).to.have.been.called.once;
     });
 
-    it("Should challenge double payment - reference for already confirmed redemption", async () => { // TODO
+    it("Should challenge double payment - reference for already confirmed redemption", async () => {
         const challenger = await createTestChallenger(context, challengerAddress, state);
         const spyChlg = spy.on(challenger, "doublePaymentChallenge");
         // create test actors
@@ -233,16 +233,9 @@ describe("Challenger tests", () => {
         await createCRAndPerformMintingAndRunSteps(minter, agentBot, 3, orm, chain);
         // transfer FAssets
         const fBalance = await context.fAsset.balanceOf(minter.address);
-        // const transferFeeMillionths = await context.assetManager.transferFeeMillionths();
-        // const transferFee = fBalance.mul(transferFeeMillionths).divn(1e6);
         await context.fAsset.transfer(redeemer.address, fBalance, { from: minter.address });
         // update underlying block
         await proveAndUpdateUnderlyingBlock(context.attestationProvider, context.assetManager, ownerAddress);
-        // claim transfer fee
-        // const balanceBefore = await context.fAsset.balanceOf(redeemer.address);
-        // await claimAndSendTransferFee(agentBot.agent, redeemer.address);
-        // const balanceAfter = await context.fAsset.balanceOf(redeemer.address);
-        // assertWeb3DeepEqual(balanceAfter, balanceBefore.add(transferFee));
         // create redemption requests and perform redemption
         const [reqs] = await redeemer.requestRedemption(3);
         const rdReq = reqs[0];
@@ -280,7 +273,7 @@ describe("Challenger tests", () => {
         expect(spyChlg).to.have.been.called.once;
     });
 
-    it("Should challenge illegal/double payment - reference for already confirmed announced withdrawal", async () => {// TODO
+    it("Should challenge illegal/double payment - reference for already confirmed announced withdrawal", async () => {
         const challenger = await createTestChallenger(context, challengerAddress, state);
         const spyChlg = spy.on(challenger, "doublePaymentChallenge");
         // create test actors
@@ -314,7 +307,7 @@ describe("Challenger tests", () => {
         expect(spyChlg).to.have.been.called.once;
     });
 
-    it("Should catch 'RedemptionPaymentFailed' event - failed underlying payment (not redeemer's address)", async () => { // TODO
+    it("Should catch 'RedemptionPaymentFailed' event - failed underlying payment (not redeemer's address)", async () => {
         const challenger = await createTestChallenger(context, challengerAddress, state);
         // create test actors
         const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerAddress);
@@ -325,16 +318,9 @@ describe("Challenger tests", () => {
         await createCRAndPerformMintingAndRunSteps(minter, agentBot, 1, orm, chain);
         // transfer FAssets
         const fBalance = await context.fAsset.balanceOf(minter.address);
-        // const transferFeeMillionths = await context.assetManager.transferFeeMillionths();
-        // const transferFee = fBalance.mul(transferFeeMillionths).divn(1e6);
         await context.fAsset.transfer(redeemer.address, fBalance, { from: minter.address });
         // update underlying block
         await proveAndUpdateUnderlyingBlock(context.attestationProvider, context.assetManager, ownerAddress);
-        // claim transfer fee
-        // const balanceBefore = await context.fAsset.balanceOf(redeemer.address);
-        // await claimAndSendTransferFee(agentBot.agent, redeemer.address);
-        // const balanceAfter = await context.fAsset.balanceOf(redeemer.address);
-        // assertWeb3DeepEqual(balanceAfter, balanceBefore.add(transferFee));
         // update underlying block
         await proveAndUpdateUnderlyingBlock(context.attestationProvider, context.assetManager, ownerAddress);
         // perform redemption
@@ -589,7 +575,7 @@ describe("Challenger tests", () => {
         expect(spyChlg).to.have.been.called.twice; // gets called once for each transaction
     });
 
-    it("Should liquidate agent if in full liquidation", async () => {// TODO
+    it("Should liquidate agent if in full liquidation", async () => {
         const challenger = await createTestChallenger(context, challengerAddress, state);
         const liqState = new TrackedState(context);
         await liqState.initialize();
@@ -612,11 +598,6 @@ describe("Challenger tests", () => {
         await context.fAsset.transfer(redeemer.address, fBalance, { from: minter.address });
         // update underlying block
         await proveAndUpdateUnderlyingBlock(context.attestationProvider, context.assetManager, ownerAddress);
-        // claim transfer fee
-        // const balanceBefore = await context.fAsset.balanceOf(redeemer.address);
-        // await claimAndSendTransferFee(agentBot.agent, redeemer.address);
-        // const balanceAfter = await context.fAsset.balanceOf(redeemer.address);
-        // assertWeb3DeepEqual(balanceAfter, balanceBefore.add(transferFee));
         // update underlying block
         await proveAndUpdateUnderlyingBlock(context.attestationProvider, context.assetManager, ownerAddress);
         // create redemption requests and perform redemption

@@ -36,7 +36,6 @@ async function main(args: string[]) {
             mintedUBA = mintedUBA.sub(toBN(event.args.valueUBA));
             redeemingUBA = redeemingUBA.add(toBN(event.args.valueUBA));
         } else if (event.name === "RedemptionPerformed" || event.name === "RedemptionPaymentBlocked" || event.name === "RedemptionDefault") {
-            // TODO: add handshake support
             redeemingUBA = redeemingUBA.sub(toBN(event.args.redemptionAmountUBA));
         } else if (event.name === "UnderlyingBalanceChanged") {
             underlyingBalanceUBA = toBN(event.args.underlyingBalanceUBA);

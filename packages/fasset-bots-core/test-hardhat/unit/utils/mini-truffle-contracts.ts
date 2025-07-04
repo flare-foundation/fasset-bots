@@ -31,13 +31,13 @@ describe("mini truffle and artifacts tests", () => {
                 .to.equal("contracts/ftso/mock/FakePriceReader.sol");
         });
 
-        it("require with directory should work", async () => {// TODO
+        it("require with directory should work", async () => {
             const GovernanceSettings = artifacts.require("contracts/ftso/mock/FakePriceReader.sol:FakePriceReader" as "FakePriceReader");
             expect((GovernanceSettings as MiniTruffleContract)._contractJson?.sourceName)
                 .to.equal("contracts/ftso/mock/FakePriceReader.sol");
         });
 
-        it("require with wrong directory should fail", async () => { // TODO
+        it("require with wrong directory should fail", async () => {
             expect(() => artifacts.require("contracts/ftso/mock/FtsoV2PriceStoreMock.sol:FakePriceReader" as "FakePriceReader"))
                 .to.throw("Unknown artifact contracts/ftso/mock/FtsoV2PriceStoreMock.sol:FakePriceReader");
         });

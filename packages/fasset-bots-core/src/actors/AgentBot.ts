@@ -35,7 +35,6 @@ import { AgentBotUnderlyingManagement } from "./AgentBotUnderlyingManagement";
 import { AgentBotUnderlyingWithdrawal } from "./AgentBotUnderlyingWithdrawal";
 import { AgentBotUpdateSettings } from "./AgentBotUpdateSettings";
 import { AgentTokenBalances } from "./AgentTokenBalances";
-import { HandshakeAddressVerifier } from "./plugins/HandshakeAddressVerifier";
 import { AgentBotReturnFromCoreVault } from "./AgentBotReturnFromCoreVault";
 
 const PING_RESPONSE_MIN_INTERVAL_PER_SENDER_MS = 2 * MINUTES * 1000;
@@ -100,7 +99,6 @@ export class AgentBot {
         public notifier: AgentNotifier,
         public owner: OwnerAddressPair,
         public ownerUnderlyingAddress: string,
-        public handshakeAddressVerifier: HandshakeAddressVerifier | null
     ) {}
 
     context = this.agent.context;
@@ -162,7 +160,6 @@ export class AgentBot {
         addressValidityProof: AddressValidity.Proof,
         agentSettingsConfig: AgentVaultInitSettings,
         notifierTransports: NotifierTransport[],
-        handshakeAddressVerifier: HandshakeAddressVerifier | null
     ): Promise<AgentBot> {
         logger.info(`Starting to create agent for owner ${owner.managementAddress} with settings ${JSON.stringify(agentSettingsConfig)}.`);
         // ensure that work address is defined
@@ -189,7 +186,7 @@ export class AgentBot {
             underlying address ${agent.underlyingAddress} and collateral pool address ${agent.collateralPool.address}.`);
 
         const notifier = new AgentNotifier(agent.vaultAddress, notifierTransports);
-        return new AgentBot(agent, agentBotSettings, notifier, owner, ownerUnderlyingAddress, handshakeAddressVerifier);
+        return new AgentBot(agent, agentBotSettings, notifier, owner, ownerUnderlyingAddress);
     }
 
     /**
@@ -205,7 +202,6 @@ export class AgentBot {
         agentEntity: AgentEntity,
         ownerUnderlyingAddress: string,
         notifierTransports: NotifierTransport[],
-        handshakeAddressVerifier: HandshakeAddressVerifier | null = null
     ): Promise<AgentBot> {
         logger.info(`Starting to recreate agent ${agentEntity.vaultAddress} from DB for owner ${agentEntity.ownerAddress}.`);
         const agentVault = await AgentVault.at(agentEntity.vaultAddress);
@@ -225,7 +221,7 @@ export class AgentBot {
         logger.info(squashSpace`Agent ${agent.vaultAddress} was restored from DB by owner ${agent.owner},
             underlying address ${agent.underlyingAddress} and collateral pool address ${agent.collateralPool.address}.`);
         const notifier = new AgentNotifier(agent.vaultAddress, notifierTransports);
-        return new AgentBot(agent, agentBotSettings, notifier, owner, ownerUnderlyingAddress, handshakeAddressVerifier);
+        return new AgentBot(agent, agentBotSettings, notifier, owner, ownerUnderlyingAddress);
     }
 
     static underlyingAddress(secrets: Secrets, chainId: ChainId) {

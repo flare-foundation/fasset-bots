@@ -70,7 +70,7 @@ export class PricePublisherService {
                     await this.getAndPublishFeedData(lastAvailableRoundId);
                 }
             } catch (error) {
-                if (errorIncluded(error, ["prices already published"])) {
+                if (errorIncluded(error, ["PricesAlreadyPublished"])) {
                     logger.info("Reverted with: prices already published")
                 } else {
                     logger.error(`Error in publishing prices: ${error}`);

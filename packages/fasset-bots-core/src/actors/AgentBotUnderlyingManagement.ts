@@ -252,14 +252,14 @@ export class AgentBotUnderlyingManagement {
                         not supported for underlying ${underlyingPayment.type} payment ${underlyingPayment.txHash}.`);
             }
         } catch (error) {
-            if (errorIncluded(error, ["no active announcement"])) {
+            if (errorIncluded(error, ["NoActiveAnnouncement"])) {
                 const underlyingPayment = await rootEm.findOneOrFail(AgentUnderlyingPayment, {id }, { refresh: true });
                 await this.updateUnderlyingPayment(rootEm, underlyingPayment, {
                     state: AgentUnderlyingPaymentState.DONE,
                 });
                 logger.warn(`Agent ${this.agent.vaultAddress} closed underlying payment ${id} because it was already confirmed`);
                 console.log(`Agent ${this.agent.vaultAddress} closed underlying payment ${id} because it was already confirmed`);
-            } else if (errorIncluded(error, ["payment failed"])) {
+            } else if (errorIncluded(error, ["PaymentFailed"])) {
                 const underlyingPayment = await rootEm.findOneOrFail(AgentUnderlyingPayment, {id }, { refresh: true });
                 await this.updateUnderlyingPayment(rootEm, underlyingPayment, {
                     state: AgentUnderlyingPaymentState.DONE,

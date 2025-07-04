@@ -146,7 +146,7 @@ export class AgentBotMinting {
                     logger.error(`Agent ${this.agent.vaultAddress} run into minting state ${minting.state} not supported for minting ${minting.requestId}.`);
             }
         } catch (error) {
-            if (errorIncluded(error, ["invalid crt id"])) {
+            if (errorIncluded(error, ["InvalidCrtId"])) {
                 const minting = await this.findMinting(rootEm, { id });
                 await this.updateMinting(rootEm, minting, {
                     state: AgentMintingState.DONE,
@@ -381,7 +381,7 @@ export class AgentBotMinting {
             await this.context.assetManager.selfMint(web3DeepNormalize(proof), this.agent.vaultAddress, lots, { from: this.agent.owner.workAddress });
             await this.notifier.sendSelfMintExecuted(lots.toString());
         } catch (error) {
-            if (errorIncluded(error, ["self-mint payment too small"])) {
+            if (errorIncluded(error, ["SelfMintPaymentTooSmall"])) {
                 const lotSizeUBA = await this.context.assetManager.lotSize();
                 const agentInfo = await this.bot.agent.getAgentInfo();
                 const poolFeeBIPS = toBN(agentInfo.feeBIPS).mul(toBN(agentInfo.poolFeeShareBIPS)).addn(MAX_BIPS - 1).divn(MAX_BIPS);    // round up
@@ -389,7 +389,7 @@ export class AgentBotMinting {
                 if (maxMintLots.gte(lots)) throw error; // not size issue or cannot fix
                 await this.notifier.sendSelfMintPaymentTooSmall(String(lots), String(maxMintLots));
                 await this.executeSelfMinting(proof, maxMintLots);
-            } else if (errorIncluded(error, ["not enough free collateral"])) {
+            } else if (errorIncluded(error, ["NotEnoughFreeCollateral"])) {
                 const agentInfo = await this.bot.agent.getAgentInfo();
                 const freeCollateralLots = toBN(agentInfo.freeCollateralLots);
                 if (freeCollateralLots.gte(lots)) throw error; // not size issue or cannot fix

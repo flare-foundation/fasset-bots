@@ -10,7 +10,7 @@ import { ORM } from "../../../src/config/orm";
 import { AgentEntity, AgentRedemption, AgentUnderlyingPayment, AgentUpdateSetting, ReturnFromCoreVault } from "../../../src/entities/agent";
 import { Agent, OwnerAddressPair } from "../../../src/fasset/Agent";
 import { MockChain, MockChainWallet } from "../../../src/mock/MockChain";
-import { CommandLineError, Currencies } from "../../../src/utils";
+import { CommandLineError, Currencies, latestBlockTimestampBN } from "../../../src/utils";
 import { BN_ZERO, checkedCast, toBN, toBNExp, toStringExp } from "../../../src/utils/helpers";
 import { artifacts, web3 } from "../../../src/utils/web3";
 import { testAgentBotSettings, testChainInfo } from "../../../test/test-utils/TestChainInfo";
@@ -46,7 +46,6 @@ describe("AgentBot cli commands unit tests", () => {
     let botCliCommands: AgentBotCommands;
     let chain: MockChain;
     let governance: string;
-    let secrets: Secrets;
 
     async function createAgent(contextToUse: TestAssetBotContext = context): Promise<Agent> {
         const agentBot = await createTestAgentBot(contextToUse, botCliCommands.orm, botCliCommands.owner.managementAddress, botCliCommands.ownerUnderlyingAddress);
@@ -68,7 +67,6 @@ describe("AgentBot cli commands unit tests", () => {
 
     before(async () => {
         accounts = await web3.eth.getAccounts();
-        secrets = new Secrets(TEST_SECRETS, { apiKey: {} });
         // accounts
         governance = accounts[0];
         ownerAddress = accounts[3];
@@ -126,7 +124,7 @@ describe("AgentBot cli commands unit tests", () => {
         expect(Number(agentInfo.freeCollateralLots)).to.eq(5);
     });
 
-    it.only("Should enter, announce exit available list and exit available list", async () => {
+    it("Should enter, announce exit available list and exit available list", async () => {
         const agent = await createAgent();
         const vaultAddress = agent.vaultAddress;
         // deposit to vault
@@ -139,8 +137,7 @@ describe("AgentBot cli commands unit tests", () => {
         // buy collateral pool tokens
         await botCliCommands.buyCollateralPoolTokens(vaultAddress, depositAmountWei);
         // try to exit - not in available list yet
-        // await expect(botCliCommands.exitAvailableList(vaultAddress)).to.be.revertedWithCustomError(contract, "MyError").withArgs(...);
-        await expectRevert.custom(botCliCommands.exitAvailableList(vaultAddress), "AgentNotAvailable", []);
+        await expectRevert.custom(botCliCommands.exitAvailableList(vaultAddress), "AgentNotAvailable");
         const agentInfoBefore2 = await context.assetManager.getAgentInfo(vaultAddress);
         expect(agentInfoBefore2.publiclyAvailable).to.be.false;
         // enter available
@@ -148,13 +145,13 @@ describe("AgentBot cli commands unit tests", () => {
         const agentInfoMiddle = await context.assetManager.getAgentInfo(vaultAddress);
         expect(agentInfoMiddle.publiclyAvailable).to.be.true;
         // exit before announce
-        await expectRevert(botCliCommands.exitAvailableList(vaultAddress), "exit not announced");
+        await expectRevert(botCliCommands.exitAvailableList(vaultAddress), `Agent ${vaultAddress} cannot exit available list - exit not announced.`);
         // exit enter available
         await botCliCommands.announceExitAvailableList(vaultAddress!);
         const agentEnt = await orm.em.findOneOrFail(AgentEntity, { vaultAddress: vaultAddress } as FilterQuery<AgentEntity>);
         expect(toBN(agentEnt.exitAvailableAllowedAtTimestamp).gt(BN_ZERO)).to.be.true;
         // try to exit - not yet allowed
-        await expectRevert(botCliCommands.exitAvailableList(vaultAddress), "cannot exit available list. Allowed at");
+        await expectRevert(botCliCommands.exitAvailableList(vaultAddress), `Agent ${vaultAddress} cannot exit available list. Allowed at ${agentEnt.exitAvailableAllowedAtTimestamp}, current timestamp is`);
         const agentInfoMiddle2 = await context.assetManager.getAgentInfo(vaultAddress);
         expect(agentInfoMiddle2.publiclyAvailable).to.be.true;
         // skip time
@@ -206,14 +203,10 @@ describe("AgentBot cli commands unit tests", () => {
         await minter.executeMinting(crt, txHash);
         // transfer FAssets
         const fBalance = await context.fAsset.balanceOf(minter.address);
-        // TODO check code and delete
-        // const transferFeeMillionths = await context.assetManager.transferFeeMillionths();
         await context.fAsset.transfer(ownerAddress, fBalance, { from: minter.address });
-        // const transferFee = fBalance.mul(transferFeeMillionths).divn(1e6);
         await botCliCommands.selfClose(vaultAddress, fBalance.divn(2).toString());
         const fBalanceAfter = await context.fAsset.balanceOf(ownerAddress);
         expect(fBalanceAfter.toString()).to.eq(fBalance.divn(2).toString());
-        // expect(fBalanceAfter.toString()).to.eq(fBalance.divn(2).sub(transferFee).toString());
     });
 
     it("Should close vault", async () => {
@@ -221,7 +214,6 @@ describe("AgentBot cli commands unit tests", () => {
         await botCliCommands.closeVault(agent1.vaultAddress);
         const agentEnt1 = await orm.em.findOneOrFail(AgentEntity, { vaultAddress: agent1.vaultAddress } as FilterQuery<AgentEntity>);
         expect(agentEnt1.waitingForDestructionCleanUp).to.be.true;
-
         const agent2 = await createAgent();
         await mintAndDepositVaultCollateralToOwner(context, agent2, toBN(depositAmountUSDC), ownerAddress);
         await botCliCommands.depositToVault(agent2.vaultAddress, depositAmountUSDC);
@@ -276,11 +268,11 @@ describe("AgentBot cli commands unit tests", () => {
         const agentBot = await createAgentBot();
         const agent = agentBot.agent;
         const initialRedemptionPoolFeeShareBIPS = toBN(await agent.getAgentSetting("redemptionPoolFeeShareBIPS"));
-        expect(initialRedemptionPoolFeeShareBIPS.eq(BN_ZERO)).to.be.true;
+        expect(initialRedemptionPoolFeeShareBIPS.gt(BN_ZERO)).to.be.true;
         // update redemptionPoolFeeShareBIPS
         const settingsName = "redemptionPoolFeeShareBIPS";
-        const updateValue1 = "1100";
-        await botCliCommands.updateAgentSetting(agent.vaultAddress, settingsName, updateValue1);
+        const updateValue1 = initialRedemptionPoolFeeShareBIPS.muln(0.5);
+        await botCliCommands.updateAgentSetting(agent.vaultAddress, settingsName, updateValue1.toString());
         const settingsUpdates = await orm.em.find(AgentUpdateSetting, { agentAddress: agent.vaultAddress, name: settingsName } as FilterQuery<AgentUpdateSetting>, { orderBy: { id: ('ASC') } });
         expect(settingsUpdates[0].state).to.eq(AgentUpdateSettingState.WAITING);
         await time.increaseTo(settingsUpdates[0].validAt);
@@ -395,8 +387,8 @@ describe("AgentBot cli commands unit tests", () => {
         const transaction = (context.wallet as MockChainWallet).transactionList[latest.txDbId!];
         transaction.status = 1;
         // cannot withdraw again while announcement is still active
-        await expectRevert(botCliCommands.withdrawUnderlying(agentBot.agent.vaultAddress, amountToWithdraw.toString(), "SomeRandomUnderlyingAddress"),
-            "announced underlying withdrawal active");
+        await expectRevert.custom(botCliCommands.withdrawUnderlying(agentBot.agent.vaultAddress, amountToWithdraw.toString(), "SomeRandomUnderlyingAddress"),
+            "AnnouncedUnderlyingWithdrawalActive");
         //  not enough time passed
         await botCliCommands.cancelUnderlyingWithdrawal(agentBot.agent.vaultAddress);
         orm.em.clear();
@@ -405,10 +397,6 @@ describe("AgentBot cli commands unit tests", () => {
         const latestId = latestToSoon.id;
         expect(toBN(latestToSoon.announcedAtTimestamp).gt(BN_ZERO)).to.be.true;
         expect(latestToSoon.cancelled).to.not.be.true;
-        // time passed
-        // const settings = await context.assetManager.getSettings();
-        // TODO - check code and delete
-        // await time.increase(settings.announcedUnderlyingConfirmationMinSeconds);
         await botCliCommands.cancelUnderlyingWithdrawal(agentBot.agent.vaultAddress);
         for (let i = 0; i < 3; i++) {
             await agentBot.runStep(orm.em);
@@ -533,11 +521,12 @@ describe("AgentBot cli commands unit tests", () => {
         const settings = loadAgentSettings(DEFAULT_AGENT_SETTINGS_PATH_HARDHAT);
         settings.poolTokenSuffix = "AB-X5";
         expect(await botCliCommands.context.assetManager.isPoolTokenSuffixReserved(settings.poolTokenSuffix)).equal(false);
-        const agentBot = await botCliCommands.createAgentVault(settings, secrets);
+        await context.agentOwnerRegistry.whitelistAndDescribeAgent(botCliCommands.owner.managementAddress, "Agent Name", "Agent Description", "Icon", "URL");
+        const agentBot = await botCliCommands.createAgentVault(settings);
         expect(agentBot).to.not.be.undefined;
         expect(await botCliCommands.context.assetManager.isPoolTokenSuffixReserved(settings.poolTokenSuffix)).equal(true);
         // cannot create vault twice with same token
-        await expect(botCliCommands.createAgentVault(settings, secrets))
+        await expect(botCliCommands.createAgentVault(settings))
             .to.eventually.be.rejectedWith(/Agent vault with collateral pool token suffix ".*" already exists./)
             .and.to.be.instanceOf(CommandLineError);
     });
@@ -555,7 +544,8 @@ describe("AgentBot cli commands unit tests", () => {
             .and.to.be.instanceOf(CommandLineError);
         const settings = loadAgentSettings(DEFAULT_AGENT_SETTINGS_PATH_HARDHAT);
         settings.poolTokenSuffix = "A-B8C-ZX15";
-        await botCliCommands.createAgentVault(settings, secrets);
+        await context.agentOwnerRegistry.whitelistAndDescribeAgent(botCliCommands.owner.managementAddress, "Agent Name", "Agent Description", "Icon", "URL");
+        await botCliCommands.createAgentVault(settings);
         await expect(botCliCommands.validateCollateralPoolTokenSuffix("A-B8C-ZX15"))
             .to.eventually.be.rejectedWith(/Agent vault with collateral pool token suffix ".*" already exists./)
             .and.to.be.instanceOf(CommandLineError);
@@ -582,10 +572,10 @@ describe("AgentBot cli commands unit tests", () => {
         expect(res.vaultCollateralFtsoSymbol).to.not.be.null;
         expect(res.fee).to.not.be.null;
         expect(res.poolFeeShare).to.not.be.null;
+        expect(res.redemptionPoolFeeShare).to.not.be.null;
         expect(Number(res.mintingVaultCollateralRatio)).to.be.gt(0);
         expect(Number(res.mintingPoolCollateralRatio)).to.be.gt(0);
         expect(Number(res.poolExitCollateralRatio)).to.be.gt(0);
-        expect(Number(res.redemptionPoolFeeShare)).to.be.gt(0);
         expect(Number(res.buyFAssetByAgentFactor)).to.be.gt(0);
     });
 

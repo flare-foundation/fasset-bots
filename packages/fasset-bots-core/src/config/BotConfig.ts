@@ -30,7 +30,6 @@ import { DatabaseAccount } from "./config-files/SecretsFile";
 import { createWalletClient, requireSupportedChainId } from "./create-wallet-client";
 import { EM, ORM } from "./orm";
 import { AgentBotDbUpgrades } from "../actors/AgentBotDbUpgrades";
-import { ChainalysisClient, HandshakeAddressVerifier } from "../actors/plugins/HandshakeAddressVerifier";
 
 export interface BotConfig<T extends BotFAssetConfig = BotFAssetConfig> {
     secrets: Secrets;
@@ -329,16 +328,4 @@ export function dataAccessLayerApiKey(secrets: Secrets, dataAccessLayerUrls: str
         throw new Error(`Cannot create dataAccessLayer. The number of URLs and API keys do not match.`);
     }
     return Array.isArray(apiTokenKey) ? apiTokenKey : Array(dataAccessLayerUrls.length).fill(apiTokenKey);
-}
-
-/**
- * Get the handshake address verifier client.
- */
-export function getHandshakeAddressVerifier(secrets: Secrets): HandshakeAddressVerifier | null {
-    const havClientUrl = secrets.optional("handshakeAddressVerifierApi.url");
-    if (havClientUrl == null || havClientUrl == "") {
-        return null;
-    }
-    const havClientApiKey = secrets.required("handshakeAddressVerifierApi.api_key");
-    return new ChainalysisClient(havClientUrl, havClientApiKey);
 }

@@ -221,7 +221,7 @@ export class AgentBotRedemption {
                 await this.context.assetManager.finishRedemptionWithoutPayment(web3DeepNormalize(proof), redemption.requestId, { from: this.agent.owner.workAddress });
             });
         } catch (error) {
-            if (errorIncluded(error, ["invalid request id"])) {
+            if (errorIncluded(error, ["InvalidRequestId"])) {
                 logger.warn(`Redemption ${redemption.requestId} doesn't exist any more, probably it has been confirmed by a 3rd party.`)
                 finalState = AgentRedemptionFinalState.EXTERNALLY_CONFIRMED;
             } else {
@@ -514,7 +514,7 @@ export class AgentBotRedemption {
                     await this.context.assetManager.confirmRedemptionPayment(web3DeepNormalize(proof), redemption.requestId, { from: this.agent.owner.workAddress });
                 });
             } catch (error) {
-                if (errorIncluded(error, ["invalid request id"])) {
+                if (errorIncluded(error, ["InvalidRequestId"])) {
                     logger.warn(`Redemption ${redemption.requestId} doesn't exist any more, probably it has been confirmed by a 3rd party.`)
                 } else {
                     throw error;

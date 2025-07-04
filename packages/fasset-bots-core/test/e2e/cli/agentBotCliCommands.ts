@@ -37,7 +37,7 @@ describe("AgentBot cli commands unit tests", () => {
         const botCliCommands = await AgentBotCommands.create(secrets, fassetBotConfig, fAssetSymbol);
         const agentSettings = loadAgentSettings(COSTON_TEST_AGENT_SETTINGS);
         agentSettings.poolTokenSuffix = DEFAULT_POOL_TOKEN_SUFFIX();
-        const agent = await botCliCommands.createAgentVault(agentSettings, secrets);
+        const agent = await botCliCommands.createAgentVault(agentSettings);
         expect(agent!.underlyingAddress).is.not.null;
         expect(agent!.owner.workAddress).to.eq(ownerAddress);
         // sort of clean up

@@ -6,7 +6,7 @@ import chalk from "chalk";
 import { InfoBotCommands } from "..";
 import { AgentBot } from "../actors/AgentBot";
 import { AgentVaultInitSettings, createAgentVaultInitSettings } from "../config/AgentVaultInitSettings";
-import { AgentBotConfig, AgentBotSettings, closeBotConfig, createBotConfig, getHandshakeAddressVerifier } from "../config/BotConfig";
+import { AgentBotConfig, AgentBotSettings, closeBotConfig, createBotConfig } from "../config/BotConfig";
 import { loadAgentConfigFile } from "../config/config-file-loader";
 import { AgentSettingsConfig, Schema_AgentSettingsConfig } from "../config/config-files/AgentSettingsConfig";
 import { createAgentBotContext } from "../config/create-asset-context";
@@ -138,7 +138,7 @@ export class AgentBotCommands {
      * Creates instance of Agent.
      * @param agentSettings
      */
-    async createAgentVault(agentSettings: AgentSettingsConfig, secrets: Secrets): Promise<Agent> {
+    async createAgentVault(agentSettings: AgentSettingsConfig): Promise<Agent> {
         await this.validateCollateralPoolTokenSuffix(agentSettings.poolTokenSuffix);
         try {
             const underlyingAddress = await AgentBot.createUnderlyingAddress(this.context);
@@ -154,7 +154,7 @@ export class AgentBotCommands {
             await this.notifierFor("Owner").agentCreating();
             const agentBotSettings: AgentVaultInitSettings = await createAgentVaultInitSettings(this.context, agentSettings);
             const agentBot = await AgentBot.create(this.orm.em, this.context, this.agentBotSettings, this.owner, this.ownerUnderlyingAddress,
-                addressValidityProof, agentBotSettings, this.notifiers, getHandshakeAddressVerifier(secrets));
+                addressValidityProof, agentBotSettings, this.notifiers);
             await this.notifierFor(agentBot.agent.vaultAddress).sendAgentCreated();
             console.log(`Agent bot created.`);
             console.log(`Owner ${this.owner} created new agent vault at ${agentBot.agent.agentVault.address}.`);
@@ -301,11 +301,11 @@ export class AgentBotCommands {
         try {
             await agentBot.exitAvailable(this.orm.em);
         } catch (error) {
-            if (errorIncluded(error, ["exit not announced"])) {
+            if (errorIncluded(error, ["ExitNotAnnounced"])) {
                 logger.error(`Agent ${agentVault} cannot exit - exit not announced.`);
                 throw new CommandLineError(`Agent ${readAgentEnt.vaultAddress} cannot exit available list - exit not announced.`);
             }
-            if (errorIncluded(error, ["exit too soon"])) {
+            if (errorIncluded(error, ["ExitTooSoon"])) {
                 logger.error(`Agent ${agentVault} cannot exit - exit too soon. Allowed at ${readAgentEnt.exitAvailableAllowedAtTimestamp}, current timestamp is ${await latestBlockTimestampBN()}.`);
                 throw new CommandLineError(squashSpace`Agent ${readAgentEnt.vaultAddress} cannot exit available list.
                     Allowed at ${readAgentEnt.exitAvailableAllowedAtTimestamp}, current timestamp is ${await latestBlockTimestampBN()}.`);

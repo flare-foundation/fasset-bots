@@ -78,7 +78,7 @@ export class AgentService {
 
     async createAgent(fAssetSymbol: string, agentSettings: AgentSettingsConfig): Promise<AgentCreateResponse | null> {
         const cli = await AgentBotCommands.create(this.secrets, FASSET_BOT_CONFIG, fAssetSymbol);
-        const agent = await cli.createAgentVault(agentSettings, this.secrets);
+        const agent = await cli.createAgentVault(agentSettings);
         if (agent) {
             return {
                 vaultAddress: agent.vaultAddress,

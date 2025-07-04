@@ -30,7 +30,6 @@ import { testNotifierTransports } from "../../test/test-utils/testNotifierTransp
 import { IERC20Instance } from "../../typechain-truffle";
 import { TestAssetBotContext, createTestAssetContext } from "./create-test-asset-context";
 import { MockFlareDataConnectorClient } from "../../src/mock/MockFlareDataConnectorClient";
-import { MockHandshakeAddressVerifier } from "../../src/mock/MockHandshakeAddressVerifier";
 
 const FakeERC20 = artifacts.require("FakeERC20");
 const IERC20 = artifacts.require("IERC20");
@@ -68,7 +67,7 @@ export async function createTestAgentBot(
     const agentVaultSettings = options ?? await createAgentVaultInitSettings(context, loadAgentSettings(DEFAULT_AGENT_SETTINGS_PATH_HARDHAT));
     agentVaultSettings.poolTokenSuffix = DEFAULT_POOL_TOKEN_SUFFIX();
     const agentBotSettings = requireNotNull(testAgentBotSettings[context.chainInfo.chainId.chainName as TestChainType]);
-    const agentBot = await AgentBot.create(orm.em, context, agentBotSettings, owner, ownerUnderlyingAddress, addressValidityProof, agentVaultSettings, notifiers, new MockHandshakeAddressVerifier());
+    const agentBot = await AgentBot.create(orm.em, context, agentBotSettings, owner, ownerUnderlyingAddress, addressValidityProof, agentVaultSettings, notifiers);
     agentBot.timekeeper = { latestProof: undefined };
     return agentBot;
 }
@@ -143,7 +142,7 @@ export function createTestAgentBotRunner(
     notifiers: NotifierTransport[] = testNotifierTransports,
 ): AgentBotRunner {
     const testAgentBotSettingsMap = new Map([["FETH", testAgentBotSettings.eth], ["FBTC", testAgentBotSettings.btc], ["FDOGE", testAgentBotSettings.doge], ["FXRP", testAgentBotSettings.xrp]]);
-    return new AgentBotRunner(secrets, contexts, testAgentBotSettingsMap, orm, loopDelay, notifiers, testTimekeeperService, null);
+    return new AgentBotRunner(secrets, contexts, testAgentBotSettingsMap, orm, loopDelay, notifiers, testTimekeeperService);
 }
 
 export async function createTestMinter(context: IAssetAgentContext, minterAddress: string, chain: MockChain, underlyingAddress: string = minterUnderlyingAddress, amount: BN = depositUnderlying): Promise<Minter> {
