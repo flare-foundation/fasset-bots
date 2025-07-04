@@ -191,24 +191,6 @@ export interface CollateralPoolTokenInstance extends Truffle.ContractInstance {
     ): Promise<number>;
   };
 
-  destroy: {
-    (_recipient: string, txDetails?: Truffle.TransactionDetails): Promise<
-      Truffle.TransactionResponse<AllEvents>
-    >;
-    call(
-      _recipient: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _recipient: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _recipient: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
   implementation(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
   increaseAllowance: {
@@ -527,24 +509,6 @@ export interface CollateralPoolTokenInstance extends Truffle.ContractInstance {
       estimateGas(
         spender: string,
         subtractedValue: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
-
-    destroy: {
-      (_recipient: string, txDetails?: Truffle.TransactionDetails): Promise<
-        Truffle.TransactionResponse<AllEvents>
-      >;
-      call(
-        _recipient: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        _recipient: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        _recipient: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };

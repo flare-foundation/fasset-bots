@@ -20,13 +20,11 @@ export interface CollateralRatiosChanged {
     collateralClass: BN;
     collateralToken: string;
     minCollateralRatioBIPS: BN;
-    ccbMinCollateralRatioBIPS: BN;
     safetyMinCollateralRatioBIPS: BN;
     0: BN;
     1: string;
     2: BN;
     3: BN;
-    4: BN;
   };
 }
 
@@ -40,7 +38,6 @@ export interface CollateralTypeAdded {
     assetFtsoSymbol: string;
     tokenFtsoSymbol: string;
     minCollateralRatioBIPS: BN;
-    ccbMinCollateralRatioBIPS: BN;
     safetyMinCollateralRatioBIPS: BN;
     0: BN;
     1: string;
@@ -50,7 +47,6 @@ export interface CollateralTypeAdded {
     5: string;
     6: BN;
     7: BN;
-    8: BN;
   };
 }
 
@@ -83,7 +79,6 @@ export interface CollateralTypesFacetInstance extends Truffle.ContractInstance {
         assetFtsoSymbol: string;
         tokenFtsoSymbol: string;
         minCollateralRatioBIPS: number | BN | string;
-        ccbMinCollateralRatioBIPS: number | BN | string;
         safetyMinCollateralRatioBIPS: number | BN | string;
       },
       txDetails?: Truffle.TransactionDetails
@@ -98,7 +93,6 @@ export interface CollateralTypesFacetInstance extends Truffle.ContractInstance {
         assetFtsoSymbol: string;
         tokenFtsoSymbol: string;
         minCollateralRatioBIPS: number | BN | string;
-        ccbMinCollateralRatioBIPS: number | BN | string;
         safetyMinCollateralRatioBIPS: number | BN | string;
       },
       txDetails?: Truffle.TransactionDetails
@@ -113,7 +107,6 @@ export interface CollateralTypesFacetInstance extends Truffle.ContractInstance {
         assetFtsoSymbol: string;
         tokenFtsoSymbol: string;
         minCollateralRatioBIPS: number | BN | string;
-        ccbMinCollateralRatioBIPS: number | BN | string;
         safetyMinCollateralRatioBIPS: number | BN | string;
       },
       txDetails?: Truffle.TransactionDetails
@@ -128,7 +121,6 @@ export interface CollateralTypesFacetInstance extends Truffle.ContractInstance {
         assetFtsoSymbol: string;
         tokenFtsoSymbol: string;
         minCollateralRatioBIPS: number | BN | string;
-        ccbMinCollateralRatioBIPS: number | BN | string;
         safetyMinCollateralRatioBIPS: number | BN | string;
       },
       txDetails?: Truffle.TransactionDetails
@@ -175,7 +167,6 @@ export interface CollateralTypesFacetInstance extends Truffle.ContractInstance {
     assetFtsoSymbol: string;
     tokenFtsoSymbol: string;
     minCollateralRatioBIPS: BN;
-    ccbMinCollateralRatioBIPS: BN;
     safetyMinCollateralRatioBIPS: BN;
   }>;
 
@@ -191,7 +182,6 @@ export interface CollateralTypesFacetInstance extends Truffle.ContractInstance {
       assetFtsoSymbol: string;
       tokenFtsoSymbol: string;
       minCollateralRatioBIPS: BN;
-      ccbMinCollateralRatioBIPS: BN;
       safetyMinCollateralRatioBIPS: BN;
     }[]
   >;
@@ -201,7 +191,6 @@ export interface CollateralTypesFacetInstance extends Truffle.ContractInstance {
       _collateralClass: number | BN | string,
       _token: string,
       _minCollateralRatioBIPS: number | BN | string,
-      _ccbMinCollateralRatioBIPS: number | BN | string,
       _safetyMinCollateralRatioBIPS: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<Truffle.TransactionResponse<AllEvents>>;
@@ -209,7 +198,6 @@ export interface CollateralTypesFacetInstance extends Truffle.ContractInstance {
       _collateralClass: number | BN | string,
       _token: string,
       _minCollateralRatioBIPS: number | BN | string,
-      _ccbMinCollateralRatioBIPS: number | BN | string,
       _safetyMinCollateralRatioBIPS: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<void>;
@@ -217,7 +205,6 @@ export interface CollateralTypesFacetInstance extends Truffle.ContractInstance {
       _collateralClass: number | BN | string,
       _token: string,
       _minCollateralRatioBIPS: number | BN | string,
-      _ccbMinCollateralRatioBIPS: number | BN | string,
       _safetyMinCollateralRatioBIPS: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
@@ -225,7 +212,6 @@ export interface CollateralTypesFacetInstance extends Truffle.ContractInstance {
       _collateralClass: number | BN | string,
       _token: string,
       _minCollateralRatioBIPS: number | BN | string,
-      _ccbMinCollateralRatioBIPS: number | BN | string,
       _safetyMinCollateralRatioBIPS: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
@@ -243,7 +229,6 @@ export interface CollateralTypesFacetInstance extends Truffle.ContractInstance {
           assetFtsoSymbol: string;
           tokenFtsoSymbol: string;
           minCollateralRatioBIPS: number | BN | string;
-          ccbMinCollateralRatioBIPS: number | BN | string;
           safetyMinCollateralRatioBIPS: number | BN | string;
         },
         txDetails?: Truffle.TransactionDetails
@@ -258,7 +243,6 @@ export interface CollateralTypesFacetInstance extends Truffle.ContractInstance {
           assetFtsoSymbol: string;
           tokenFtsoSymbol: string;
           minCollateralRatioBIPS: number | BN | string;
-          ccbMinCollateralRatioBIPS: number | BN | string;
           safetyMinCollateralRatioBIPS: number | BN | string;
         },
         txDetails?: Truffle.TransactionDetails
@@ -273,7 +257,6 @@ export interface CollateralTypesFacetInstance extends Truffle.ContractInstance {
           assetFtsoSymbol: string;
           tokenFtsoSymbol: string;
           minCollateralRatioBIPS: number | BN | string;
-          ccbMinCollateralRatioBIPS: number | BN | string;
           safetyMinCollateralRatioBIPS: number | BN | string;
         },
         txDetails?: Truffle.TransactionDetails
@@ -288,7 +271,6 @@ export interface CollateralTypesFacetInstance extends Truffle.ContractInstance {
           assetFtsoSymbol: string;
           tokenFtsoSymbol: string;
           minCollateralRatioBIPS: number | BN | string;
-          ccbMinCollateralRatioBIPS: number | BN | string;
           safetyMinCollateralRatioBIPS: number | BN | string;
         },
         txDetails?: Truffle.TransactionDetails
@@ -335,7 +317,6 @@ export interface CollateralTypesFacetInstance extends Truffle.ContractInstance {
       assetFtsoSymbol: string;
       tokenFtsoSymbol: string;
       minCollateralRatioBIPS: BN;
-      ccbMinCollateralRatioBIPS: BN;
       safetyMinCollateralRatioBIPS: BN;
     }>;
 
@@ -351,7 +332,6 @@ export interface CollateralTypesFacetInstance extends Truffle.ContractInstance {
         assetFtsoSymbol: string;
         tokenFtsoSymbol: string;
         minCollateralRatioBIPS: BN;
-        ccbMinCollateralRatioBIPS: BN;
         safetyMinCollateralRatioBIPS: BN;
       }[]
     >;
@@ -361,7 +341,6 @@ export interface CollateralTypesFacetInstance extends Truffle.ContractInstance {
         _collateralClass: number | BN | string,
         _token: string,
         _minCollateralRatioBIPS: number | BN | string,
-        _ccbMinCollateralRatioBIPS: number | BN | string,
         _safetyMinCollateralRatioBIPS: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<Truffle.TransactionResponse<AllEvents>>;
@@ -369,7 +348,6 @@ export interface CollateralTypesFacetInstance extends Truffle.ContractInstance {
         _collateralClass: number | BN | string,
         _token: string,
         _minCollateralRatioBIPS: number | BN | string,
-        _ccbMinCollateralRatioBIPS: number | BN | string,
         _safetyMinCollateralRatioBIPS: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<void>;
@@ -377,7 +355,6 @@ export interface CollateralTypesFacetInstance extends Truffle.ContractInstance {
         _collateralClass: number | BN | string,
         _token: string,
         _minCollateralRatioBIPS: number | BN | string,
-        _ccbMinCollateralRatioBIPS: number | BN | string,
         _safetyMinCollateralRatioBIPS: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
@@ -385,7 +362,6 @@ export interface CollateralTypesFacetInstance extends Truffle.ContractInstance {
         _collateralClass: number | BN | string,
         _token: string,
         _minCollateralRatioBIPS: number | BN | string,
-        _ccbMinCollateralRatioBIPS: number | BN | string,
         _safetyMinCollateralRatioBIPS: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;

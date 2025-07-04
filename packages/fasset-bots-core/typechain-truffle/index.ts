@@ -4,6 +4,8 @@
 
 import type { Truffle } from "./types";
 
+import { IIAddressUpdatableContract } from "./IIAddressUpdatable";
+import { IIAddressUpdaterContract } from "./IIAddressUpdater";
 import { IAddressValidityVerificationContract } from "./IAddressValidityVerification";
 import { IBalanceDecreasingTransactionVerificationContract } from "./IBalanceDecreasingTransactionVerification";
 import { IConfirmedBlockHeightExistsVerificationContract } from "./IConfirmedBlockHeightExistsVerification";
@@ -25,8 +27,6 @@ import { IWeb2JsonVerificationContract } from "./IWeb2JsonVerification";
 import { RandomNumberV2InterfaceContract } from "./RandomNumberV2Interface";
 import { RewardsV2InterfaceContract } from "./RewardsV2Interface";
 import { IICleanableContract } from "./IICleanable";
-import { IIAddressUpdatableContract } from "./IIAddressUpdatable";
-import { IIAddressUpdaterContract } from "./IIAddressUpdater";
 import { MockContractContract } from "./MockContract";
 import { MockInterfaceContract } from "./MockInterface";
 import { IERC1822ProxiableContract } from "./IERC1822Proxiable";
@@ -218,6 +218,8 @@ import { MockLibraryNonDepContract } from "./MockLibraryNonDep";
 export type * from "./types";
 
     export interface Artifacts {
+      require(name: "IIAddressUpdatable"): IIAddressUpdatableContract;
+      require(name: "IIAddressUpdater"): IIAddressUpdaterContract;
       require(
         name: "IAddressValidityVerification"
       ): IAddressValidityVerificationContract;
@@ -255,8 +257,6 @@ export type * from "./types";
       require(name: "RandomNumberV2Interface"): RandomNumberV2InterfaceContract;
       require(name: "RewardsV2Interface"): RewardsV2InterfaceContract;
       require(name: "IICleanable"): IICleanableContract;
-      require(name: "IIAddressUpdatable"): IIAddressUpdatableContract;
-      require(name: "IIAddressUpdater"): IIAddressUpdaterContract;
       require(name: "MockContract"): MockContractContract;
       require(name: "MockInterface"): MockInterfaceContract;
       require(name: "IERC1822Proxiable"): IERC1822ProxiableContract;
@@ -503,6 +503,14 @@ export type * from "./types";
 
 
 export {
+  IIAddressUpdatableContract,
+  IIAddressUpdatableInstance,
+} from "./IIAddressUpdatable";
+export {
+  IIAddressUpdaterContract,
+  IIAddressUpdaterInstance,
+} from "./IIAddressUpdater";
+export {
   IAddressValidityVerificationContract,
   IAddressValidityVerificationInstance,
 } from "./IAddressValidityVerification";
@@ -574,14 +582,6 @@ export {
   RewardsV2InterfaceInstance,
 } from "./RewardsV2Interface";
 export { IICleanableContract, IICleanableInstance } from "./IICleanable";
-export {
-  IIAddressUpdatableContract,
-  IIAddressUpdatableInstance,
-} from "./IIAddressUpdatable";
-export {
-  IIAddressUpdaterContract,
-  IIAddressUpdaterInstance,
-} from "./IIAddressUpdater";
 export { MockContractContract, MockContractInstance } from "./MockContract";
 export { MockInterfaceContract, MockInterfaceInstance } from "./MockInterface";
 export {

@@ -58,7 +58,6 @@ export interface AgentInfoFacetInstance extends Truffle.ContractInstance {
     redeemingUBA: BN;
     poolRedeemingUBA: BN;
     dustUBA: BN;
-    ccbStartTimestamp: BN;
     liquidationStartTimestamp: BN;
     maxLiquidationAmountUBA: BN;
     liquidationPaymentFactorVaultBIPS: BN;
@@ -157,7 +156,6 @@ export interface AgentInfoFacetInstance extends Truffle.ContractInstance {
       redeemingUBA: BN;
       poolRedeemingUBA: BN;
       dustUBA: BN;
-      ccbStartTimestamp: BN;
       liquidationStartTimestamp: BN;
       maxLiquidationAmountUBA: BN;
       liquidationPaymentFactorVaultBIPS: BN;

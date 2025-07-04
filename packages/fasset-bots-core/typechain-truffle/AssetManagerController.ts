@@ -126,7 +126,6 @@ export interface AssetManagerControllerInstance
         assetFtsoSymbol: string;
         tokenFtsoSymbol: string;
         minCollateralRatioBIPS: number | BN | string;
-        ccbMinCollateralRatioBIPS: number | BN | string;
         safetyMinCollateralRatioBIPS: number | BN | string;
       },
       txDetails?: Truffle.TransactionDetails
@@ -142,7 +141,6 @@ export interface AssetManagerControllerInstance
         assetFtsoSymbol: string;
         tokenFtsoSymbol: string;
         minCollateralRatioBIPS: number | BN | string;
-        ccbMinCollateralRatioBIPS: number | BN | string;
         safetyMinCollateralRatioBIPS: number | BN | string;
       },
       txDetails?: Truffle.TransactionDetails
@@ -158,7 +156,6 @@ export interface AssetManagerControllerInstance
         assetFtsoSymbol: string;
         tokenFtsoSymbol: string;
         minCollateralRatioBIPS: number | BN | string;
-        ccbMinCollateralRatioBIPS: number | BN | string;
         safetyMinCollateralRatioBIPS: number | BN | string;
       },
       txDetails?: Truffle.TransactionDetails
@@ -174,7 +171,6 @@ export interface AssetManagerControllerInstance
         assetFtsoSymbol: string;
         tokenFtsoSymbol: string;
         minCollateralRatioBIPS: number | BN | string;
-        ccbMinCollateralRatioBIPS: number | BN | string;
         safetyMinCollateralRatioBIPS: number | BN | string;
       },
       txDetails?: Truffle.TransactionDetails
@@ -619,29 +615,6 @@ export interface AssetManagerControllerInstance
     ): Promise<number>;
   };
 
-  setCcbTimeSeconds: {
-    (
-      _assetManagers: string[],
-      _value: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      _assetManagers: string[],
-      _value: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _assetManagers: string[],
-      _value: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _assetManagers: string[],
-      _value: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
   setCleanerContract: {
     (
       _assetManagers: string[],
@@ -763,7 +736,6 @@ export interface AssetManagerControllerInstance
       _class: number | BN | string,
       _token: string,
       _minCollateralRatioBIPS: number | BN | string,
-      _ccbMinCollateralRatioBIPS: number | BN | string,
       _safetyMinCollateralRatioBIPS: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<Truffle.TransactionResponse<AllEvents>>;
@@ -772,7 +744,6 @@ export interface AssetManagerControllerInstance
       _class: number | BN | string,
       _token: string,
       _minCollateralRatioBIPS: number | BN | string,
-      _ccbMinCollateralRatioBIPS: number | BN | string,
       _safetyMinCollateralRatioBIPS: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<void>;
@@ -781,7 +752,6 @@ export interface AssetManagerControllerInstance
       _class: number | BN | string,
       _token: string,
       _minCollateralRatioBIPS: number | BN | string,
-      _ccbMinCollateralRatioBIPS: number | BN | string,
       _safetyMinCollateralRatioBIPS: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
@@ -790,7 +760,6 @@ export interface AssetManagerControllerInstance
       _class: number | BN | string,
       _token: string,
       _minCollateralRatioBIPS: number | BN | string,
-      _ccbMinCollateralRatioBIPS: number | BN | string,
       _safetyMinCollateralRatioBIPS: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
@@ -1560,7 +1529,6 @@ export interface AssetManagerControllerInstance
           assetFtsoSymbol: string;
           tokenFtsoSymbol: string;
           minCollateralRatioBIPS: number | BN | string;
-          ccbMinCollateralRatioBIPS: number | BN | string;
           safetyMinCollateralRatioBIPS: number | BN | string;
         },
         txDetails?: Truffle.TransactionDetails
@@ -1576,7 +1544,6 @@ export interface AssetManagerControllerInstance
           assetFtsoSymbol: string;
           tokenFtsoSymbol: string;
           minCollateralRatioBIPS: number | BN | string;
-          ccbMinCollateralRatioBIPS: number | BN | string;
           safetyMinCollateralRatioBIPS: number | BN | string;
         },
         txDetails?: Truffle.TransactionDetails
@@ -1592,7 +1559,6 @@ export interface AssetManagerControllerInstance
           assetFtsoSymbol: string;
           tokenFtsoSymbol: string;
           minCollateralRatioBIPS: number | BN | string;
-          ccbMinCollateralRatioBIPS: number | BN | string;
           safetyMinCollateralRatioBIPS: number | BN | string;
         },
         txDetails?: Truffle.TransactionDetails
@@ -1608,7 +1574,6 @@ export interface AssetManagerControllerInstance
           assetFtsoSymbol: string;
           tokenFtsoSymbol: string;
           minCollateralRatioBIPS: number | BN | string;
-          ccbMinCollateralRatioBIPS: number | BN | string;
           safetyMinCollateralRatioBIPS: number | BN | string;
         },
         txDetails?: Truffle.TransactionDetails
@@ -2055,29 +2020,6 @@ export interface AssetManagerControllerInstance
       ): Promise<number>;
     };
 
-    setCcbTimeSeconds: {
-      (
-        _assetManagers: string[],
-        _value: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        _assetManagers: string[],
-        _value: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        _assetManagers: string[],
-        _value: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        _assetManagers: string[],
-        _value: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
-
     setCleanerContract: {
       (
         _assetManagers: string[],
@@ -2199,7 +2141,6 @@ export interface AssetManagerControllerInstance
         _class: number | BN | string,
         _token: string,
         _minCollateralRatioBIPS: number | BN | string,
-        _ccbMinCollateralRatioBIPS: number | BN | string,
         _safetyMinCollateralRatioBIPS: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<Truffle.TransactionResponse<AllEvents>>;
@@ -2208,7 +2149,6 @@ export interface AssetManagerControllerInstance
         _class: number | BN | string,
         _token: string,
         _minCollateralRatioBIPS: number | BN | string,
-        _ccbMinCollateralRatioBIPS: number | BN | string,
         _safetyMinCollateralRatioBIPS: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<void>;
@@ -2217,7 +2157,6 @@ export interface AssetManagerControllerInstance
         _class: number | BN | string,
         _token: string,
         _minCollateralRatioBIPS: number | BN | string,
-        _ccbMinCollateralRatioBIPS: number | BN | string,
         _safetyMinCollateralRatioBIPS: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
@@ -2226,7 +2165,6 @@ export interface AssetManagerControllerInstance
         _class: number | BN | string,
         _token: string,
         _minCollateralRatioBIPS: number | BN | string,
-        _ccbMinCollateralRatioBIPS: number | BN | string,
         _safetyMinCollateralRatioBIPS: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;

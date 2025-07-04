@@ -71,7 +71,7 @@ export interface SettingsReaderFacetInstance extends Truffle.ContractInstance {
     paymentChallengeRewardUSD5: BN;
     withdrawalWaitMinSeconds: BN;
     maxTrustedPriceAgeSeconds: BN;
-    ccbTimeSeconds: BN;
+    __ccbTimeSeconds: BN;
     attestationWindowSeconds: BN;
     minUpdateRepeatTimeSeconds: BN;
     __buybackCollateralFactorBIPS: BN;
@@ -157,7 +157,7 @@ export interface SettingsReaderFacetInstance extends Truffle.ContractInstance {
       paymentChallengeRewardUSD5: BN;
       withdrawalWaitMinSeconds: BN;
       maxTrustedPriceAgeSeconds: BN;
-      ccbTimeSeconds: BN;
+      __ccbTimeSeconds: BN;
       attestationWindowSeconds: BN;
       minUpdateRepeatTimeSeconds: BN;
       __buybackCollateralFactorBIPS: BN;

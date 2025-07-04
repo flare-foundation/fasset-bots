@@ -12,16 +12,6 @@ export interface LiquidationFacetContract
   "new"(meta?: Truffle.TransactionDetails): Promise<LiquidationFacetInstance>;
 }
 
-export interface AgentInCCB {
-  name: "AgentInCCB";
-  args: {
-    agentVault: string;
-    timestamp: BN;
-    0: string;
-    1: BN;
-  };
-}
-
 export interface DustChanged {
   name: "DustChanged";
   args: {
@@ -89,7 +79,6 @@ export interface RedemptionTicketUpdated {
 }
 
 export type AllEvents =
-  | AgentInCCB
   | DustChanged
   | LiquidationEnded
   | LiquidationPerformed
@@ -146,7 +135,7 @@ export interface LiquidationFacetInstance extends Truffle.ContractInstance {
     call(
       _agentVault: string,
       txDetails?: Truffle.TransactionDetails
-    ): Promise<{ 0: BN; 1: BN }>;
+    ): Promise<BN>;
     sendTransaction(
       _agentVault: string,
       txDetails?: Truffle.TransactionDetails
@@ -206,7 +195,7 @@ export interface LiquidationFacetInstance extends Truffle.ContractInstance {
       call(
         _agentVault: string,
         txDetails?: Truffle.TransactionDetails
-      ): Promise<{ 0: BN; 1: BN }>;
+      ): Promise<BN>;
       sendTransaction(
         _agentVault: string,
         txDetails?: Truffle.TransactionDetails

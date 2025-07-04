@@ -115,24 +115,6 @@ export interface IICollateralPoolTokenInstance
     txDetails?: Truffle.TransactionDetails
   ): Promise<BN>;
 
-  destroy: {
-    (_recipient: string, txDetails?: Truffle.TransactionDetails): Promise<
-      Truffle.TransactionResponse<AllEvents>
-    >;
-    call(
-      _recipient: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _recipient: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _recipient: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
   lockedBalanceOf(
     _account: string,
     txDetails?: Truffle.TransactionDetails
@@ -306,24 +288,6 @@ export interface IICollateralPoolTokenInstance
       _account: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<BN>;
-
-    destroy: {
-      (_recipient: string, txDetails?: Truffle.TransactionDetails): Promise<
-        Truffle.TransactionResponse<AllEvents>
-      >;
-      call(
-        _recipient: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        _recipient: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        _recipient: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
 
     lockedBalanceOf(
       _account: string,

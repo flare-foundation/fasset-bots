@@ -108,25 +108,6 @@
         },
         {
           "indexed": false,
-          "internalType": "uint256",
-          "name": "timestamp",
-          "type": "uint256"
-        }
-      ],
-      "name": "AgentInCCB",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "agentVault",
-          "type": "address"
-        },
-        {
-          "indexed": false,
           "internalType": "string",
           "name": "name",
           "type": "string"
@@ -315,12 +296,6 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "ccbMinCollateralRatioBIPS",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
           "name": "safetyMinCollateralRatioBIPS",
           "type": "uint256"
         }
@@ -481,12 +456,6 @@
           "indexed": false,
           "internalType": "uint256",
           "name": "minCollateralRatioBIPS",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "ccbMinCollateralRatioBIPS",
           "type": "uint256"
         },
         {

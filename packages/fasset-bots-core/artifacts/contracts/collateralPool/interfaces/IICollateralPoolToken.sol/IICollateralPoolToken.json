@@ -197,19 +197,6 @@
     {
       "inputs": [
         {
-          "internalType": "address payable",
-          "name": "_recipient",
-          "type": "address"
-        }
-      ],
-      "name": "destroy",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
           "internalType": "address",
           "name": "_account",
           "type": "address"

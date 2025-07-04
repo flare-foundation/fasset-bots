@@ -22,7 +22,6 @@ export interface CollateralTypeAdded {
     assetFtsoSymbol: string;
     tokenFtsoSymbol: string;
     minCollateralRatioBIPS: BN;
-    ccbMinCollateralRatioBIPS: BN;
     safetyMinCollateralRatioBIPS: BN;
     0: BN;
     1: string;
@@ -32,7 +31,6 @@ export interface CollateralTypeAdded {
     5: string;
     6: BN;
     7: BN;
-    8: BN;
   };
 }
 
@@ -169,7 +167,7 @@ export interface AssetManagerInitInstance extends Truffle.ContractInstance {
         paymentChallengeRewardUSD5: number | BN | string;
         withdrawalWaitMinSeconds: number | BN | string;
         maxTrustedPriceAgeSeconds: number | BN | string;
-        ccbTimeSeconds: number | BN | string;
+        __ccbTimeSeconds: number | BN | string;
         attestationWindowSeconds: number | BN | string;
         minUpdateRepeatTimeSeconds: number | BN | string;
         __buybackCollateralFactorBIPS: number | BN | string;
@@ -210,7 +208,6 @@ export interface AssetManagerInitInstance extends Truffle.ContractInstance {
         assetFtsoSymbol: string;
         tokenFtsoSymbol: string;
         minCollateralRatioBIPS: number | BN | string;
-        ccbMinCollateralRatioBIPS: number | BN | string;
         safetyMinCollateralRatioBIPS: number | BN | string;
       }[],
       txDetails?: Truffle.TransactionDetails
@@ -254,7 +251,7 @@ export interface AssetManagerInitInstance extends Truffle.ContractInstance {
         paymentChallengeRewardUSD5: number | BN | string;
         withdrawalWaitMinSeconds: number | BN | string;
         maxTrustedPriceAgeSeconds: number | BN | string;
-        ccbTimeSeconds: number | BN | string;
+        __ccbTimeSeconds: number | BN | string;
         attestationWindowSeconds: number | BN | string;
         minUpdateRepeatTimeSeconds: number | BN | string;
         __buybackCollateralFactorBIPS: number | BN | string;
@@ -295,7 +292,6 @@ export interface AssetManagerInitInstance extends Truffle.ContractInstance {
         assetFtsoSymbol: string;
         tokenFtsoSymbol: string;
         minCollateralRatioBIPS: number | BN | string;
-        ccbMinCollateralRatioBIPS: number | BN | string;
         safetyMinCollateralRatioBIPS: number | BN | string;
       }[],
       txDetails?: Truffle.TransactionDetails
@@ -339,7 +335,7 @@ export interface AssetManagerInitInstance extends Truffle.ContractInstance {
         paymentChallengeRewardUSD5: number | BN | string;
         withdrawalWaitMinSeconds: number | BN | string;
         maxTrustedPriceAgeSeconds: number | BN | string;
-        ccbTimeSeconds: number | BN | string;
+        __ccbTimeSeconds: number | BN | string;
         attestationWindowSeconds: number | BN | string;
         minUpdateRepeatTimeSeconds: number | BN | string;
         __buybackCollateralFactorBIPS: number | BN | string;
@@ -380,7 +376,6 @@ export interface AssetManagerInitInstance extends Truffle.ContractInstance {
         assetFtsoSymbol: string;
         tokenFtsoSymbol: string;
         minCollateralRatioBIPS: number | BN | string;
-        ccbMinCollateralRatioBIPS: number | BN | string;
         safetyMinCollateralRatioBIPS: number | BN | string;
       }[],
       txDetails?: Truffle.TransactionDetails
@@ -424,7 +419,7 @@ export interface AssetManagerInitInstance extends Truffle.ContractInstance {
         paymentChallengeRewardUSD5: number | BN | string;
         withdrawalWaitMinSeconds: number | BN | string;
         maxTrustedPriceAgeSeconds: number | BN | string;
-        ccbTimeSeconds: number | BN | string;
+        __ccbTimeSeconds: number | BN | string;
         attestationWindowSeconds: number | BN | string;
         minUpdateRepeatTimeSeconds: number | BN | string;
         __buybackCollateralFactorBIPS: number | BN | string;
@@ -465,7 +460,6 @@ export interface AssetManagerInitInstance extends Truffle.ContractInstance {
         assetFtsoSymbol: string;
         tokenFtsoSymbol: string;
         minCollateralRatioBIPS: number | BN | string;
-        ccbMinCollateralRatioBIPS: number | BN | string;
         safetyMinCollateralRatioBIPS: number | BN | string;
       }[],
       txDetails?: Truffle.TransactionDetails
@@ -578,7 +572,7 @@ export interface AssetManagerInitInstance extends Truffle.ContractInstance {
           paymentChallengeRewardUSD5: number | BN | string;
           withdrawalWaitMinSeconds: number | BN | string;
           maxTrustedPriceAgeSeconds: number | BN | string;
-          ccbTimeSeconds: number | BN | string;
+          __ccbTimeSeconds: number | BN | string;
           attestationWindowSeconds: number | BN | string;
           minUpdateRepeatTimeSeconds: number | BN | string;
           __buybackCollateralFactorBIPS: number | BN | string;
@@ -619,7 +613,6 @@ export interface AssetManagerInitInstance extends Truffle.ContractInstance {
           assetFtsoSymbol: string;
           tokenFtsoSymbol: string;
           minCollateralRatioBIPS: number | BN | string;
-          ccbMinCollateralRatioBIPS: number | BN | string;
           safetyMinCollateralRatioBIPS: number | BN | string;
         }[],
         txDetails?: Truffle.TransactionDetails
@@ -663,7 +656,7 @@ export interface AssetManagerInitInstance extends Truffle.ContractInstance {
           paymentChallengeRewardUSD5: number | BN | string;
           withdrawalWaitMinSeconds: number | BN | string;
           maxTrustedPriceAgeSeconds: number | BN | string;
-          ccbTimeSeconds: number | BN | string;
+          __ccbTimeSeconds: number | BN | string;
           attestationWindowSeconds: number | BN | string;
           minUpdateRepeatTimeSeconds: number | BN | string;
           __buybackCollateralFactorBIPS: number | BN | string;
@@ -704,7 +697,6 @@ export interface AssetManagerInitInstance extends Truffle.ContractInstance {
           assetFtsoSymbol: string;
           tokenFtsoSymbol: string;
           minCollateralRatioBIPS: number | BN | string;
-          ccbMinCollateralRatioBIPS: number | BN | string;
           safetyMinCollateralRatioBIPS: number | BN | string;
         }[],
         txDetails?: Truffle.TransactionDetails
@@ -748,7 +740,7 @@ export interface AssetManagerInitInstance extends Truffle.ContractInstance {
           paymentChallengeRewardUSD5: number | BN | string;
           withdrawalWaitMinSeconds: number | BN | string;
           maxTrustedPriceAgeSeconds: number | BN | string;
-          ccbTimeSeconds: number | BN | string;
+          __ccbTimeSeconds: number | BN | string;
           attestationWindowSeconds: number | BN | string;
           minUpdateRepeatTimeSeconds: number | BN | string;
           __buybackCollateralFactorBIPS: number | BN | string;
@@ -789,7 +781,6 @@ export interface AssetManagerInitInstance extends Truffle.ContractInstance {
           assetFtsoSymbol: string;
           tokenFtsoSymbol: string;
           minCollateralRatioBIPS: number | BN | string;
-          ccbMinCollateralRatioBIPS: number | BN | string;
           safetyMinCollateralRatioBIPS: number | BN | string;
         }[],
         txDetails?: Truffle.TransactionDetails
@@ -833,7 +824,7 @@ export interface AssetManagerInitInstance extends Truffle.ContractInstance {
           paymentChallengeRewardUSD5: number | BN | string;
           withdrawalWaitMinSeconds: number | BN | string;
           maxTrustedPriceAgeSeconds: number | BN | string;
-          ccbTimeSeconds: number | BN | string;
+          __ccbTimeSeconds: number | BN | string;
           attestationWindowSeconds: number | BN | string;
           minUpdateRepeatTimeSeconds: number | BN | string;
           __buybackCollateralFactorBIPS: number | BN | string;
@@ -874,7 +865,6 @@ export interface AssetManagerInitInstance extends Truffle.ContractInstance {
           assetFtsoSymbol: string;
           tokenFtsoSymbol: string;
           minCollateralRatioBIPS: number | BN | string;
-          ccbMinCollateralRatioBIPS: number | BN | string;
           safetyMinCollateralRatioBIPS: number | BN | string;
         }[],
         txDetails?: Truffle.TransactionDetails

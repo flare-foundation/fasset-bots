@@ -28,7 +28,7 @@ export interface MaliciousMintExecutorInstance
 
   fasset(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
-  liquidationStatus(txDetails?: Truffle.TransactionDetails): Promise<BN>;
+  liquidationStartedTs(txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
   mint: {
     (
@@ -182,7 +182,7 @@ export interface MaliciousMintExecutorInstance
 
     fasset(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
-    liquidationStatus(txDetails?: Truffle.TransactionDetails): Promise<BN>;
+    liquidationStartedTs(txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
     mint: {
       (

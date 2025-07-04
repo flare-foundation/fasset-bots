@@ -107,25 +107,6 @@
           "type": "address"
         },
         {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "timestamp",
-          "type": "uint256"
-        }
-      ],
-      "name": "AgentInCCB",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "agentVault",
-          "type": "address"
-        },
-        {
           "indexed": true,
           "internalType": "address",
           "name": "sender",
@@ -371,12 +352,6 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "ccbMinCollateralRatioBIPS",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
           "name": "safetyMinCollateralRatioBIPS",
           "type": "uint256"
         }
@@ -537,12 +512,6 @@
           "indexed": false,
           "internalType": "uint256",
           "name": "minCollateralRatioBIPS",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "ccbMinCollateralRatioBIPS",
           "type": "uint256"
         },
         {
@@ -2210,6 +2179,11 @@
               "internalType": "uint256",
               "name": "executorFeeNatWei",
               "type": "uint256"
+            },
+            {
+              "internalType": "enum CollateralReservationInfo.Status",
+              "name": "status",
+              "type": "uint8"
             }
           ],
           "internalType": "struct CollateralReservationInfo.Data",
@@ -3916,11 +3890,6 @@
             },
             {
               "internalType": "uint256",
-              "name": "ccbStartTimestamp",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
               "name": "liquidationStartTimestamp",
               "type": "uint256"
             },
@@ -4314,11 +4283,6 @@
             },
             {
               "internalType": "uint256",
-              "name": "ccbMinCollateralRatioBIPS",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
               "name": "safetyMinCollateralRatioBIPS",
               "type": "uint256"
             }
@@ -4375,11 +4339,6 @@
             {
               "internalType": "uint256",
               "name": "minCollateralRatioBIPS",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "ccbMinCollateralRatioBIPS",
               "type": "uint256"
             },
             {
@@ -4657,7 +4616,7 @@
             },
             {
               "internalType": "uint64",
-              "name": "ccbTimeSeconds",
+              "name": "__ccbTimeSeconds",
               "type": "uint64"
             },
             {
@@ -5923,11 +5882,6 @@
       ],
       "name": "startLiquidation",
       "outputs": [
-        {
-          "internalType": "uint8",
-          "name": "_liquidationStatus",
-          "type": "uint8"
-        },
         {
           "internalType": "uint256",
           "name": "_liquidationStartTs",

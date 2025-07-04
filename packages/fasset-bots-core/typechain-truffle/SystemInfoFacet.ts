@@ -43,6 +43,7 @@ export interface SystemInfoFacetInstance extends Truffle.ContractInstance {
     lastUnderlyingTimestamp: BN;
     executor: string;
     executorFeeNatWei: BN;
+    status: BN;
   }>;
 
   controllerAttached(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
@@ -110,6 +111,7 @@ export interface SystemInfoFacetInstance extends Truffle.ContractInstance {
       lastUnderlyingTimestamp: BN;
       executor: string;
       executorFeeNatWei: BN;
+      status: BN;
     }>;
 
     controllerAttached(

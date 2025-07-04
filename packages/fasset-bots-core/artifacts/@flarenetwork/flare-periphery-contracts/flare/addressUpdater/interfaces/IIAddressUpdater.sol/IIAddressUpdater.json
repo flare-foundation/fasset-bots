@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
   "contractName": "IIAddressUpdater",
-  "sourceName": "@flarenetwork/flare-periphery-contracts/songbird/addressUpdater/interfaces/IIAddressUpdater.sol",
+  "sourceName": "@flarenetwork/flare-periphery-contracts/flare/addressUpdater/interfaces/IIAddressUpdater.sol",
   "abi": [
     {
       "inputs": [

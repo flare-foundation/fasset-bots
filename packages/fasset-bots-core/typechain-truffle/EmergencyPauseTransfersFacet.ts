@@ -60,16 +60,6 @@ export interface AgentDestroyed {
   };
 }
 
-export interface AgentInCCB {
-  name: "AgentInCCB";
-  args: {
-    agentVault: string;
-    timestamp: BN;
-    0: string;
-    1: BN;
-  };
-}
-
 export interface AgentSettingChangeAnnounced {
   name: "AgentSettingChangeAnnounced";
   args: {
@@ -158,13 +148,11 @@ export interface CollateralRatiosChanged {
     collateralClass: BN;
     collateralToken: string;
     minCollateralRatioBIPS: BN;
-    ccbMinCollateralRatioBIPS: BN;
     safetyMinCollateralRatioBIPS: BN;
     0: BN;
     1: string;
     2: BN;
     3: BN;
-    4: BN;
   };
 }
 
@@ -222,7 +210,6 @@ export interface CollateralTypeAdded {
     assetFtsoSymbol: string;
     tokenFtsoSymbol: string;
     minCollateralRatioBIPS: BN;
-    ccbMinCollateralRatioBIPS: BN;
     safetyMinCollateralRatioBIPS: BN;
     0: BN;
     1: string;
@@ -232,7 +219,6 @@ export interface CollateralTypeAdded {
     5: string;
     6: BN;
     7: BN;
-    8: BN;
   };
 }
 
@@ -733,7 +719,6 @@ export type AllEvents =
   | AgentCollateralTypeChanged
   | AgentDestroyAnnounced
   | AgentDestroyed
-  | AgentInCCB
   | AgentSettingChangeAnnounced
   | AgentSettingChanged
   | AgentVaultCreated

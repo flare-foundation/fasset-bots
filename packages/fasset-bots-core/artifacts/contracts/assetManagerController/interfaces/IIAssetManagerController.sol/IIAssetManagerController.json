@@ -234,11 +234,6 @@
             },
             {
               "internalType": "uint256",
-              "name": "ccbMinCollateralRatioBIPS",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
               "name": "safetyMinCollateralRatioBIPS",
               "type": "uint256"
             }
@@ -676,24 +671,6 @@
           "type": "address[]"
         },
         {
-          "internalType": "uint256",
-          "name": "_value",
-          "type": "uint256"
-        }
-      ],
-      "name": "setCcbTimeSeconds",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "contract IIAssetManager[]",
-          "name": "_assetManagers",
-          "type": "address[]"
-        },
-        {
           "internalType": "address",
           "name": "_value",
           "type": "address"
@@ -796,11 +773,6 @@
         {
           "internalType": "uint256",
           "name": "_minCollateralRatioBIPS",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_ccbMinCollateralRatioBIPS",
           "type": "uint256"
         },
         {
