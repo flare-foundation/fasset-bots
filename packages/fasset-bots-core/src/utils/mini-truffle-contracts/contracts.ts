@@ -4,7 +4,6 @@ import { AbiItem } from "web3-utils";
 import { Truffle } from "../../../typechain-truffle";
 import { Web3EventDecoder } from "../events/Web3EventDecoder";
 import { replaceStringRange } from "../helpers";
-import { buildCustomErrorMap } from "./custom-errors";
 import { createContractInstanceConstructor, executeConstructor } from "./methods";
 import { ContractJson, ContractSettings } from "./types";
 
@@ -58,7 +57,8 @@ export class MiniTruffleContract implements Truffle.Contract<any> {
         public contractName: string,
         public abi: AbiItem[],
         public _bytecode: string | undefined,
-        public _contractJson: ContractJson // only needed for linking
+        public _errorMap: Map<string, AbiItem>,
+        public _contractJson: ContractJson,  // only needed for linking
     ) {
         // console.log("Creating contract", contractName);
     }
@@ -68,8 +68,6 @@ export class MiniTruffleContract implements Truffle.Contract<any> {
     _instanceConstructor = createContractInstanceConstructor(this.contractName);
 
     _eventDecoder = new Web3EventDecoder(this.abi);
-
-    _errorMap = buildCustomErrorMap(this.abi);
 
     async deployed(): Promise<any> {
         if (!this.address) {
@@ -126,7 +124,7 @@ export class MiniTruffleContract implements Truffle.Contract<any> {
      * Allows for e.g. changing finalization method for a certain instance.
      */
     _withSettings(newSettings: Partial<ContractSettings>) {
-        return new MiniTruffleContract({ ...this._settings, ...newSettings }, this.contractName, this.abi, this._bytecode, this._contractJson);
+        return new MiniTruffleContract({ ...this._settings, ...newSettings }, this.contractName, this.abi, this._bytecode, this._errorMap, this._contractJson);
     }
 }
 

@@ -173,7 +173,7 @@ export namespace expectRevert {
                 return typeof x === 'string' || Array.isArray(x) ? JSON.stringify(x) : String(x);
             });
             const errorString = `${name}(${argStrings.join(", ")})`;
-            return expectRevert(promise, `reverted with custom error '${errorString}'`);
+            return expectRevert(promise, `reverted with custom error ${errorString}`);
         } else {
             // match by just name
             return expectRevert(promise, `reverted with custom error ${name}`);
