@@ -38,11 +38,7 @@ cd ${liquidatordir}/artifacts
 mkdir -p ${projdir}/artifacts/liquidator
 find -name '*.json' -not -name '*.dbg.json' -path './contracts/*' -not -path './contracts/mock/*' | xargs cp -t ${projdir}/artifacts/liquidator --parents
 
-# fix some paths so that sourceName always matches the actual dir
 cd ${projdir}
-mkdir -p artifacts/flattened
-mv artifacts/flare-sc artifacts/flattened/FlareSmartContracts.sol
-
 # fix source paths in liquidator jsons
 find -name '*.json' -path './artifacts/liquidator/*' | xargs sed -i -e 's/"sourceName": "contracts\//"sourceName": "liquidator\/contracts\//'
 
