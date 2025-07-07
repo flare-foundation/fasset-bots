@@ -276,8 +276,6 @@ export class AgentController {
                         announcedUnderlyingWithdrawalId: { type: 'string', example: '0' },
                         buyFAssetByAgentFactorBIPS: { type: 'string', example: '9900' },
                         poolExitCollateralRatioBIPS: { type: 'string', example: '26000' },
-                        poolTopupCollateralRatioBIPS: { type: 'string', example: '22000' },
-                        poolTopupTokenPriceFactorBIPS: { type: 'string', example: '8000' },
                         poolSuffix: { type: 'string', example: 'POOLSUFFIXNAME'}
                     }
                 }
