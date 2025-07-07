@@ -214,10 +214,7 @@ export class AgentController {
                             agentSettingUpdateValidAtMintingVaultCrBIPS: { type: 'string', example: '0' },
                             agentSettingUpdateValidAtMintingPoolCrBIPS: { type: 'string', example: '0' },
                             agentSettingUpdateValidAtBuyFAssetByAgentFactorBIPS: { type: 'string', example: '0' },
-                            agentSettingUpdateValidAtPoolExitCrBIPS: { type: 'string', example: '0' },
-                            agentSettingUpdateValidAtPoolTopupCrBIPS: { type: 'string', example: '0' },
-                            agentSettingUpdateValidAtPoolTopupTokenPriceFactorBIPS: { type: 'string', example: '0' },
-                            agentSettingUpdateValidAtHandshakeType: { type: 'string', example: '0' }
+                            agentSettingUpdateValidAtPoolExitCrBIPS: { type: 'string', example: '0' }
                         }
                     }
                 }
@@ -281,7 +278,6 @@ export class AgentController {
                         poolExitCollateralRatioBIPS: { type: 'string', example: '26000' },
                         poolTopupCollateralRatioBIPS: { type: 'string', example: '22000' },
                         poolTopupTokenPriceFactorBIPS: { type: 'string', example: '8000' },
-                        handshakeType: { type: 'string', example: 0 },
                         poolSuffix: { type: 'string', example: 'POOLSUFFIXNAME'}
                     }
                 }
