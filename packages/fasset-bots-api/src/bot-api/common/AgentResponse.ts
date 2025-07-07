@@ -183,3 +183,9 @@ export interface RedemptionQueueData {
     mintedLots: number;
     redemptionQueueLots: number;
 }
+
+export interface TransferToCVFee {
+    fee: string;
+    feeUSD: string;
+    symbol: string;
+}

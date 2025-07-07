@@ -5,7 +5,7 @@ import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Inject, Injectable } from "@nestjs/common";
 import { Cache } from "cache-manager";
 import { PostAlert } from "../../../../../fasset-bots-core/src/utils/notifier/NotifierTransports";
-import { APIKey, AgentBalance, AgentCreateResponse, AgentData, AgentSettings, AgentUnderlying, AgentVaultStatus, AllBalances, AllCollaterals, CollateralTemplate, Collaterals, Delegation, DepositableVaultCVData, ExtendedAgentVaultInfo, RedeemableVaultCVData, RedemptionQueueData, RequestableVaultCVData, UnderlyingAddress, VaultCollaterals, VaultInfo } from "../../common/AgentResponse";
+import { APIKey, AgentBalance, AgentCreateResponse, AgentData, AgentSettings, AgentUnderlying, AgentVaultStatus, AllBalances, AllCollaterals, CollateralTemplate, Collaterals, Delegation, DepositableVaultCVData, ExtendedAgentVaultInfo, RedeemableVaultCVData, RedemptionQueueData, RequestableVaultCVData, TransferToCVFee, UnderlyingAddress, VaultCollaterals, VaultInfo } from "../../common/AgentResponse";
 import * as fs from 'fs';
 import Web3 from "web3";
 import { AgentSettingsDTO, Alerts, DelegateDTO } from "../../common/AgentSettingsDTO";
@@ -353,12 +353,7 @@ export class AgentService {
         }
         agentVaultInfo.vaultCollateralToken = collateralToken.tokenFtsoSymbol;
         agentVaultInfo.poolSuffix = tokenSymbol;
-        let redFeeBIPS = "0"
-        try{
-            redFeeBIPS = toBN(await cli.context.assetManager.getAgentSetting(agentVaultAddress, "redemptionPoolFeeShareBIPS")).toString();
-        } catch(e) {
-            redFeeBIPS = "0"
-        }
+        const redFeeBIPS = toBN(info.redemptionPoolFeeShareBIPS).toString();
         agentVaultInfo.redemptionPoolFeeShareBIPS = redFeeBIPS;
         const del = await cli.context.wNat.delegatesOf(info.collateralPool);
         const delegates: Delegation [] = [];
@@ -933,6 +928,11 @@ export class AgentService {
         }
         const cli = await AgentBotCommands.create(this.secrets, FASSET_BOT_CONFIG, fAssetSymbol);
         await cli.returnFromCoreVault(agentVaultAddress, lots);
+    }
+
+    async transferToCVFee(fAssetSymbol: string, agentVaultAddress: string, amount: string): Promise<TransferToCVFee> {
+        const cli = this.infoBotMap.get(fAssetSymbol) as AgentBotCommands;
+        return {fee: "0", symbol: cli.context.nativeChainInfo.tokenSymbol, feeUSD: "0"};
     }
 
     async updateRedemptionQueue(): Promise<void> {

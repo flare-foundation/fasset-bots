@@ -3,7 +3,7 @@ import { Controller, Get, HttpCode, Param, Post, UseGuards, UseInterceptors } fr
 import { AgentService } from "../services/agent.service";
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { ApiResponseWrapper, handleApiResponse } from "../../common/ApiResponse";
-import { AgentBalance, Collaterals, DepositableVaultCVData, RequestableVaultCVData } from "../../common/AgentResponse";
+import { AgentBalance, Collaterals, DepositableVaultCVData, RequestableVaultCVData, TransferToCVFee } from "../../common/AgentResponse";
 import { ErrorStatusInterceptor } from "../interceptors/error.status.interceptor";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 
@@ -231,4 +231,16 @@ export class AgentVaultController {
     ): Promise<ApiResponseWrapper<void>> {
         return handleApiResponse(this.agentService.cancelRequestFromCoreVault(fAssetSymbol, agentVaultAddress));
     }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @Get("getCVFee/:fAssetSymbol/:agentVaultAddress/:amount")
+    public async getTransferToCVFee(
+        @Param("fAssetSymbol") fAssetSymbol: string,
+        @Param("agentVaultAddress") agentVaultAddress: string,
+        @Param("amount") amount: string
+    ): Promise<ApiResponseWrapper<TransferToCVFee>> {
+        return handleApiResponse(this.agentService.transferToCVFee(fAssetSymbol, agentVaultAddress,amount));
+    }
+
 }
