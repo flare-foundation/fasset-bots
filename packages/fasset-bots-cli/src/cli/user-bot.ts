@@ -66,7 +66,7 @@ program
                 await bot.printAgentInfo(agentVaultAddress, opts.owner ? "auto" : undefined);
             }
         } catch (error) {
-            translateError(error, { "invalid agent vault address": `Agent vault with address ${agentVaultAddress} does not exist.` });
+            translateError(error, { "InvalidAgentVaultAddress": `Agent vault with address ${agentVaultAddress} does not exist.` });
         }
     });
 
@@ -100,11 +100,11 @@ program
             }
         } catch (error) {
             translateError(error, {
-                "invalid agent vault address": `Agent vault with address ${agentVault} does not exist.`,
-                "not enough free collateral": `Agent ${agentVault} does not have enough free collateral to accept the minting request.`,
-                "agent not in mint queue": `Agent ${agentVault} is not available for minting; try some other one.`,
-                "rc: invalid agent status": `Agent ${agentVault} is not available for minting; try some other one.`,
-                "agent's fee too high": `Agent ${agentVault} just changed minting fee; select an agent again.`,
+                "InvalidAgentVaultAddress": `Agent vault with address ${agentVault} does not exist.`,
+                "NotEnoughFreeCollateral": `Agent ${agentVault} does not have enough free collateral to accept the minting request.`,
+                "AgentNotInMintQueue": `Agent ${agentVault} is not available for minting; try some other one.`,
+                "InvalidAgentStatus": `Agent ${agentVault} is not available for minting; try some other one.`,
+                "AgentsFeeTooHigh": `Agent ${agentVault} just changed minting fee; select an agent again.`,
             });
         }
     });
@@ -164,7 +164,7 @@ program
             }
         } catch (error) {
             translateError(error, {
-                "f-asset balance too low": `User account does not hold ${numberOfLots} lots of ${options.fasset}.`
+                "FAssetBalanceTooLow": `User account does not hold ${numberOfLots} lots of ${options.fasset}.`
             });
         }
     });
@@ -181,7 +181,7 @@ program
             await redeemerBot.savedRedemptionDefault(requestId, cmdOptions.noWait ?? false);
         } catch (error) {
             translateError(error, {
-                "redemption default too early": "Agent still has time to pay; please try redemptionDefault later if the redemption isn't paid."
+                "RedemptionDefaultTooEarly": "Agent still has time to pay; please try redemptionDefault later if the redemption isn't paid."
             });
         }
     });
@@ -283,11 +283,11 @@ program
             console.log(`Received ${collateral} CFLR collateral.`);
         } catch (error) {
             translateError(error, {
-                "token share is zero": "Token amount must be greater than 0",
-                "token balance too low": `Token amount must not exceed user's balance of pool tokens, which is ${formatFixed(balance, 18)}.`,
-                "collateral ratio falls below exitCR": `Cannot exit pool at this time, since it would reduce the collateral ratio to dangerously low level; try with lower token amount.`,
-                "collateral left after exit is too low and non-zero": `Should not exit with nearly all tokens - use "all" for token amount.`,
-                "insufficient non-timelocked balance": "You cannot exit pool immediately after entering, please wait a minute.",
+                "TokenShareIsZero": "Token amount must be greater than 0",
+                "TokenBalanceTooLow": `Token amount must not exceed user's balance of pool tokens, which is ${formatFixed(balance, 18)}.`,
+                "CollateralRatioFallsBelowExitCR": `Cannot exit pool at this time, since it would reduce the collateral ratio to dangerously low level; try with lower token amount.`,
+                "CollateralAfterExitTooLow": `Should not exit with nearly all tokens - use "all" for token amount.`,
+                "InsufficientNontimelockedBalance": "You cannot exit pool immediately after entering, please wait a minute.",
             });
         }
     });
@@ -325,7 +325,7 @@ program
             await redeemerBot.redeemFromCoreVault(numberOfLots);
         } catch (error) {
             translateError(error, {
-                "f-asset balance too low": `User account does not hold ${numberOfLots} lots of ${options.fasset}.`
+                "FAssetBalanceTooLow": `User account does not hold ${numberOfLots} lots of ${options.fasset}.`
             });
         }
     });
@@ -357,7 +357,7 @@ toplevelRun(async () => {
         await program.parseAsync();
     } catch (error) {
         translateError(error, {
-            "invalid agent vault address": "Agent vault with given address does not exist.",
+            "InvalidAgentVaultAddress": "Agent vault with given address does not exist.",
             "insufficient funds for gas * price + value": "User account does not heave enough CFLR.",
         });
     }
