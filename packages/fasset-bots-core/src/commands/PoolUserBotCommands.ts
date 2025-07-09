@@ -12,6 +12,7 @@ import { logger } from "../utils/logger";
 import { authenticatedHttpProvider, initWeb3 } from "../utils/web3";
 import { InfoBotCommands } from "./InfoBotCommands";
 import { CleanupRegistration, CollateralPool } from "./UserBotCommands";
+import BN from "bn.js";
 
 
 export class PoolUserBotCommands {
@@ -67,6 +68,17 @@ export class PoolUserBotCommands {
         const pool = await CollateralPool.at(poolAddress);
         const res = await pool.exit(tokenAmountWei, { from: this.nativeAddress });
         return requiredEventArgs(res, "CPExited");
+    }
+
+    async poolFeesBalance(poolAddress: string): Promise<BN> {
+        const pool = await CollateralPool.at(poolAddress);
+        return await pool.fAssetFeesOf(this.nativeAddress);
+    }
+
+    async withdrawPoolFees(poolAddress: string, amount: BNish) {
+        const pool = await CollateralPool.at(poolAddress);
+        const res = await pool.withdrawFees(amount, { from: this.nativeAddress })
+        return requiredEventArgs(res, "CPFeesWithdrawn")
     }
 
     infoBot(): InfoBotCommands {

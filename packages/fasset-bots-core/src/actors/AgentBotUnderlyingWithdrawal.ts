@@ -65,9 +65,7 @@ export class AgentBotUnderlyingWithdrawal {
             }
         } catch (error: any) {
             const agentVault = this.agent.vaultAddress;
-            if (error.message?.includes("cancel too soon")) {
-                logger.info(`Agent ${agentVault} cannot yet cancel underlying withdrawal. Trying again.`);
-            } else if (error.message?.includes("no active announcement")) {
+            if (error.message?.includes("NoActiveAnnouncement")) {
                 await this.bot.notifier.sendNoActiveWithdrawal();
                 logger.info(`Agent ${agentVault} has no active underlying withdrawal announcement.`);
                 console.log(`Agent ${agentVault} has no active underlying withdrawal announcement.`);

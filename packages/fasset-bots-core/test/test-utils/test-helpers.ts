@@ -102,11 +102,11 @@ export async function cleanUp(context: IAssetAgentContext, agentBotSettings: Age
             await destroyAgent(context, agentBotSettings, orm, agentAddress, ownerAddress, ownerUnderlyingAddress);
         } catch (e) {
             if (e instanceof Error) {
-                if (e.message.includes("destroy: not allowed yet")) {
+                if (e.message.includes("DestroyNotAllowedYet")) {
                     await sleep(Number(toBN(waitingTime).muln(1000)));
                     await destroyAgent(context, agentBotSettings, orm, agentAddress, ownerAddress, ownerUnderlyingAddress);
                 }
-                if (e.message.includes("destroy not announced")) {
+                if (e.message.includes("DestroyNotAnnounced")) {
                     await context.assetManager.announceDestroyAgent(agentAddress, { from: ownerAddress });
                     await sleep(Number(toBN(waitingTime).muln(1000)));
                     await destroyAgent(context, agentBotSettings, orm, agentAddress, ownerAddress, ownerUnderlyingAddress);
