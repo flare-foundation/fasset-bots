@@ -13,9 +13,6 @@ describe("InfoBot cli commands unit tests", () => {
     })
 
     it("Should create InfoBot", async () => {
-        const infoBot1 = await InfoBotCommands.create(secrets, TEST_FASSET_BOT_CONFIG, "FTestBTC");
-        expect(infoBot1.context.assetManager.address).to.not.eq(ZERO_ADDRESS);
-        expect(await infoBot1.context.fAsset.symbol()).to.eq("FTestBTC");
         const infoBot2 = await InfoBotCommands.create(secrets, TEST_FASSET_BOT_CONFIG, undefined);
         expect(infoBot2.context.assetManager.address).to.not.eq(ZERO_ADDRESS);
         expect(await infoBot2.context.fAsset.symbol()).to.eq("FTestXRP");

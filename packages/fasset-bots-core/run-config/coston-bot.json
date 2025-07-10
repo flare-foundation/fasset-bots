@@ -22,41 +22,6 @@
             "minimumAccountBalance": "10",
             "faucet": "https://faucet.tequ.dev/",
             "priceChangeEmitter": "FtsoV2PriceStore"
-        },
-        "FSimCoinX": {
-            "chainId": "testXRP",
-            "tokenName": "Test XRP",
-            "tokenSymbol": "testXRP",
-            "tokenDecimals": 6,
-            "indexerUrls": ["https://testnet-verifier-fdc-test.aflabs.org/verifier/xrp"],
-            "walletUrls": ["https://s.altnet.rippletest.net:51234"],
-            "minimumAccountBalance": "10",
-            "faucet": "https://faucet.tequ.dev/",
-            "priceChangeEmitter": "FakePriceReader"
-        },
-        "FTestBTC": {
-            "chainId": "testBTC",
-            "tokenName": "Test BTC",
-            "tokenSymbol": "testBTC",
-            "tokenDecimals": 8,
-            "indexerUrls": ["https://testnet-verifier-fdc-test.aflabs.org/verifier/btc"],
-            "walletUrls": ["https://blockbook-bitcoin-testnet4.flare.network/api/v2"],
-            "priceChangeEmitter": "FtsoV2PriceStore",
-            "stuckTransactionOptions": {
-                "desiredChangeValue": 0.001
-            }
-        },
-        "FTestDOGE": {
-            "chainId": "testDOGE",
-            "tokenName": "Test DOGE",
-            "tokenSymbol": "testDOGE",
-            "tokenDecimals": 8,
-            "indexerUrls": ["https://testnet-verifier-fdc-test.aflabs.org/verifier/doge"],
-            "walletUrls": ["https://blockbook-dogecoin-testnet.flare.network/api/v2"],
-            "priceChangeEmitter": "FtsoV2PriceStore",
-            "stuckTransactionOptions": {
-                "desiredChangeValue": 100
-            }
         }
     },
     "agentBotSettings": {

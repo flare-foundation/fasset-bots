@@ -63,5 +63,6 @@ export class AgentSettingsConfigDTO {
      * The percentage of the redemption fee that goes to the collateral pool.
      * @pattern ^\d+(\.\d+)?%?$
      */
+    @ApiProperty()
     redemptionPoolFeeShare: string = "";
 }

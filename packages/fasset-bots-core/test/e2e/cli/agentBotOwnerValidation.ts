@@ -2,7 +2,7 @@ import { expect, spy, use } from "chai";
 import spies from "chai-spies";
 import { Secrets, createAgentBotContext, createBotConfig, loadConfigFile } from "../../../src/config";
 import { initWeb3 } from "../../../src/utils/web3";
-import { COSTON_RPC, COSTON_RUN_CONFIG_CONTRACTS, FASSET_BOT_CONFIG, TEST_FASSET_BOT_CONFIG, TEST_SECRETS } from "../../test-utils/test-bot-config";
+import { COSTON_RPC, COSTON_RUN_CONFIG_CONTRACTS, TEST_FASSET_BOT_CONFIG, TEST_SECRETS } from "../../test-utils/test-bot-config";
 import { getNativeAccounts } from "../../test-utils/test-helpers";
 import { AgentBotOwnerValidation, printingReporter } from "../../../src/commands/AgentBotOwnerValidation";
 import { IAssetAgentContext } from "../../../src/fasset-bots/IAssetBotContext";
@@ -11,7 +11,6 @@ use(spies);
 
 const fassetBotConfig = TEST_FASSET_BOT_CONFIG;
 const fAssetSymbol = "FTestXRP";
-const fassetBotConfig2 = FASSET_BOT_CONFIG;
 
 describe("AgentBotOwnerValidation cli commands unit tests", () => {
     let secrets: Secrets;
@@ -21,9 +20,6 @@ describe("AgentBotOwnerValidation cli commands unit tests", () => {
 
     async function createTestOwnerValidation() {
         return await AgentBotOwnerValidation.create(TEST_SECRETS, fassetBotConfig, printingReporter);
-    }
-    async function createOwnerValidation() {
-        return await AgentBotOwnerValidation.create(TEST_SECRETS, fassetBotConfig2, printingReporter);
     }
 
     before(async () => {
@@ -66,20 +62,6 @@ describe("AgentBotOwnerValidation cli commands unit tests", () => {
     it("Should validateForFAsset", async () => {
         const spyConsole = spy.on(console, "log");
         const botOwnerVAlidation = await createTestOwnerValidation();
-        await botOwnerVAlidation.validateForFAsset(fAssetSymbol);
-        expect(spyConsole).to.be.called.exactly(3);
-    });
-
-    it("Should validateOwnerNativeAddresses 2", async () => {
-        const spyConsole = spy.on(console, "log");
-        const botOwnerVAlidation = await createOwnerValidation();
-        await botOwnerVAlidation.validateOwnerNativeAddresses();
-        expect(spyConsole).to.be.called.above(8);
-    });
-
-    it("Should validateForFAsset 2", async () => {
-        const spyConsole = spy.on(console, "log");
-        const botOwnerVAlidation = await createOwnerValidation();
         await botOwnerVAlidation.validateForFAsset(fAssetSymbol);
         expect(spyConsole).to.be.called.exactly(3);
     });

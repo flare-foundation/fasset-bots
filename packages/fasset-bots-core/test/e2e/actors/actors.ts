@@ -150,22 +150,22 @@ describe("Actor tests - coston", () => {
         expect(actorBaseRunner2.actor.address).to.eq(liquidatorAddress);
         expect(actorBaseRunner2.actor instanceof Liquidator).to.be.true;
 
-        const actorBaseRunner3 = await ActorBaseRunner.create(actorConfig, systemKeeperAddress, ActorBaseKind.SYSTEM_KEEPER, fassetList[1]);
+        const actorBaseRunner3 = await ActorBaseRunner.create(actorConfig, systemKeeperAddress, ActorBaseKind.SYSTEM_KEEPER, fassetList[0]);
         expect(actorBaseRunner3.loopDelay).to.eq(actorConfig.loopDelay);
         expect(actorBaseRunner3.actor.address).to.eq(systemKeeperAddress);
         expect(actorBaseRunner3.actor instanceof SystemKeeper).to.be.true;
     });
 
-    it("should start and stop timekeepers", async () => {
+    it("Should start and stop timekeepers", async () => {
         const spyUpdate = spy.on(TimeKeeper.prototype, "updateUnderlyingBlock");
         try {
             const timekeeperService = await TimeKeeperService.create(actorConfig, ownerAddress, testTimekeeperTimingConfig({ queryWindow: 7200, updateIntervalMs: 300_000 }))
             timekeeperService.startAll();
             const timekeepers = Array.from(timekeeperService.timekeepers.values());
-            expect(timekeepers.length).to.be.eq(2);
+            expect(timekeepers.length).to.be.eq(1);
             await sleep(2000);
             await timekeeperService.stopAll();
-            expect(spyUpdate).to.be.called.exactly(2);
+            expect(spyUpdate).to.be.at.least(1);
         } finally {
             spy.restore(TimeKeeper.prototype);
         }

@@ -8,6 +8,5 @@
     "mintingPoolCollateralRatio": "2.4",
     "poolExitCollateralRatio": "2.6",
     "buyFAssetByAgentFactor": "0.99",
-    "poolTopupCollateralRatio": "2.2",
-    "poolTopupTokenPriceFactor": "0.8"
+    "redemptionPoolFeeShare": "40%"
 }

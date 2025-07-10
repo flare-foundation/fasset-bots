@@ -26,7 +26,7 @@ describe("AgentBot cli commands unit tests", () => {
     });
 
     it("Should initialize bot cli commands", async () => {
-        const botCliCommands = await AgentBotCommands.create(secrets, fassetBotConfig, fAssetSymbol);
+        const botCliCommands = await AgentBotCommands.create(secrets, fassetBotConfig, fAssetSymbol, undefined, false);
         expect(botCliCommands.notifiers).to.not.be.null;
         expect(botCliCommands.orm).to.not.be.null;
         expect(botCliCommands.context).to.not.be.null;

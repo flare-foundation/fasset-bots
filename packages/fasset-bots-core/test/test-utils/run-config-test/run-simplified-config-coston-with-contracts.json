@@ -17,14 +17,6 @@
             "tokenDecimals": 6,
             "indexerUrls": ["https://testnet-verifier-fdc-test.aflabs.org/verifier/xrp"],
             "priceChangeEmitter": "FtsoV2PriceStore"
-        },
-        "FSimCoinX": {
-            "chainId": "testXRP",
-            "tokenName": "Test XRP",
-            "tokenSymbol": "testXRP",
-            "tokenDecimals": 6,
-            "indexerUrls": ["https://testnet-verifier-fdc-test.aflabs.org/verifier/xrp"],
-            "priceChangeEmitter": "FakePriceReader"
         }
     },
     "agentBotSettings": {

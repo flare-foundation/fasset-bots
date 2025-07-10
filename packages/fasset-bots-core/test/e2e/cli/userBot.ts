@@ -24,9 +24,6 @@ describe("UserBot cli commands unit tests", () => {
     it("Should create UserBot", async () => {
         const userBot1 = await PoolUserBotCommands.create(TEST_SECRETS, TEST_FASSET_BOT_CONFIG, "FTestXRP");
         expect(userBot1.nativeAddress).to.eq(userAddress);
-        const userBot2 = await UserBotCommands.create(TEST_SECRETS, TEST_FASSET_BOT_CONFIG, "FSimCoinX", userDataDir);
-        expect(userBot2.nativeAddress).to.eq(userAddress);
-        expect(userBot2.underlyingAddress).to.not.eq(ZERO_ADDRESS);
     });
 
     it("Should create UserBot - invalid 'fAssetSymbol'", async () => {
