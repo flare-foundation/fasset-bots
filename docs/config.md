@@ -53,16 +53,10 @@ export interface AgentSettingsConfig {
     buyFAssetByAgentFactor: string;
 
     /**
-     * Pool collateral ratio below which the providers can enter at discounted rate.
-     * @pattern ^\d+(\.\d+)?\%?$
+     * The percentage of the redemption fee that goes to the collateral pool.
+     * @pattern ^\d+(\.\d+)?%?$
      */
-    poolTopupCollateralRatio: string;
-
-    /**
-     * Discounted price factor at which providers can enter when topup is active (i.e. the pool CR is below poolTopupCollateralRatio).
-     * @pattern ^\d+(\.\d+)?\%?$
-     */
-    poolTopupTokenPriceFactor: string;
+    redemptionPoolFeeShare: string = "";
 }
 ```
 

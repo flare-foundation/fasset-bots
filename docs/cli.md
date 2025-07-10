@@ -51,9 +51,7 @@ Some of the available commands:
 -   **mintingPoolCollateralRatioBIPS**: Collateral ratio at which we calculate locked collateral and collateral available for minting. Agent may set own value for minting collateral ratio on creation. The value must always be greater than system minimum collateral ratio for pool collateral.
 -   **buyFAssetByAgentFactorBIPS**: The factor set by the agent to multiply the price at which agent buys f-assets from pool token holders on self-close exit (when requested or the redeemed amount is less than 1 lot).
 -   **poolExitCollateralRatioBIPS**: The minimum collateral ratio above which a staker can exit the pool (this is CR that must be left after exit). Must be higher than system minimum collateral ratio for pool collateral.
--   **poolTopupCollateralRatioBIPS**: The CR below which it is possible to enter the pool at discounted rate (to prevent liquidation). Must be higher than system minimum collateral ratio for pool collateral.
--   **poolTopupTokenPriceFactorBIPS**: The discount to pool token price when entering and pool CR is below pool topup CR.
--   **handshakeType**: Handshake type (0 - no verification, 1 - manual verification (minting or redeeming can be rejected), ...)
+-   **redemptionPoolFeeShare**: The percentage of the redemption fee that goes to the collateral pool.
 
 # CLI `key`
 
