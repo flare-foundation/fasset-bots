@@ -406,6 +406,14 @@ describe("AgentBot cli commands unit tests", () => {
         expect(latestCancel.cancelled).to.be.true;
     });
 
+    it("Should not run command 'withdrawUnderlying' - destination is agent underlying address", async () => {
+        const agentBot = await createAgentBot();
+        const amountToWithdraw = toBN(100e6);
+        await expect(botCliCommands.withdrawUnderlying(agentBot.agent.vaultAddress, amountToWithdraw.toString(), agentBot.agent.underlyingAddress))
+            .to.eventually.be.rejectedWith(`Cannot withdraw to agent underlying address: ${agentBot.agent.underlyingAddress}`)
+            .and.to.be.instanceOf(CommandLineError);
+    });
+
     it("Should run command 'cancelUnderlyingWithdrawal' - no active withdrawals", async () => {
         const agent = await createAgent();
         const spyConsole = spy.on(console, "log");

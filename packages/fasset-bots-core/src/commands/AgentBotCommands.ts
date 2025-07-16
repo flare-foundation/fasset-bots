@@ -491,6 +491,9 @@ export class AgentBotCommands {
             throw new CommandLineError(`Invalid destination address: ${destinationAddress}`);
         }
         const { agentBot } = await this.getAgentBot(agentVault);
+        if (agentBot.agent.underlyingAddress === destinationAddress) {
+            throw new CommandLineError(`Cannot withdraw to agent underlying address: ${destinationAddress}`);
+        }
         // check that amount is not too high (we don't want the agent to go to full liquidation)
         const safeToWithdraw = await agentBot.getSafeToWithdrawUnderlying();
         if (toBN(amount).gt(safeToWithdraw)) {
