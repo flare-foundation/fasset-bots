@@ -435,7 +435,7 @@ describe("Notifier tests", () => {
 
     it("Should send agent cv redemption cannot be paid", async () => {
         const spySend = spy.on(notifier, "sendTransferToCVRedemptionNoFreeUnderlying");
-        await notifier.sendTransferToCVRedemptionNoFreeUnderlying("requestId", toBN(0), toBN(0));
+        await notifier.sendTransferToCVRedemptionNoFreeUnderlying("requestId");
         expect(spySend).to.have.been.called.once;
     });
 

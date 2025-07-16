@@ -292,12 +292,10 @@ export class AgentBotRedemption {
         if (maxRedemptionFee.eq(BN_ZERO)) {
             const coreVaultSourceAddress = await requireNotNull(this.context.coreVaultManager).coreVaultAddress();
             if (redemption.paymentAddress === coreVaultSourceAddress) { // additional check
-                const currentFee = await this.context.wallet.getTransactionFee({source: this.agent.underlyingAddress, destination: redemption.paymentAddress, isPayment: true, amount: redemption.valueUBA});
-                maxRedemptionFee = currentFee.muln(TRANSACTION_FEE_FACTOR_CV_REDEMPTION);
-                const safeToUseFreeUnderlying = await this.bot.getSafeToWithdrawUnderlying(); // check if enough safe free underlying to pay for fee
-                if (maxRedemptionFee.gt(safeToUseFreeUnderlying)) {
-                    logger.error(`Cannot pay for redemption ${redemption.requestId}, maxFee ${maxRedemptionFee.toString()} is greater than safe free underlying ${safeToUseFreeUnderlying.toString()}`);
-                    await this.notifier.sendTransferToCVRedemptionNoFreeUnderlying(redemption.requestId, maxRedemptionFee, safeToUseFreeUnderlying);
+                maxRedemptionFee = await this.bot.getTransferToCoreVaultMaxFee(redemption.paymentAddress, redemption.valueUBA)
+                if (maxRedemptionFee.eq(BN_ZERO)) {
+                    logger.error(`Cannot pay for redemption ${redemption.requestId}, current fee is greater than agent can spend.`);
+                    await this.notifier.sendTransferToCVRedemptionNoFreeUnderlying(redemption.requestId);
                     return;
                 }
             } else {

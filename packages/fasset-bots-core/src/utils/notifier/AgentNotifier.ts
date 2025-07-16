@@ -631,10 +631,10 @@ export class AgentNotifier extends BaseNotifier<AgentNotificationKey> {
         );
     }
 
-    async sendTransferToCVRedemptionNoFreeUnderlying(requestId: BNish, maxRedemptionFee: BNish, safeToUseFreeUnderlying: BNish) {
+    async sendTransferToCVRedemptionNoFreeUnderlying(requestId: BNish) {
         await this.danger(
             AgentNotificationKey.TRANSFER_TO_CV_REDEMPTION,
-            `Agent ${this.address} cannot pay core vault redemption ${requestId}. Not enough safe free underlying ${safeToUseFreeUnderlying}, needed ${maxRedemptionFee}.`
+            `Agent ${this.address} cannot pay core vault redemption ${requestId}. Fee is too high.`
         );
     }
 

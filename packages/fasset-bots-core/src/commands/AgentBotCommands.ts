@@ -868,13 +868,11 @@ export class AgentBotCommands {
             throw new CommandLineError(`Cannot transfer funds. Requested amount ${currency.formatValue(amount)} is higher than allowed ${currency.formatValue(allowedToSend.maximumTransferUBA)}.`);
         }
         // check if enough free underlying to cover underlying fee
-        const safeToWithdraw = await this.getSafeToWithdrawUnderlying(agentVault);
         const coreVaultSourceAddress = await requireNotNull(this.context.coreVaultManager).coreVaultAddress();
-        const underlyingFee = await agentBot.context.wallet.getTransactionFee({source: agentBot.agent.underlyingAddress, amount: toBN(amount), destination: coreVaultSourceAddress, isPayment: true })
-        if (toBN(safeToWithdraw).lt(underlyingFee.muln(TRANSACTION_FEE_FACTOR_CV_REDEMPTION))) { // multiply by a constant to be on the safe side, in case the underlying fee changes until redemption ticket is actually paid on the underlying.
-            logger.error(`Agent ${agentVault} cannot transfer funds. Not enough free underlying ${currency.formatValue(safeToWithdraw)} to pay for underlying transaction fee ${currency.formatValue(underlyingFee)}.`);
-            throw new CommandLineError(squashSpace`Cannot transfer funds. Not enough free underlying ${currency.formatValue(safeToWithdraw)} to pay for underlying transaction fee ${currency.formatValue(underlyingFee)}.
-                Note that the "minimumFreeUnderlyingBalance" is set to ${currency.formatValue(agentBot.agentBotSettings.minimumFreeUnderlyingBalance)}.`);
+        const underlyingFee = await agentBot.getTransferToCoreVaultMaxFee(coreVaultSourceAddress, toBN(amount));
+        if (underlyingFee.eq(BN_ZERO)) {
+            logger.error(`Agent ${agentVault} cannot transfer funds. Current fee is too high.`);
+            throw new CommandLineError(squashSpace`Cannot transfer funds. Not enough free underlying to pay for underlying transaction fee.`);
         }
         // request transfer
         const res = await this.context.assetManager.transferToCoreVault(agentVault, amount,  { from: agentBot.agent.owner.workAddress });

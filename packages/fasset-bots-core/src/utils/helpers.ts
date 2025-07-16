@@ -37,6 +37,7 @@ export const DEFAULT_RETRY_DELAY_MS = 2000;
 
 export const TRANSACTION_FEE_FACTOR = 1.4; // used in the calculation of the required underlying balance
 export const TRANSACTION_FEE_FACTOR_CV_REDEMPTION = 2; // used for `transferToCoreVault` to ensure sufficient `freeUnderlying`
+export const TRANSACTION_FEE_CV_MAX_IN_DROPS = 10_000; // used for `transferToCoreVault` to ensure sufficient fee in case of sudden fee burst - 0.01 XRP
 
 /**
  * Asynchronously wait `ms` milliseconds.

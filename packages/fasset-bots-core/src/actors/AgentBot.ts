@@ -17,7 +17,7 @@ import { EventArgs, EvmEvent } from "../utils/events/common";
 import { eventIs } from "../utils/events/truffle";
 import { FairLock } from "../utils/FairLock";
 import { formatArgs, formatTimestamp, squashSpace } from "../utils/formatting";
-import { BN_ZERO, BNish, DAYS, MINUTES, ZERO_ADDRESS, assertNotNull, getOrCreate, maxBN, sleepUntil, toBN } from "../utils/helpers";
+import { BN_ZERO, BNish, DAYS, MINUTES, TRANSACTION_FEE_CV_MAX_IN_DROPS, TRANSACTION_FEE_FACTOR_CV_REDEMPTION, ZERO_ADDRESS, assertNotNull, getOrCreate, maxBN, minBN, sleepUntil, toBN } from "../utils/helpers";
 import { logger } from "../utils/logger";
 import { loggerAsyncStorage } from "@flarenetwork/simple-wallet";
 import { AgentNotifier } from "../utils/notifier/AgentNotifier";
@@ -633,6 +633,19 @@ export class AgentBot {
         const backingUBA = toBN(info.mintedUBA).add(toBN(info.redeemingUBA));
         const required = backingUBA.add(this.agentBotSettings.minimumFreeUnderlyingBalance);
         return maxBN(toBN(info.underlyingBalanceUBA).sub(required), BN_ZERO);
+    }
+
+    async getTransferToCoreVaultMaxFee(destinationAddress: string, amount: BN): Promise<BN> {
+        const currentFee = await this.context.wallet.getTransactionFee({source: this.agent.underlyingAddress, destination: destinationAddress, isPayment: true, amount: amount});
+        const redemptionFee = currentFee.muln(TRANSACTION_FEE_FACTOR_CV_REDEMPTION);
+        const safeToUseFreeUnderlying = await this.getSafeToWithdrawUnderlying();
+        const canUseToPayFee = minBN(toBN(TRANSACTION_FEE_CV_MAX_IN_DROPS), safeToUseFreeUnderlying.divRound(toBN(2)))
+        // safe check
+        if (redemptionFee.gt(canUseToPayFee)) { // not enough to pay for the current fee
+            logger.warn(`getTransferToCoreVaultMaxFee: currentFee: ${currentFee.toString()}, canUseToPayFee ${canUseToPayFee.toString()}.`);
+            return BN_ZERO
+        }
+        return canUseToPayFee;
     }
 
     /**
