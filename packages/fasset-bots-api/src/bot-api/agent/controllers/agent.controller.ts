@@ -520,4 +520,12 @@ export class AgentController {
         public async redemptionQueueData(): Promise<ApiResponseWrapper<RedemptionQueueData>> {
             return handleApiResponse(this.agentService.getRedemptionQueueData());
     }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @Get("otherBots")
+    public async getOtherBots(
+    ): Promise<ApiResponseWrapper<any>> {
+        return handleApiResponse(this.agentService.getOtherBots());
+    }
 }

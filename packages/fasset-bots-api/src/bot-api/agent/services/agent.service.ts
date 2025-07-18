@@ -33,6 +33,8 @@ export class AgentService {
     private redemptionQueueLots: number = -1;
     private fxrpSymbol: string = "";
     private isRunning: boolean = false;
+    private liquidatorActivity: number = 0;
+    private challengerActivity: number = 0;
     constructor(
         @Inject(CACHE_MANAGER) private cacheManager: Cache,
         private readonly em: EntityManager,
@@ -379,6 +381,12 @@ export class AgentService {
             await this.deleteExpiredAlerts();
             return;
         }*/
+        if(notification.title == "CHALLENGER IS ONLINE") {
+            this.challengerActivity = Date.now();
+        }
+        if(notification.title == "LIQUIDATOR IS ONLINE") {
+            this.liquidatorActivity = Date.now();
+        }
         const alert = new Alert(notification.bot_type,notification.address, notification.level, notification.title, notification.description, Date.now()+ (4 * 24 * 60 * 60 * 1000), Date.now());
         await this.deleteExpiredAlerts();
         await this.em.persistAndFlush(alert);
@@ -930,11 +938,6 @@ export class AgentService {
         await cli.returnFromCoreVault(agentVaultAddress, lots);
     }
 
-    async transferToCVFee(fAssetSymbol: string, agentVaultAddress: string, amount: string): Promise<TransferToCVFee> {
-        const cli = this.infoBotMap.get(fAssetSymbol) as AgentBotCommands;
-        return {fee: "0", symbol: cli.context.nativeChainInfo.tokenSymbol, feeUSD: "0"};
-    }
-
     async updateRedemptionQueue(): Promise<void> {
         const cli = this.infoBotMap.get(this.fxrpSymbol) as AgentBotCommands;
         const fSupply = await cli.context.fAsset.totalSupply();
@@ -963,5 +966,34 @@ export class AgentService {
         }
         const cli = await AgentBotCommands.create(this.secrets, FASSET_BOT_CONFIG, fAssetSymbol);
         await cli.cancelReturnFromCoreVault(agentVaultAddress);
+    }
+
+    async getOtherBots(): Promise<any> {
+        const others = [];
+        const challAddress = cachedSecrets.optional(`challenger.address`);
+        const liqAddress = cachedSecrets.optional(`liquidator.address`);
+        const now = Date.now();
+        const natBot = this.infoBotMap.get(this.fxrpSymbol) as AgentBotCommands;
+        const natSymbol = natBot.context.nativeChainInfo.tokenSymbol;
+        const fDecimals = await natBot.context.fAsset.decimals();
+        if (challAddress) {
+            const status = this.challengerActivity >= (now - 180000);
+            const natBalance = await web3.eth.getBalance(challAddress);
+            const fassetBalance = await natBot.context.fAsset.balanceOf(challAddress);
+            const balances: AllBalances[] = [];
+            balances.push({symbol: natSymbol, balance: formatFixed(toBN(natBalance), 18, { decimals: 3, groupDigits: true, groupSeparator: "," })});
+            balances.push({symbol: natBot.context.fAssetSymbol, balance: formatFixed(toBN(fassetBalance), fDecimals.toNumber(), { decimals: 3, groupDigits: true, groupSeparator: "," })});
+            others.push({type: "Agent Challenger", address: challAddress, status: status, balances: balances});
+        }
+        if (liqAddress) {
+            const status = this.liquidatorActivity >= (now - 180000);
+            const natBalance = await web3.eth.getBalance(liqAddress);
+            const fassetBalance = await natBot.context.fAsset.balanceOf(liqAddress);
+            const balances: AllBalances[] = [];
+            balances.push({symbol: natSymbol, balance: formatFixed(toBN(natBalance), 18, { decimals: 3, groupDigits: true, groupSeparator: "," })});
+            balances.push({symbol: natBot.context.fAssetSymbol, balance: formatFixed(toBN(fassetBalance), fDecimals.toNumber(), { decimals: 3, groupDigits: true, groupSeparator: "," })});
+            others.push({type: "Agent Liquidator", address: liqAddress, status: status, balances: balances});
+        }
+        return others;
     }
 }

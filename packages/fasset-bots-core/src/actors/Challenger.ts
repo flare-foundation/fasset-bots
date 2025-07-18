@@ -79,7 +79,6 @@ export class Challenger extends ActorBase {
         const trackedState = new TrackedState(context);
         await trackedState.initialize(true);
         const blockHeight = await context.blockchainIndexer.getLastFinalizedBlockNumber();
-        ;
         logger.info(`Challenger ${address} initialized tracked state.`);
         return new Challenger(context, new ScopedRunner(), address, trackedState, blockHeight, new ChallengerNotifier(address, config.notifiers));
     }

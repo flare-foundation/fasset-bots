@@ -11,7 +11,7 @@ import { ChallengerNotifier } from "../../../fasset-bots-core/src/utils/notifier
 const program = programWithCommonOptions("bot", "all_fassets");
 
 let activityUpdateTimer: NodeJS.Timeout | null = null;
-const activityUpdateInterval = 60000; // 1min
+const activityUpdateInterval = 120000; // 2min
 
 async function activityTimestampUpdate(notifier: ChallengerNotifier) {
     try {
@@ -19,7 +19,7 @@ async function activityTimestampUpdate(notifier: ChallengerNotifier) {
     } catch(error) {
         logger.error("Error sending timestamp:", error);
         console.error(`Error sending timestamp: ${error}`);
-    };
+    }
 }
 
 function startTimestampUpdater(notifier: ChallengerNotifier) {
