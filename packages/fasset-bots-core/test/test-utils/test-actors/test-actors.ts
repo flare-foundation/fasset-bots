@@ -14,6 +14,8 @@ import { ChainId } from "../../../src/underlying-chain/ChainId";
 import { ScopedRunner } from "../../../src/utils/events/ScopedRunner";
 import { fail } from "../../../src/utils/helpers";
 import { NotifierTransport } from "../../../src/utils/notifier/BaseNotifier";
+import { ChallengerNotifier } from "../../../src/utils/notifier/ChallengerNotifier";
+import { LiquidatorNotifier } from "../../../src/utils/notifier/LiquidatorNotifier";
 import { DEFAULT_POOL_TOKEN_SUFFIX } from "../../../test-hardhat/test-utils/helpers";
 import { testNotifierTransports } from "../testNotifierTransports";
 
@@ -49,11 +51,11 @@ export async function createTestAgentBot(
 }
 
 export async function createTestChallenger(context: IChallengerContext, address: string, state: TrackedState): Promise<Challenger> {
-    return new Challenger(context, new ScopedRunner(), address, state, await context.blockchainIndexer.getLastFinalizedBlockNumber(), testNotifierTransports);
+    return new Challenger(context, new ScopedRunner(), address, state, await context.blockchainIndexer.getLastFinalizedBlockNumber(), new ChallengerNotifier(address, testNotifierTransports));
 }
 
 export async function createTestLiquidator(context: ILiquidatorContext, address: string, state: TrackedState): Promise<Liquidator> {
-    return new Liquidator(context, new ScopedRunner(), address, state, testNotifierTransports);
+    return new Liquidator(context, new ScopedRunner(), address, state, new LiquidatorNotifier(address, testNotifierTransports));
 }
 
 export async function createTestSystemKeeper(address: string, state: TrackedState): Promise<SystemKeeper> {

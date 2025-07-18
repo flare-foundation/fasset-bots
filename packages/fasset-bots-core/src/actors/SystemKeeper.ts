@@ -20,7 +20,7 @@ export class SystemKeeper extends ActorBase {
         public address: string,
         public state: TrackedState
     ) {
-        super(runner, address, state);
+        super(runner, address, state, null);
     }
 
     static async create(config: BotConfig, address: string, fAsset: BotFAssetConfig): Promise<SystemKeeper> {

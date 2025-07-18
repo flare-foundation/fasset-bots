@@ -30,6 +30,8 @@ import { testNotifierTransports } from "../../test/test-utils/testNotifierTransp
 import { IERC20Instance } from "../../typechain-truffle";
 import { TestAssetBotContext, createTestAssetContext } from "./create-test-asset-context";
 import { MockFlareDataConnectorClient } from "../../src/mock/MockFlareDataConnectorClient";
+import { ChallengerNotifier } from "../../src/utils/notifier/ChallengerNotifier";
+import { LiquidatorNotifier } from "../../src/utils/notifier/LiquidatorNotifier";
 
 const FakeERC20 = artifacts.require("FakeERC20");
 const IERC20 = artifacts.require("IERC20");
@@ -91,11 +93,11 @@ export async function mintVaultCollateralToOwner(amount: BNish, vaultCollateralT
 }
 
 export async function createTestChallenger(context: IChallengerContext, address: string, state: TrackedState): Promise<Challenger> {
-    return new Challenger(context, new ScopedRunner(), address, state, await context.blockchainIndexer.getLastFinalizedBlockNumber(), testNotifierTransports);
+    return new Challenger(context, new ScopedRunner(), address, state, await context.blockchainIndexer.getLastFinalizedBlockNumber(), new ChallengerNotifier(address, testNotifierTransports));
 }
 
 export async function createTestLiquidator(context: ILiquidatorContext, address: string, state: TrackedState): Promise<Liquidator> {
-    return new Liquidator(context, new ScopedRunner(), address, state, testNotifierTransports);
+    return new Liquidator(context, new ScopedRunner(), address, state, new LiquidatorNotifier(address, testNotifierTransports));
 }
 
 export async function createTestSystemKeeper(address: string, state: TrackedState): Promise<SystemKeeper> {

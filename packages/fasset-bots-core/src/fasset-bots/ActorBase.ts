@@ -1,5 +1,7 @@
 import { TrackedState } from "../state/TrackedState";
 import { ScopedRunner } from "../utils/events/ScopedRunner";
+import { ChallengerNotifier } from "../utils/notifier/ChallengerNotifier";
+import { LiquidatorNotifier } from "../utils/notifier/LiquidatorNotifier";
 
 export enum ActorBaseKind {
     CHALLENGER,
@@ -12,7 +14,8 @@ export class ActorBase {
     constructor(
         public runner: ScopedRunner,
         public address: string,
-        public state: TrackedState
+        public state: TrackedState,
+        public notifier: ChallengerNotifier | LiquidatorNotifier | null
     ) {}
 
     async runStep(): Promise<void> {

@@ -32,7 +32,7 @@ describe("Actor base runner tests", () => {
     });
 
     it("Should run actor base runner until its stopped", async () => {
-        const actor = new ActorBase(new ScopedRunner(), ownerAddress, new TrackedState(context));
+        const actor = new ActorBase(new ScopedRunner(), ownerAddress, new TrackedState(context), null);
         const actorBaseRunner = new ActorBaseRunner(loopDelay, actor);
         const spyStep = spy.on(actorBaseRunner, "runStep");
         actorBaseRunner.requestStop();

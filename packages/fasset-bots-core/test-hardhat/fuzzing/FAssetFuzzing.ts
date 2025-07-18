@@ -29,6 +29,8 @@ import { FuzzingRunner } from "./FuzzingRunner";
 import { FuzzingState } from "./FuzzingState";
 import { FuzzingStateComparator } from "./FuzzingStateComparator";
 import { FuzzingTimeline } from "./FuzzingTimeline";
+import { LiquidatorNotifier } from "../../src/utils/notifier/LiquidatorNotifier";
+import { ChallengerNotifier } from "../../src/utils/notifier/ChallengerNotifier";
 
 export type MiningMode = "auto" | "manual";
 
@@ -121,7 +123,7 @@ describe("Fuzzing tests", () => {
         // create liquidators
         const firstLiquidatorAddress = firstAgentAddress + 3 * N_AGENTS + N_CUSTOMERS + N_KEEPERS;
         for (let i = 0; i < N_LIQUIDATORS; i++) {
-            const liquidator = new Liquidator(context, runner, accounts[firstLiquidatorAddress + i], commonTrackedState, notifiers);
+            const liquidator = new Liquidator(context, runner, accounts[firstLiquidatorAddress + i], commonTrackedState, new LiquidatorNotifier(accounts[firstLiquidatorAddress + i], notifiers));
             liquidators.push(liquidator);
             // await context.fAsset.mint(accounts[1], 100);
             eventFormatter.addAddress(`LIQUIDATOR_${i}`, liquidator.address);
@@ -129,7 +131,7 @@ describe("Fuzzing tests", () => {
         }
         // create challenger
         const challengerAddress = accounts[firstAgentAddress + 3 * N_AGENTS + N_CUSTOMERS + N_KEEPERS + N_LIQUIDATORS];
-        challenger = new Challenger(context, runner, challengerAddress, commonTrackedState, await context.blockchainIndexer.chain.getLastFinalizedBlockNumber(), notifiers);
+        challenger = new Challenger(context, runner, challengerAddress, commonTrackedState, await context.blockchainIndexer.chain.getLastFinalizedBlockNumber(), new ChallengerNotifier(challengerAddress, notifiers));
         eventFormatter.addAddress(`CHALLENGER`, challenger.address);
         // create time keeper
         const timeKeeperAddress = accounts[firstAgentAddress + 3 * N_AGENTS + N_CUSTOMERS + N_KEEPERS + N_LIQUIDATORS + 1];

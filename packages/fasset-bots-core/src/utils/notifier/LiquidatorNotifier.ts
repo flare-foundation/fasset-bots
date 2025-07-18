@@ -2,6 +2,7 @@ import { BaseNotifier, BotType, NotifierTransport } from "./BaseNotifier";
 
 enum LiquidatorNotificationKey {
     AGENT_LIQUIDATED = "AGENT LIQUIDATED",
+    LIQUIDATOR_IS_ONLINE = "LIQUIDATOR IS ONLINE"
 }
 
 export class LiquidatorNotifier extends BaseNotifier<LiquidatorNotificationKey> {
@@ -13,6 +14,14 @@ export class LiquidatorNotifier extends BaseNotifier<LiquidatorNotificationKey> 
         await this.info(
             LiquidatorNotificationKey.AGENT_LIQUIDATED,
             `Liquidator ${this.address} liquidated agent ${agentVault}.`
+        );
+    }
+
+    async sendActivityReport() {
+        const now = Math.floor((new Date()).getTime() / 1000)
+        await this.info(
+            LiquidatorNotificationKey.LIQUIDATOR_IS_ONLINE,
+            `Liquidator ${this.address} is online: ${now.toString()}.`
         );
     }
 }

@@ -5,7 +5,8 @@ enum ChallengerNotificationKey {
     DOUBLE_PAYMENT_CHALLENGE = "DOUBLE PAYMENT CHALLENGE",
     FREE_BALANCE_NEGATIVE_CHALLENGE = "FREE BALANCE NEGATIVE CHALLENGE",
     UNDERLYING_PAYMENT_CONFIRMED = "UNDERLYING PAYMENT CONFIRMED",
-    TRANSFER_TO_CORE_VAULT_DEFAULTED = "TRANSFER TO CORE VAULT DEFAULTED"
+    TRANSFER_TO_CORE_VAULT_DEFAULTED = "TRANSFER TO CORE VAULT DEFAULTED",
+    CHALLENGER_IS_ONLINE = "CHALLENGER IS ONLINE"
 }
 
 export class ChallengerNotifier extends BaseNotifier<ChallengerNotificationKey> {
@@ -45,6 +46,14 @@ export class ChallengerNotifier extends BaseNotifier<ChallengerNotificationKey> 
         await this.info(
             ChallengerNotificationKey.TRANSFER_TO_CORE_VAULT_DEFAULTED,
             `Challenger ${this.address} successfully defaulted transfer to core vault with reference ${reference} for agent ${agentVault}.`
+        );
+    }
+
+    async sendActivityReport() {
+        const now = Math.floor((new Date()).getTime() / 1000)
+        await this.info(
+            ChallengerNotificationKey.CHALLENGER_IS_ONLINE,
+            `Challenger ${this.address} is online: ${now.toString()}.`
         );
     }
 }

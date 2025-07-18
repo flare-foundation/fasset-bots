@@ -11,6 +11,7 @@ import { testChainInfo } from "../../../test/test-utils/TestChainInfo";
 import { testNotifierTransports } from "../../../test/test-utils/testNotifierTransports";
 import { TestAssetBotContext, TestAssetTrackedStateContext, createTestAssetContext, getTestAssetTrackedStateContext } from "../../test-utils/create-test-asset-context";
 import { loadFixtureCopyVars } from "../../test-utils/hardhat-test-helpers";
+import { LiquidatorNotifier } from "../../../src/utils/notifier/LiquidatorNotifier";
 use(spies);
 
 describe("Liquidator unit tests", () => {
@@ -50,7 +51,7 @@ describe("Liquidator unit tests", () => {
     });
 
     it("Should create liquidator", async () => {
-        const liquidator = new Liquidator(context, runner, liquidatorAddress, state, testNotifierTransports);
+        const liquidator = new Liquidator(context, runner, liquidatorAddress, state, new LiquidatorNotifier(liquidatorAddress, testNotifierTransports));
         expect(liquidator.address).to.eq(liquidatorAddress);
     });
 
@@ -58,7 +59,7 @@ describe("Liquidator unit tests", () => {
         const spyConsole = spy.on(console, "error");
         const mockState = new MockTrackedState(trackedStateContext, null);
         await mockState.initialize();
-        const liquidator = new Liquidator(trackedStateContext, runner, liquidatorAddress, mockState, testNotifierTransports);
+        const liquidator = new Liquidator(trackedStateContext, runner, liquidatorAddress, mockState, new LiquidatorNotifier(liquidatorAddress, testNotifierTransports));
         expect(liquidator.address).to.eq(liquidatorAddress);
         await liquidator.runStep();
         expect(spyConsole).to.be.called.once;

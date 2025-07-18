@@ -44,7 +44,7 @@ interface ActiveWithdrawal {
 export class Challenger extends ActorBase {
     static deepCopyWithObjectCreate = true;
 
-    notifier: ChallengerNotifier;
+    // notifier: ChallengerNotifier;
     challengeStrategy: ChallengeStrategy<any>;
 
     constructor(
@@ -53,10 +53,9 @@ export class Challenger extends ActorBase {
         public address: string,
         public state: TrackedState,
         public lastEventUnderlyingBlockHandled: number,
-        notifierTransports: NotifierTransport[]
+        public notifier: ChallengerNotifier
     ) {
-        super(runner, address, state);
-        this.notifier = new ChallengerNotifier(this.address, notifierTransports);
+        super(runner, address, state, notifier);
         if (context.challengeStrategy === undefined) {
             this.challengeStrategy = new DefaultChallengeStrategy(context, state, address);
         } else {
@@ -80,8 +79,9 @@ export class Challenger extends ActorBase {
         const trackedState = new TrackedState(context);
         await trackedState.initialize(true);
         const blockHeight = await context.blockchainIndexer.getLastFinalizedBlockNumber();
+        ;
         logger.info(`Challenger ${address} initialized tracked state.`);
-        return new Challenger(context, new ScopedRunner(), address, trackedState, blockHeight, config.notifiers);
+        return new Challenger(context, new ScopedRunner(), address, trackedState, blockHeight, new ChallengerNotifier(address, config.notifiers));
     }
 
     /**

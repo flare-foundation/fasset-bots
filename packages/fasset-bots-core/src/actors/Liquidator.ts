@@ -16,7 +16,6 @@ import { DefaultLiquidationStrategy, LiquidationStrategy } from "./plugins/Liqui
 export class Liquidator extends ActorBase {
     static deepCopyWithObjectCreate = true;
 
-    notifier: LiquidatorNotifier;
     liquidationStrategy: LiquidationStrategy<any>;
 
     constructor(
@@ -24,10 +23,9 @@ export class Liquidator extends ActorBase {
         public runner: ScopedRunner,
         public address: string,
         public state: TrackedState,
-        notifierTransports: NotifierTransport[]
+        notifier: LiquidatorNotifier
     ) {
-        super(runner, address, state);
-        this.notifier = new LiquidatorNotifier(this.address, notifierTransports);
+        super(runner, address, state, notifier);
         if (context.liquidationStrategy === undefined) {
             this.liquidationStrategy = new DefaultLiquidationStrategy(context, state, address);
         } else {
@@ -44,7 +42,7 @@ export class Liquidator extends ActorBase {
         const trackedState = new TrackedState(context);
         await trackedState.initialize(true);
         logger.info(`Liquidator ${address} initialized tracked state.`);
-        return new Liquidator(context, new ScopedRunner(), address, trackedState, config.notifiers);
+        return new Liquidator(context, new ScopedRunner(), address, trackedState, new LiquidatorNotifier(address, config.notifiers));
     }
 
     /**
