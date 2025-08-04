@@ -26,3 +26,4 @@ export { TokenPriceReader } from "./state/TokenPrice";
 export * from "./config/config-file-loader";
 export { encryptText, decryptText, EncryptionMethod } from "@flarenetwork/simple-wallet";
 export { isJSON, promptForPassword } from "./utils/prompt";
+export * from "./fasset/Conversions";
