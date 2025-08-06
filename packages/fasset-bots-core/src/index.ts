@@ -36,3 +36,5 @@ export * from "./underlying-chain/interfaces/IFlareDataConnectorClient";
 export * from "./utils/helpers";
 export * from "./utils/formatting";
 export * from "./utils/events/Web3ContractEventDecoder";
+export * from "./config/secrets";
+export * from "./utils/events/common";
