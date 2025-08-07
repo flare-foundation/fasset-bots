@@ -31,6 +31,7 @@ export class TransactionRevertedError extends ErrorWithCause {
 
 
 export const STRING_REVERT_ERROR: AbiItem = { type: "error" as any, name: "Error", inputs: [{ "internalType": "string", "name": "message", "type": "string" }] };
+export const PANIC_ERROR: AbiItem = { type: "error" as any, name: "Panic", inputs: [{ "internalType": "uint256", "name": "code", "type": "uint256" }] };
 
 export function buildCustomErrorMap(abi: AbiItem[]) {
     function addError(item: AbiItem) {
@@ -40,6 +41,7 @@ export function buildCustomErrorMap(abi: AbiItem[]) {
     }
     const errorMap = new Map<string, AbiItem>;
     addError(STRING_REVERT_ERROR);
+    addError(PANIC_ERROR);
     for (const item of abi) {
         addError(item);
     }
