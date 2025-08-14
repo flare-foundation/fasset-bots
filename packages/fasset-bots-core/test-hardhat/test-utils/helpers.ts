@@ -53,6 +53,7 @@ export function assertWeb3DeepEqual(x: any, y: any, message?: string) {
 
 export async function createTestAgentBot(
     context: TestAssetBotContext,
+    governance: string,
     orm: ORM,
     ownerManagementAddress: string,
     ownerUnderlyingAddress?: string,
@@ -71,6 +72,7 @@ export async function createTestAgentBot(
     const agentBotSettings = requireNotNull(testAgentBotSettings[context.chainInfo.chainId.chainName as TestChainType]);
     const agentBot = await AgentBot.create(orm.em, context, agentBotSettings, owner, ownerUnderlyingAddress, addressValidityProof, agentVaultSettings, notifiers);
     agentBot.timekeeper = { latestProof: undefined };
+    await context.coreVaultManager?.addAllowedDestinationAddresses([vaultUnderlyingAddress], { from: governance })
     return agentBot;
 }
 
@@ -166,7 +168,7 @@ export async function createTestAgentAndMakeAvailable(
     governance?: string,
 ): Promise<Agent> {
     const agent = await createTestAgent(context, ownerAddress, underlyingAddress, autoSetWorkAddress);
-    await mintAndDepositVaultCollateralToOwner(context, agent, depositUSDC, ownerAddress, governance);
+    await mintAndDepositVaultCollateralToOwner(agent, depositUSDC, ownerAddress, governance);
     await agent.depositVaultCollateral(depositUSDC);
     await agent.buyCollateralPoolTokens(depositNat);
     await agent.makeAvailable();
@@ -175,16 +177,16 @@ export async function createTestAgentAndMakeAvailable(
 
 export async function createTestAgentBotAndMakeAvailable(
     context: TestAssetBotContext,
+    governance: string,
     orm: ORM,
     ownerAddress: string,
     ownerUnderlyingAddress?: string,
     autoSetWorkAddress: boolean = true,
     notifier: NotifierTransport[] = testNotifierTransports,
     options?: AgentVaultInitSettings,
-    governance?: string,
 ) {
-    const agentBot = await createTestAgentBot(context, orm, ownerAddress, ownerUnderlyingAddress, autoSetWorkAddress, notifier, options);
-    await mintAndDepositVaultCollateralToOwner(context, agentBot.agent, depositUSDC, agentBot.agent.owner.workAddress, governance);
+    const agentBot = await createTestAgentBot(context, governance, orm, ownerAddress, ownerUnderlyingAddress, autoSetWorkAddress, notifier, options);
+    await mintAndDepositVaultCollateralToOwner(agentBot.agent, depositUSDC, agentBot.agent.owner.workAddress, governance);
     await agentBot.agent.depositVaultCollateral(depositUSDC);
     await agentBot.agent.buyCollateralPoolTokens(depositNat);
     await agentBot.agent.makeAvailable();
@@ -192,7 +194,6 @@ export async function createTestAgentBotAndMakeAvailable(
 }
 
 export async function mintAndDepositVaultCollateralToOwner(
-    context: IAssetAgentContext,
     agent: Agent,
     depositAmount: BNish,
     ownerAddress: string,

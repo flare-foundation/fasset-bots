@@ -3,7 +3,7 @@ import "source-map-support/register";
 
 import { AgentBotCommands, AgentBotOwnerValidation, printingReporter } from "@flarenetwork/fasset-bots-core";
 import { Secrets, loadAgentSettings, loadConfigFile, loadContracts } from "@flarenetwork/fasset-bots-core/config";
-import { CommandLineError, Currencies, errorIncluded, requireNotNullCmd, squashSpace, toBIPS, toBN } from "@flarenetwork/fasset-bots-core/utils";
+import { CommandLineError, Currencies, errorIncluded, getMaximumTransferToCoreVault, requireNotNullCmd, squashSpace, toBIPS, toBN } from "@flarenetwork/fasset-bots-core/utils";
 import chalk from "chalk";
 import fs from "fs";
 import { programWithCommonOptions } from "../utils/program";
@@ -545,7 +545,7 @@ program
         const options: { config: string; secrets: string; fasset: string } = program.opts();
         const secrets = await Secrets.load(options.secrets);
         const cli = await AgentBotCommands.create(secrets, options.config, options.fasset, registerToplevelFinalizer);
-        const allowed = await cli.getMaximumTransferToCoreVault(agentVault);
+        const allowed = await getMaximumTransferToCoreVault(cli.context, agentVault);
         const currency = await Currencies.fasset(cli.context);
         console.log(`Agent's ${agentVault} maximum amount to transfer is ${currency.format(allowed.maximumTransferUBA)}.`);
         console.log(`Agent's ${agentVault} minimum amount to be left is ${currency.format(allowed.minimumLeftAmountUBA)}.`);

@@ -49,10 +49,11 @@ describe("Tracked agent state tests", () => {
 
     async function initialize() {
         orm = await createTestOrm();
-        context = await createTestAssetContext(accounts[0], testChainInfo.xrp);
+        const governance = accounts[0];
+        context = await createTestAssetContext(governance, testChainInfo.xrp);
         trackedStateContext = getTestAssetTrackedStateContext(context);
         // create agent bot
-        agentBot = await createTestAgentBot(context, orm, ownerAddress);
+        agentBot = await createTestAgentBot(context, governance, orm, ownerAddress);
         const agentVaultCollateralToken = await agentBot.agent.getVaultCollateral();
         await mintVaultCollateralToOwner(amount, agentVaultCollateralToken.token, ownerAddress);
         await agentBot.agent.depositVaultCollateral(amount);

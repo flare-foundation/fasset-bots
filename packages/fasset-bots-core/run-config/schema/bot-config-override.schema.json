@@ -22,12 +22,32 @@
                     "description": "The amount of underlying currency on owner's underlying address, below which an alert is triggered.",
                     "pattern": "^[0-9]+(\\.[0-9]+)?$",
                     "type": "string"
+                },
+                "returnFromCVRatio": {
+                    "description": "Ratio of minted lots to (minted + free lots) that triggers a return from CV.",
+                    "type": "number"
+                },
+                "targetReturnFromCVRatio": {
+                    "description": "Target ratio of minted lots to (minted + free lots) after CV return.",
+                    "type": "number"
+                },
+                "targetTransferToCVRatio": {
+                    "description": "Target ratio of minted lots to (minted + free lots) after CV transfer.",
+                    "type": "number"
+                },
+                "transferToCVRatio": {
+                    "description": "Ratio of minted lots to (minted + free lots) that triggers a transfer to CV.",
+                    "type": "number"
                 }
             },
             "required": [
                 "feeSafetyFactorPerKB",
                 "minimumFreeUnderlyingBalance",
-                "recommendedOwnerBalance"
+                "recommendedOwnerBalance",
+                "returnFromCVRatio",
+                "targetReturnFromCVRatio",
+                "targetTransferToCVRatio",
+                "transferToCVRatio"
             ],
             "type": "object"
         },
@@ -405,6 +425,22 @@
                     "description": "The amount of underlying currency on owner's underlying address, below which an alert is triggered.",
                     "pattern": "^[0-9]+(\\.[0-9]+)?$",
                     "type": "string"
+                },
+                "returnFromCVRatio": {
+                    "description": "Ratio of minted lots to (minted + free lots) that triggers a return from CV.",
+                    "type": "number"
+                },
+                "targetReturnFromCVRatio": {
+                    "description": "Target ratio of minted lots to (minted + free lots) after CV return.",
+                    "type": "number"
+                },
+                "targetTransferToCVRatio": {
+                    "description": "Target ratio of minted lots to (minted + free lots) after CV transfer.",
+                    "type": "number"
+                },
+                "transferToCVRatio": {
+                    "description": "Ratio of minted lots to (minted + free lots) that triggers a transfer to CV.",
+                    "type": "number"
                 }
             },
             "type": "object"

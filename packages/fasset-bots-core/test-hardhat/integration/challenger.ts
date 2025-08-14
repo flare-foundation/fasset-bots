@@ -20,7 +20,7 @@ import { createTestOrm } from "../../test/test-utils/create-test-orm";
 import { fundUnderlying, performRedemptionPayment } from "../../test/test-utils/test-helpers";
 import { TestAssetBotContext, createTestAssetContext } from "../test-utils/create-test-asset-context";
 import { loadFixtureCopyVars } from "../test-utils/hardhat-test-helpers";
-import { assertWeb3DeepEqual, createCRAndPerformMintingAndRunSteps, createTestAgentBotAndMakeAvailable, createTestChallenger, createTestLiquidator, createTestMinter, createTestRedeemer, getAgentStatus, runWithManualFDCFinalization, updateAgentBotUnderlyingBlockProof } from "../test-utils/helpers";
+import { createCRAndPerformMintingAndRunSteps, createTestAgentBotAndMakeAvailable, createTestChallenger, createTestLiquidator, createTestMinter, createTestRedeemer, getAgentStatus, runWithManualFDCFinalization, updateAgentBotUnderlyingBlockProof } from "../test-utils/helpers";
 use(spies);
 
 const IERC20 = artifacts.require("IERC20");
@@ -39,6 +39,7 @@ describe("Challenger tests", () => {
     let liquidatorAddress: string;
     let chain: MockChain;
     let state: TrackedState;
+    let governance: string;
 
     before(async () => {
         accounts = await web3.eth.getAccounts();
@@ -48,11 +49,12 @@ describe("Challenger tests", () => {
         challengerAddress = accounts[6];
         liquidatorAddress = accounts[7];
         minter2Address = accounts[8];
+        governance = accounts[0];
     });
 
     async function initialize() {
         orm = await createTestOrm();
-        context = await createTestAssetContext(accounts[0], testChainInfo.xrp,  { coreVaultUnderlyingAddress });
+        context = await createTestAssetContext(governance, testChainInfo.xrp,  { coreVaultUnderlyingAddress });
         state = new TrackedState(context);
         await state.initialize();
         chain = context.blockchainIndexer.chain;
@@ -77,7 +79,7 @@ describe("Challenger tests", () => {
         const challenger = await createTestChallenger(context, challengerAddress, state);
         const spyChlg = spy.on(challenger, "illegalTransactionChallenge");
         // create test actors
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerAddress);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, ownerAddress);
         await runChallengerStep(challenger);
         // faucet underlying
         const underlyingBalance = toBN(1000000000);
@@ -104,15 +106,16 @@ describe("Challenger tests", () => {
         expect(spyChlg).to.have.been.called.once;
     });
 
-    it("Should challenge illegal payment - reference for nonexisting redemption", async () => {
+    it.only("Should challenge illegal payment - reference for nonexisting redemption", async () => {
         const challenger = await createTestChallenger(context, challengerAddress, state);
         const spyChlg = spy.on(challenger, "illegalTransactionChallenge");
         // create test actors
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerAddress);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, ownerAddress);
         const minter = await createTestMinter(context, minterAddress, chain);
         await runChallengerStep(challenger);
         // create collateral reservation and perform minting
-        await createCRAndPerformMintingAndRunSteps(minter, agentBot, 2, orm, chain);
+        const freeCollateralLots = toBN((await agentBot.agent.getAgentInfo()).freeCollateralLots);
+        await createCRAndPerformMintingAndRunSteps(minter, agentBot, Number(freeCollateralLots), orm, chain);
         // perform illegal payment
         const agentInfo = await agentBot.agent.getAgentInfo();
         await agentBot.agent.performPayment(agentInfo.underlyingAddressString, toBN(agentInfo.mintedUBA).divn(2), PaymentReference.redemption(15));
@@ -136,7 +139,7 @@ describe("Challenger tests", () => {
         const challenger = await createTestChallenger(context, challengerAddress, state);
         const spyChlg = spy.on(challenger, "doublePaymentChallenge");
         // create test actors
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerAddress);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, ownerAddress);
         const minter = await createTestMinter(context, minterAddress, chain);
         const redeemer = await createTestRedeemer(context, redeemerAddress);
         await runChallengerStep(challenger);
@@ -191,7 +194,7 @@ describe("Challenger tests", () => {
         const challenger = await createTestChallenger(context, challengerAddress, state);
         const spyChlg = spy.on(challenger, "doublePaymentChallenge");
         // create test actors
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerAddress);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, ownerAddress);
         const minter = await createTestMinter(context, minterAddress, chain);
         await runChallengerStep(challenger);
         // create collateral reservation and perform minting
@@ -225,7 +228,7 @@ describe("Challenger tests", () => {
         const challenger = await createTestChallenger(context, challengerAddress, state);
         const spyChlg = spy.on(challenger, "doublePaymentChallenge");
         // create test actors
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerAddress);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, ownerAddress);
         const minter = await createTestMinter(context, minterAddress, chain);
         const redeemer = await createTestRedeemer(context, redeemerAddress);
         await runChallengerStep(challenger);
@@ -277,7 +280,7 @@ describe("Challenger tests", () => {
         const challenger = await createTestChallenger(context, challengerAddress, state);
         const spyChlg = spy.on(challenger, "doublePaymentChallenge");
         // create test actors
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerAddress);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, ownerAddress);
         const minter = await createTestMinter(context, minterAddress, chain);
         await runChallengerStep(challenger);
         // create collateral reservation and perform minting
@@ -310,7 +313,7 @@ describe("Challenger tests", () => {
     it("Should catch 'RedemptionPaymentFailed' event - failed underlying payment (not redeemer's address)", async () => {
         const challenger = await createTestChallenger(context, challengerAddress, state);
         // create test actors
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerAddress);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, ownerAddress);
         const minter = await createTestMinter(context, minterAddress, chain);
         const redeemer = await createTestRedeemer(context, redeemerAddress);
         await runChallengerStep(challenger);
@@ -386,7 +389,7 @@ describe("Challenger tests", () => {
     it("Should catch 'RedemptionPaymentBlocked' event", async () => {
         const challenger = await createTestChallenger(context, challengerAddress, state);
         // create test actors
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerAddress);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, ownerAddress);
         const minter = await createTestMinter(context, minterAddress, chain);
         const redeemer = await createTestRedeemer(context, redeemerAddress);
         await runChallengerStep(challenger);
@@ -428,7 +431,7 @@ describe("Challenger tests", () => {
     it("Should perform free balance negative challenge", async () => {
         const challenger = await createTestChallenger(context, challengerAddress, state);
         // create test actors
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerAddress);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, ownerAddress);
         const minter = await createTestMinter(context, minterAddress, chain);
         await createCRAndPerformMintingAndRunSteps(minter, agentBot, 2, orm, chain);
         await runChallengerStep(challenger);
@@ -460,7 +463,7 @@ describe("Challenger tests", () => {
 
     it("Should not perform free balance negative challenge - attestation helper error", async () => {
         // create test actors
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerAddress);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, ownerAddress);
         const minter = await createTestMinter(context, minterAddress, chain);
         await createCRAndPerformMintingAndRunSteps(minter, agentBot, 2, orm, chain);
         // check status
@@ -486,7 +489,7 @@ describe("Challenger tests", () => {
     it("Coinspect - Will not challenge negative balance with multipleUTXOs", async () => {
         const challenger = await createTestChallenger(context, challengerAddress, state);
         // create test actors
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerAddress);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, ownerAddress);
         const minter = await createTestMinter(context, minterAddress, chain);
         await createCRAndPerformMintingAndRunSteps(minter, agentBot, 2, orm, chain);
         await runChallengerStep(challenger);
@@ -529,7 +532,7 @@ describe("Challenger tests", () => {
         const challenger = await createTestChallenger(context, challengerAddress, state);
         const spyChlg = spy.on(challenger, "freeBalanceNegativeChallenge");
         // create test actors
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerAddress);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, ownerAddress);
         const minter = await createTestMinter(context, minterAddress, chain);
         const redeemer = await createTestRedeemer(context, redeemerAddress);
         await runChallengerStep(challenger);
@@ -581,7 +584,7 @@ describe("Challenger tests", () => {
         await liqState.initialize();
         const liquidator = await createTestLiquidator(context, liquidatorAddress, liqState);
         const spyChlg = spy.on(challenger, "doublePaymentChallenge"); // create test actors
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerAddress);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, ownerAddress);
         const poolCollateralToken = await IERC20.at((await agentBot.agent.getPoolCollateral()).token);
         const minter = await createTestMinter(context, minterAddress, chain);
         const minter2 = await createTestMinter(context, minter2Address, chain);
@@ -655,7 +658,7 @@ describe("Challenger tests", () => {
     it("Should do 3rd party confirmation for redemption payment", async () => {
         const challenger = await createTestChallenger(context, challengerAddress, state);
         // create test actors
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerAddress);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, ownerAddress);
         const minter = await createTestMinter(context, minterAddress, chain);
         const redeemer = await createTestRedeemer(context, minterAddress);
         await runChallengerStep(challenger);
@@ -704,7 +707,7 @@ describe("Challenger tests", () => {
         const withdrawalAmount = 100e6;
         const challenger = await createTestChallenger(context, challengerAddress, state);
         // create test actors
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerAddress);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, ownerAddress);
         const minter = await createTestMinter(context, minterAddress, chain);
         await runChallengerStep(challenger);
         chain.mint(underlyingAddress, 2 * withdrawalAmount);
@@ -759,7 +762,7 @@ describe("Challenger tests", () => {
     it("Should do 3rd party default for transfer to core vault", async () => {
         const challenger = await createTestChallenger(context, challengerAddress, state);
         // create test actors
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerAddress);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, ownerAddress);
         const agentVault = agentBot.agent.vaultAddress;
         const minter = await createTestMinter(context, minterAddress, chain);
         await runChallengerStep(challenger);

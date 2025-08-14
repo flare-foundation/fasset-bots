@@ -68,6 +68,10 @@ export interface AgentBotSettings {
     minBalanceOnWorkAccount: BN;
     defaultAgentSettings: AgentSettingsConfigDefaults;
     feeSafetyFactorPerKB: number;
+    transferToCVRatio: number;
+    returnFromCVRatio: number;
+    targetTransferToCVRatio: number;
+    targetReturnFromCVRatio: number;
 }
 
 export type BotFAssetAgentConfig = RequireFields<BotFAssetConfig, "wallet" | "blockchainIndexerClient" | "flareDataConnector" | "verificationClient" | "agentBotSettings">;
@@ -235,7 +239,11 @@ function createAgentBotSettings(agentBotSettings: AgentBotSettingsJson, fassetSe
         minBalanceOnServiceAccount: native.parse(agentBotSettings.minBalanceOnServiceAccount),
         minBalanceOnWorkAccount: native.parse(agentBotSettings.minBalanceOnWorkAccount),
         defaultAgentSettings: { ...agentBotSettings.defaultAgentSettings, ...fassetSettings.defaultAgentSettings },
-        feeSafetyFactorPerKB: Number(fassetSettings.feeSafetyFactorPerKB)
+        feeSafetyFactorPerKB: Number(fassetSettings.feeSafetyFactorPerKB),
+        transferToCVRatio: Number(fassetSettings.transferToCVRatio),
+        returnFromCVRatio: Number(fassetSettings.returnFromCVRatio),
+        targetTransferToCVRatio: Number(fassetSettings.targetTransferToCVRatio),
+        targetReturnFromCVRatio: Number(fassetSettings.targetReturnFromCVRatio),
     }
 }
 

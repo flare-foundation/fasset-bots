@@ -1,7 +1,7 @@
 import { AddressValidity, ConfirmedBlockHeightExists } from "@flarenetwork/state-connector-protocol";
 import { FilterQuery } from "@mikro-orm/core";
 import BN from "bn.js";
-import { AgentPing } from "../../typechain-truffle/IIAssetManager";
+import { AgentPing, ReturnFromCoreVaultRequested, TransferToCoreVaultStarted } from "../../typechain-truffle/IIAssetManager";
 import { AgentBotSettings, Secrets } from "../config";
 import { AgentVaultInitSettings } from "../config/AgentVaultInitSettings";
 import { EM } from "../config/orm";
@@ -12,12 +12,12 @@ import { Agent, OwnerAddressPair } from "../fasset/Agent";
 import { attestationProved } from "../underlying-chain/AttestationHelper";
 import { ChainId } from "../underlying-chain/ChainId";
 import { TX_SUCCESS } from "../underlying-chain/interfaces/IBlockChain";
-import { CommandLineError, TokenBalances, checkUnderlyingFunds, programVersion, SimpleThrottler } from "../utils";
+import { CommandLineError, TokenBalances, checkUnderlyingFunds, programVersion, SimpleThrottler, getMaximumTransferToCoreVault, Currencies } from "../utils";
 import { EventArgs, EvmEvent } from "../utils/events/common";
-import { eventIs } from "../utils/events/truffle";
+import { eventIs, requiredEventArgs } from "../utils/events/truffle";
 import { FairLock } from "../utils/FairLock";
 import { formatArgs, formatTimestamp, squashSpace } from "../utils/formatting";
-import { BN_ZERO, BNish, DAYS, MINUTES, TRANSACTION_FEE_CV_MAX_IN_DROPS, TRANSACTION_FEE_FACTOR_CV_REDEMPTION, ZERO_ADDRESS, assertNotNull, getOrCreate, maxBN, minBN, sleepUntil, toBN } from "../utils/helpers";
+import { BN_ZERO, BNish, DAYS, MINUTES, TRANSACTION_FEE_CV_MAX_IN_DROPS, TRANSACTION_FEE_FACTOR_CV_REDEMPTION, ZERO_ADDRESS, assertNotNull, getOrCreate, maxBN, minBN, requireNotNull, sleepUntil, toBN } from "../utils/helpers";
 import { logger } from "../utils/logger";
 import { loggerAsyncStorage } from "@flarenetwork/simple-wallet";
 import { AgentNotifier } from "../utils/notifier/AgentNotifier";
@@ -36,6 +36,7 @@ import { AgentBotUnderlyingWithdrawal } from "./AgentBotUnderlyingWithdrawal";
 import { AgentBotUpdateSettings } from "./AgentBotUpdateSettings";
 import { AgentTokenBalances } from "./AgentTokenBalances";
 import { AgentBotReturnFromCoreVault } from "./AgentBotReturnFromCoreVault";
+import { AgentStatus } from "../fasset/AssetManagerTypes";
 
 const PING_RESPONSE_MIN_INTERVAL_PER_SENDER_MS = 2 * MINUTES * 1000;
 
@@ -113,7 +114,7 @@ export class AgentBot {
     collateralWithdrawal = new AgentBotCollateralWithdrawal(this);
     claims = new AgentBotClaims(this);
     closing = new AgentBotClosing(this);
-    returnFromCoreVault = new AgentBotReturnFromCoreVault(this, this.agent, this.notifier);
+    returnFromCoreVaultBot = new AgentBotReturnFromCoreVault(this, this.agent, this.notifier);
 
     // only set when created by an AgentBotRunner
     runner?: IRunner;
@@ -323,10 +324,13 @@ export class AgentBot {
                 await this.underlyingManagement.handleOpenUnderlyingPayments(threadEm);
             }));
             threads.push(this.startThread(rootEm, `return-from-core-vault-${botId}`, true, async (threadEm) => {
-                await this.returnFromCoreVault.handleOpenReturnsFromCoreVault(threadEm);
+                await this.returnFromCoreVaultBot.handleOpenReturnsFromCoreVault(threadEm);
             }));
             threads.push(this.startThread(rootEm, `daily-tasks-${botId}`, true, async (threadEm) => {
                 await this.handleDailyTasks(threadEm);
+            }));
+            threads.push(this.startThread(rootEm, `transfer-return-cv-${botId}`, true, async (threadEm) => {
+                await this.checkTransferOrReturnFromCVNeeded(threadEm);
             }));
             // wait for all to finish
             await Promise.allSettled(threads);
@@ -372,8 +376,9 @@ export class AgentBot {
         await this.minting.handleOpenMintings(rootEm);
         await this.handleTimelockedProcesses(rootEm);
         await this.underlyingManagement.handleOpenUnderlyingPayments(rootEm);
-        await this.returnFromCoreVault.handleOpenReturnsFromCoreVault(rootEm);
+        await this.returnFromCoreVaultBot.handleOpenReturnsFromCoreVault(rootEm);
         await this.handleDailyTasks(rootEm);
+        await this.checkTransferOrReturnFromCVNeeded(rootEm);
     }
 
     async handleEvents(rootEm: EM) {
@@ -439,11 +444,11 @@ export class AgentBot {
             await this.handleAgentPing(event.args);
         } // core vault events
           else if (eventIs(event, this.context.assetManager, "ReturnFromCoreVaultRequested")) {
-            await this.returnFromCoreVault.returnFromCoreVaultStarted(em, event.args);
+            await this.returnFromCoreVaultBot.returnFromCoreVaultStarted(em, event.args);
         } else if (eventIs(event, this.context.assetManager, "ReturnFromCoreVaultCancelled")) {
-            await this.returnFromCoreVault.returnFromCoreVaultCancelled(em, event.args);
+            await this.returnFromCoreVaultBot.returnFromCoreVaultCancelled(em, event.args);
         } else if (eventIs(event, this.context.assetManager, "ReturnFromCoreVaultConfirmed")) {
-            await this.returnFromCoreVault.returnFromCoreVaultConfirmed(em, event.args);
+            await this.returnFromCoreVaultBot.returnFromCoreVaultConfirmed(em, event.args);
         }
     }
 
@@ -648,6 +653,63 @@ export class AgentBot {
         return canUseToPayFee;
     }
 
+    async checkTransferOrReturnFromCVNeeded(rootEm: EM) {
+        try {
+            if (this.stopOrRestartRequested()) return;
+            const coreVaultSourceAddress = await this.context.coreVaultManager?.coreVaultAddress();
+            if (!coreVaultSourceAddress) return;
+            const agentInfo = await this.agent.getAgentInfo()
+            if (Number(agentInfo.status) != AgentStatus.NORMAL) return;
+            const settings = await this.context.assetManager.getSettings();
+            const lotSize = Number(settings.lotSizeAMG) * Number(settings.assetMintingGranularityUBA);
+            const freeLots = Number(agentInfo.freeCollateralLots);
+            const mintedLots = Number(toBN(agentInfo.mintedUBA).divn(lotSize));
+
+            const totalLots = mintedLots + freeLots;
+            if (totalLots === 0) return;
+            const ratio = mintedLots / totalLots;
+
+            // transfer to CV
+            if (ratio > this.agentBotSettings.transferToCVRatio ) {
+                const openTransfers = await this.redemption.openTransferToCoreVaultIds(rootEm);
+                console.log("openTransfers", openTransfers)
+                if (openTransfers.length == 0) {
+                    const target = this.agentBotSettings.targetTransferToCVRatio;
+                    // agent wants
+                    const transferLots = Math.floor(mintedLots - target * (totalLots));
+                    const transferLotsAmount = toBN(transferLots * lotSize);
+                    // check how much is allowed to transfer
+                    const maxAllowedToTransfer = await getMaximumTransferToCoreVault(this.context, this.agent.vaultAddress);
+                    // actual return
+                    const transferAmount = minBN(transferLotsAmount, maxAllowedToTransfer.maximumTransferUBA);
+                    if (transferAmount.gte(settings.lotSizeAMG)) {
+                        await this.transferToCoreVault(transferAmount);
+                    }
+                }
+            }
+            // return from CV
+            if (ratio < this.agentBotSettings.returnFromCVRatio) {
+                const openReturns = await this.returnFromCoreVaultBot.openReturnFromCoreVaultIds(rootEm);
+                if (openReturns.length == 0) {
+                    const target = this.agentBotSettings.targetReturnFromCVRatio;
+                    // agents wants
+                    const returnLots = Math.floor(target * (totalLots) - mintedLots);
+                    // check how much can CV return
+                    const { 1: maxCVReturnAmount } = await this.context.assetManager.coreVaultAvailableAmount();
+                    const maxCVReturnLot = Math.floor(Number(toBN(maxCVReturnAmount).divn(lotSize)));
+                    // actual return
+                    const returnLotsToUse = Math.min(maxCVReturnLot, returnLots)
+                    if (returnLotsToUse >= 1) {
+                        await this.returnFromCoreVault(toBN(returnLotsToUse));
+                    }
+                }
+            }
+        } catch(error) {
+            console.error(`Error while handling transfer or return from CV needed for agent ${this.agent.vaultAddress}: ${error}`);
+            logger.error(`Agent ${this.agent.vaultAddress} run into error while handling transfer or return from CV needed:`, error);
+        }
+    }
+
     /**
      * Updates AgentEntity within a transactional context.
      * @param rootEm root EntityManager to manage the database context
@@ -674,5 +736,40 @@ export class AgentBot {
                 return await method(em);
             });
         });
+    }
+
+    async transferToCoreVault(amount: string | BN): Promise<EventArgs<TransferToCoreVaultStarted>> {
+        const agentVault = this.agent.vaultAddress;
+        logger.info(`Agent ${agentVault} is trying to transfer underlying to core vault.`);
+        // check that amount is not too high (we don't want the agent to go to full liquidation)
+        const allowedToSend = await getMaximumTransferToCoreVault(this.context, agentVault);
+        const currency = await Currencies.fassetUnderlyingToken(this.context);
+        if (toBN(amount).gt(allowedToSend.maximumTransferUBA)) {
+            logger.error(`Agent ${agentVault} cannot transfer funds. Requested amount ${currency.formatValue(amount)} is higher than allowed ${currency.formatValue(allowedToSend.maximumTransferUBA)}.`);
+            throw new CommandLineError(`Cannot transfer funds. Requested amount ${currency.formatValue(amount)} is higher than allowed ${currency.formatValue(allowedToSend.maximumTransferUBA)}.`);
+        }
+        // check if enough free underlying to cover underlying fee
+        const coreVaultSourceAddress = await requireNotNull(this.context.coreVaultManager).coreVaultAddress();
+        const underlyingFee = await this.getTransferToCoreVaultMaxFee(coreVaultSourceAddress, toBN(amount));
+        if (underlyingFee.eq(BN_ZERO)) {
+            logger.error(`Agent ${agentVault} cannot transfer funds. Current fee is too high.`);
+            throw new CommandLineError(squashSpace`Cannot transfer funds. Not enough free underlying to pay for underlying transaction fee.`);
+        }
+        // request transfer
+        const res = await this.context.assetManager.transferToCoreVault(agentVault, amount,  { from: this.agent.owner.workAddress });
+        const event = requiredEventArgs(res, "TransferToCoreVaultStarted");
+        logger.info(`Agent ${agentVault} successfully initiated transfer of underlying to core vault.`);
+        await this.notifier.sendTransferToCVStarted(event.transferRedemptionRequestId);
+        return event;
+    }
+
+    async returnFromCoreVault(lots: string | BN): Promise<EventArgs<ReturnFromCoreVaultRequested>> {
+        const agentVault = this.agent.vaultAddress;
+        logger.info(`Agent ${agentVault} is trying to request return of underlying from core vault.`);
+        const res = await this.context.assetManager.requestReturnFromCoreVault(agentVault, lots,  { from: this.agent.owner.workAddress });
+        const event = requiredEventArgs(res, "ReturnFromCoreVaultRequested");
+        logger.info(`Agent ${agentVault} successfully initiated return of underlying from core vault with id ${event.requestId.toString()}.`);
+        this.notifier.sendReturnFromCVTrigger(event.requestId.toString());
+        return event;
     }
 }

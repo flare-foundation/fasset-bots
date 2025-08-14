@@ -23,16 +23,18 @@ describe("Agent bot runner tests", () => {
     let ownerAddress: string;
     let ownerUnderlyingAddress: string;
     let contexts: Map<string, TestAssetBotContext> = new Map();
+    let governance: string;
 
     before(async () => {
         accounts = await web3.eth.getAccounts();
         ownerAddress = accounts[1];
         ownerUnderlyingAddress = "underlying_owner_1";
+        governance = accounts[0];
     });
 
     async function initialize() {
         orm = await createTestOrm();
-        context = await createTestAssetContext(accounts[0], testChainInfo.xrp);
+        context = await createTestAssetContext(governance, testChainInfo.xrp);
         await context.agentOwnerRegistry.whitelistAndDescribeAgent(ownerAddress, "Agent Name", "Agent Description", "Icon", "URL");
         await context.agentOwnerRegistry.setWorkAddress(accounts[4], { from: ownerAddress });
         contexts.set(context.fAssetSymbol, context);
@@ -74,10 +76,10 @@ describe("Agent bot runner tests", () => {
     it("Should create agent bot runner and run it", async () => {
         context.blockchainIndexer.chain.mine(10);
         // create agents
-        await createTestAgentBot(context, orm, ownerAddress, undefined, false);
-        const otherContext = await createTestAssetContext(accounts[0], testChainInfo.btc);
-        await createTestAgentBot(otherContext, orm, ownerAddress, "UNDERLYING");
-        await createTestAgentBot(context, orm, ownerAddress, undefined, false);
+        await createTestAgentBot(context, governance, orm, ownerAddress, undefined, false);
+        const otherContext = await createTestAssetContext(governance, testChainInfo.btc);
+        await createTestAgentBot(otherContext, governance, orm, ownerAddress, "UNDERLYING");
+        await createTestAgentBot(context, governance, orm, ownerAddress, undefined, false);
         // create runner
         const secrets = createTestSecrets([context.chainInfo.chainId], ownerAddress, ownerAddress, ownerUnderlyingAddress);
         const agentBotRunner = createTestAgentBotRunner(secrets, contexts, orm, loopDelay, [new FaultyNotifierTransport()]);
@@ -101,7 +103,7 @@ describe("Agent bot runner tests", () => {
             context.blockchainIndexer.chain.mint(ownerUnderlyingAddress, toBNExp(50, 6));
             context.blockchainIndexer.chain.mine(10);
             // create agents
-            await createTestAgentBot(context, orm, ownerAddress, undefined, false);
+            await createTestAgentBot(context, governance, orm, ownerAddress, undefined, false);
             // create runner
             const secrets = createTestSecrets([context.chainInfo.chainId], ownerAddress, ownerAddress, ownerUnderlyingAddress);
             const agentBotRunner = createTestAgentBotRunner(secrets, contexts, orm, loopDelay);
@@ -110,7 +112,7 @@ describe("Agent bot runner tests", () => {
             // check
             expect(spyTopup).to.be.called.once;
             // create another bot - it should be picked by the runner on next step
-            await createTestAgentBot(context, orm, ownerAddress, undefined, false);
+            await createTestAgentBot(context, governance, orm, ownerAddress, undefined, false);
             // run step
             await agentBotRunner.runStep();
             // finish

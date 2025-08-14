@@ -10,7 +10,7 @@ import { ORM } from "../../../src/config/orm";
 import { AgentEntity, AgentRedemption, AgentUnderlyingPayment, AgentUpdateSetting, ReturnFromCoreVault } from "../../../src/entities/agent";
 import { Agent, OwnerAddressPair } from "../../../src/fasset/Agent";
 import { MockChain, MockChainWallet } from "../../../src/mock/MockChain";
-import { CommandLineError, Currencies, latestBlockTimestampBN } from "../../../src/utils";
+import { CommandLineError, Currencies, getMaximumTransferToCoreVault } from "../../../src/utils";
 import { BN_ZERO, checkedCast, toBN, toBNExp, toStringExp } from "../../../src/utils/helpers";
 import { artifacts, web3 } from "../../../src/utils/web3";
 import { testAgentBotSettings, testChainInfo } from "../../../test/test-utils/TestChainInfo";
@@ -22,8 +22,6 @@ import { DEFAULT_AGENT_SETTINGS_PATH_HARDHAT, createTestAgentBot, createTestMint
 import { fundUnderlying } from "../../../test/test-utils/test-helpers";
 import { AgentRedemptionState, AgentSettingName, AgentUnderlyingPaymentState, AgentUnderlyingPaymentType, AgentUpdateSettingState, ReturnFromCoreVaultState } from "../../../src/entities/common";
 import { AgentBot } from "../../../src/actors/AgentBot";
-import { Secrets } from "../../../src/config/secrets";
-import { TEST_SECRETS } from "../../../test/test-utils/test-bot-config";
 import { eventArgs } from "../../../src/utils/events/truffle";
 use(chaiAsPromised);
 use(spies);
@@ -48,12 +46,12 @@ describe("AgentBot cli commands unit tests", () => {
     let governance: string;
 
     async function createAgent(contextToUse: TestAssetBotContext = context): Promise<Agent> {
-        const agentBot = await createTestAgentBot(contextToUse, botCliCommands.orm, botCliCommands.owner.managementAddress, botCliCommands.ownerUnderlyingAddress);
+        const agentBot = await createTestAgentBot(contextToUse, governance, botCliCommands.orm, botCliCommands.owner.managementAddress, botCliCommands.ownerUnderlyingAddress);
         return agentBot.agent;
     }
 
     async function createAgentBot(contextToUse: TestAssetBotContext = context): Promise<AgentBot> {
-        const agentBot = await createTestAgentBot(contextToUse, botCliCommands.orm, botCliCommands.owner.managementAddress, botCliCommands.ownerUnderlyingAddress);
+        const agentBot = await createTestAgentBot(contextToUse, governance, botCliCommands.orm, botCliCommands.owner.managementAddress, botCliCommands.ownerUnderlyingAddress);
         return agentBot;
     }
 
@@ -94,7 +92,7 @@ describe("AgentBot cli commands unit tests", () => {
 
     it("Should deposit to agent vault", async () => {
         const agent = await createAgent();
-        const vaultCollateralTokenContract = await mintAndDepositVaultCollateralToOwner(context, agent!, toBN(depositAmountUSDC), ownerAddress);
+        const vaultCollateralTokenContract = await mintAndDepositVaultCollateralToOwner(agent!, toBN(depositAmountUSDC), ownerAddress);
         await botCliCommands.depositToVault(agent!.vaultAddress!, depositAmountUSDC);
         const collateral = await vaultCollateralTokenContract.balanceOf(agent!.vaultAddress!);
         expect(collateral.toString()).to.eq(depositAmountUSDC);
@@ -128,7 +126,7 @@ describe("AgentBot cli commands unit tests", () => {
         const agent = await createAgent();
         const vaultAddress = agent.vaultAddress;
         // deposit to vault
-        const vaultCollateralTokenContract = await mintAndDepositVaultCollateralToOwner(context, agent, toBN(depositAmountUSDC), ownerAddress);
+        const vaultCollateralTokenContract = await mintAndDepositVaultCollateralToOwner(agent, toBN(depositAmountUSDC), ownerAddress);
         await botCliCommands.depositToVault(vaultAddress, depositAmountUSDC);
         const collateral = await vaultCollateralTokenContract.balanceOf(vaultAddress);
         expect(collateral.toString()).to.eq(depositAmountUSDC);
@@ -165,7 +163,7 @@ describe("AgentBot cli commands unit tests", () => {
     it("Should deposit and withdraw from agent vault", async () => {
         const agent = await createAgent();
         const vaultAddress = agent.vaultAddress;
-        const vaultCollateralTokenContract = await mintAndDepositVaultCollateralToOwner(context, agent, toBN(depositAmountUSDC), ownerAddress);
+        const vaultCollateralTokenContract = await mintAndDepositVaultCollateralToOwner(agent, toBN(depositAmountUSDC), ownerAddress);
         await botCliCommands.depositToVault(vaultAddress, depositAmountUSDC);
         const collateralBefore = await vaultCollateralTokenContract.balanceOf(vaultAddress);
         expect(collateralBefore.toString()).to.eq(depositAmountUSDC);
@@ -178,7 +176,7 @@ describe("AgentBot cli commands unit tests", () => {
     it("Should announce pool token redemption", async () => {
         const agent = await createAgent();
         const vaultAddress = agent.vaultAddress;
-        await mintAndDepositVaultCollateralToOwner(context, agent, toBN(depositAmountUSDC), ownerAddress);
+        await mintAndDepositVaultCollateralToOwner(agent, toBN(depositAmountUSDC), ownerAddress);
         await botCliCommands.buyCollateralPoolTokens(vaultAddress, depositAmountWei);
         const collateralBefore = toBN(await agent.collateralPoolToken.balanceOf(agent.vaultAddress));
         expect(collateralBefore.toString()).to.eq(depositAmountWei);
@@ -191,7 +189,7 @@ describe("AgentBot cli commands unit tests", () => {
     it("Should self close", async () => {
         const agent = await createAgent();
         const vaultAddress = agent.vaultAddress;
-        await mintAndDepositVaultCollateralToOwner(context, agent, toBN(depositAmountUSDC), ownerAddress);
+        await mintAndDepositVaultCollateralToOwner(agent, toBN(depositAmountUSDC), ownerAddress);
         await botCliCommands.depositToVault(vaultAddress, depositAmountUSDC);
         await botCliCommands.buyCollateralPoolTokens(vaultAddress, depositAmountWei);
         await botCliCommands.enterAvailableList(vaultAddress);
@@ -215,7 +213,7 @@ describe("AgentBot cli commands unit tests", () => {
         const agentEnt1 = await orm.em.findOneOrFail(AgentEntity, { vaultAddress: agent1.vaultAddress } as FilterQuery<AgentEntity>);
         expect(agentEnt1.waitingForDestructionCleanUp).to.be.true;
         const agent2 = await createAgent();
-        await mintAndDepositVaultCollateralToOwner(context, agent2, toBN(depositAmountUSDC), ownerAddress);
+        await mintAndDepositVaultCollateralToOwner(agent2, toBN(depositAmountUSDC), ownerAddress);
         await botCliCommands.depositToVault(agent2.vaultAddress, depositAmountUSDC);
         await botCliCommands.buyCollateralPoolTokens(agent2.vaultAddress, depositAmountWei);
         await botCliCommands.enterAvailableList(agent2.vaultAddress);
@@ -297,7 +295,7 @@ describe("AgentBot cli commands unit tests", () => {
 
     it("Should get pool fees balance'", async () => {
         const agent = await createAgent();
-        await mintAndDepositVaultCollateralToOwner(context, agent, toBN(depositAmountUSDC), ownerAddress);
+        await mintAndDepositVaultCollateralToOwner(agent, toBN(depositAmountUSDC), ownerAddress);
         await botCliCommands.depositToVault(agent.vaultAddress, depositAmountUSDC);
         await botCliCommands.buyCollateralPoolTokens(agent.vaultAddress, depositAmountWei);
         await botCliCommands.enterAvailableList(agent.vaultAddress);
@@ -314,7 +312,7 @@ describe("AgentBot cli commands unit tests", () => {
 
     it("Should withdraw pool fees", async () => {
         const agent = await createAgent();
-        await mintAndDepositVaultCollateralToOwner(context, agent, toBN(depositAmountUSDC), ownerAddress);
+        await mintAndDepositVaultCollateralToOwner(agent, toBN(depositAmountUSDC), ownerAddress);
         await botCliCommands.depositToVault(agent.vaultAddress, depositAmountUSDC);
         await botCliCommands.buyCollateralPoolTokens(agent.vaultAddress, depositAmountWei);
         await botCliCommands.enterAvailableList(agent.vaultAddress);
@@ -430,7 +428,7 @@ describe("AgentBot cli commands unit tests", () => {
 
     it("Should delegate and undelegate", async () => {
         const agent = await createAgent();
-        await mintAndDepositVaultCollateralToOwner(context, agent, toBN(depositAmountUSDC), ownerAddress);
+        await mintAndDepositVaultCollateralToOwner(agent, toBN(depositAmountUSDC), ownerAddress);
         await botCliCommands.buyCollateralPoolTokens(agent.vaultAddress, depositAmountWei);
         const del1 = accounts[101];
         const del2 = accounts[102];
@@ -591,7 +589,7 @@ describe("AgentBot cli commands unit tests", () => {
         const agent = await createAgent();
         const vaultAddress = agent.vaultAddress;
         // deposit to vault
-        const vaultCollateralTokenContract = await mintAndDepositVaultCollateralToOwner(context, agent, toBN(depositAmountUSDC), ownerAddress);
+        const vaultCollateralTokenContract = await mintAndDepositVaultCollateralToOwner(agent, toBN(depositAmountUSDC), ownerAddress);
         await botCliCommands.depositToVault(vaultAddress, depositAmountUSDC);
         const collateral = await vaultCollateralTokenContract.balanceOf(vaultAddress);
         expect(collateral.toString()).to.eq(depositAmountUSDC);
@@ -613,7 +611,7 @@ describe("AgentBot cli commands unit tests", () => {
         const agent = await createAgent();
         const vaultAddress = agent.vaultAddress;
         // deposit to vault
-        const vaultCollateralTokenContract = await mintAndDepositVaultCollateralToOwner(context, agent, toBN(depositAmountUSDC), ownerAddress);
+        const vaultCollateralTokenContract = await mintAndDepositVaultCollateralToOwner(agent, toBN(depositAmountUSDC), ownerAddress);
         await botCliCommands.depositToVault(vaultAddress, depositAmountUSDC);
         const collateral = await vaultCollateralTokenContract.balanceOf(vaultAddress);
         expect(collateral.toString()).to.eq(depositAmountUSDC);
@@ -635,7 +633,7 @@ describe("AgentBot cli commands unit tests", () => {
         const agent = agentBot.agent;
         const vaultAddress = agent.vaultAddress;
         // deposit to vault
-        const vaultCollateralTokenContract = await mintAndDepositVaultCollateralToOwner(context, agent, toBN(depositAmountUSDC), ownerAddress);
+        const vaultCollateralTokenContract = await mintAndDepositVaultCollateralToOwner(agent, toBN(depositAmountUSDC), ownerAddress);
         await botCliCommands.depositToVault(vaultAddress, depositAmountUSDC);
         const collateral = await vaultCollateralTokenContract.balanceOf(vaultAddress);
         expect(collateral.toString()).to.eq(depositAmountUSDC);
@@ -677,7 +675,7 @@ describe("AgentBot cli commands unit tests", () => {
         const agent = await createAgent();
         const vaultAddress = agent.vaultAddress;
         // deposit to vault
-        const vaultCollateralTokenContract = await mintAndDepositVaultCollateralToOwner(context, agent, toBN(depositAmountUSDC), ownerAddress);
+        const vaultCollateralTokenContract = await mintAndDepositVaultCollateralToOwner(agent, toBN(depositAmountUSDC), ownerAddress);
         await botCliCommands.depositToVault(vaultAddress, depositAmountUSDC);
         const collateral = await vaultCollateralTokenContract.balanceOf(vaultAddress);
         expect(collateral.toString()).to.eq(depositAmountUSDC);
@@ -698,7 +696,7 @@ describe("AgentBot cli commands unit tests", () => {
         const agent = await createAgent();
         const vaultAddress = agent.vaultAddress;
         // deposit to vault
-        const vaultCollateralTokenContract = await mintAndDepositVaultCollateralToOwner(context, agent, toBN(depositAmountUSDC), ownerAddress);
+        const vaultCollateralTokenContract = await mintAndDepositVaultCollateralToOwner(agent, toBN(depositAmountUSDC), ownerAddress);
         await botCliCommands.depositToVault(vaultAddress, depositAmountUSDC);
         const collateral = await vaultCollateralTokenContract.balanceOf(vaultAddress);
         expect(collateral.toString()).to.eq(depositAmountUSDC);
@@ -720,7 +718,7 @@ describe("AgentBot cli commands unit tests", () => {
     it("Should create 'transferToCV' redemption request", async () => {
         const bot = await createAgentBot();
         const vaultAddress = bot.agent.vaultAddress;
-        await mintAndDepositVaultCollateralToOwner(context, bot.agent, toBN(depositAmountUSDC), ownerAddress);
+        await mintAndDepositVaultCollateralToOwner(bot.agent, toBN(depositAmountUSDC), ownerAddress);
         await botCliCommands.depositToVault(vaultAddress, depositAmountUSDC);
         await botCliCommands.buyCollateralPoolTokens(vaultAddress, depositAmountWei);
         await botCliCommands.enterAvailableList(vaultAddress);
@@ -740,7 +738,7 @@ describe("AgentBot cli commands unit tests", () => {
         chain.mine(chain.finalizationBlocks + 1);
         await minter.executeMinting(crt, txHash);
         // transfer to core vault
-        const result = await botCliCommands.getMaximumTransferToCoreVault(vaultAddress);
+        const result = await getMaximumTransferToCoreVault(botCliCommands.context, vaultAddress);
         const currency = await Currencies.fasset(bot.context);
         await expect(botCliCommands.transferToCoreVault(vaultAddress, result.maximumTransferUBA.addn(1))).to.eventually.be.rejectedWith(
             `Cannot transfer funds. Requested amount ${currency.format(result.maximumTransferUBA.addn(1), { unit: false })} is higher than allowed ${currency.format(result.maximumTransferUBA, { unit: false })}`
@@ -767,7 +765,7 @@ describe("AgentBot cli commands unit tests", () => {
     it("Should create 'returnFromCV' redemption request and cancel it", async () => {
         const bot = await createAgentBot();
         const vaultAddress = bot.agent.vaultAddress;
-        await mintAndDepositVaultCollateralToOwner(context, bot.agent, toBN(depositAmountUSDC), ownerAddress);
+        await mintAndDepositVaultCollateralToOwner(bot.agent, toBN(depositAmountUSDC), ownerAddress);
         await botCliCommands.depositToVault(vaultAddress, depositAmountUSDC);
         await botCliCommands.buyCollateralPoolTokens(vaultAddress, depositAmountWei);
         await botCliCommands.enterAvailableList(vaultAddress);
@@ -787,7 +785,7 @@ describe("AgentBot cli commands unit tests", () => {
         chain.mine(chain.finalizationBlocks + 1);
         await minter.executeMinting(crt, txHash);
         // transfer to core vault
-        const result = await botCliCommands.getMaximumTransferToCoreVault(vaultAddress);
+        const result = await getMaximumTransferToCoreVault(botCliCommands.context, vaultAddress);
         const res = await botCliCommands.transferToCoreVault(vaultAddress, result.maximumTransferUBA);
         const transferRedemptionId = toBN(res.transferRedemptionRequestId);
         // run agent's steps and wait for redemption with request id = transferRedemptionId
@@ -845,7 +843,7 @@ describe("AgentBot cli commands unit tests", () => {
     it("Should create and confirm'returnFromCV' redemption request", async () => {
         const bot = await createAgentBot();
         const vaultAddress = bot.agent.vaultAddress;
-        await mintAndDepositVaultCollateralToOwner(context, bot.agent, toBN(depositAmountUSDC), ownerAddress);
+        await mintAndDepositVaultCollateralToOwner(bot.agent, toBN(depositAmountUSDC), ownerAddress);
         await botCliCommands.depositToVault(vaultAddress, depositAmountUSDC);
         await botCliCommands.buyCollateralPoolTokens(vaultAddress, depositAmountWei);
         await botCliCommands.enterAvailableList(vaultAddress);
@@ -865,7 +863,7 @@ describe("AgentBot cli commands unit tests", () => {
         chain.mine(chain.finalizationBlocks + 1);
         await minter.executeMinting(crt, txHash);
         // transfer to core vault
-        const result = await botCliCommands.getMaximumTransferToCoreVault(vaultAddress);
+        const result = await getMaximumTransferToCoreVault(botCliCommands.context, vaultAddress);
         const res = await botCliCommands.transferToCoreVault(vaultAddress, result.maximumTransferUBA);
         const transferRedemptionId = toBN(res.transferRedemptionRequestId);
         // run agent's steps and wait for redemption with request id = transferRedemptionId

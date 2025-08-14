@@ -111,7 +111,11 @@ export const testAgentBotSettings: Record<TestChainType, AgentBotSettings> = {
         minBalanceOnServiceAccount: toBNExp(2, 18),
         minBalanceOnWorkAccount: toBNExp(200, 18),
         defaultAgentSettings: defaultCreateAgentSettings,
-        feeSafetyFactorPerKB: 0
+        feeSafetyFactorPerKB: 0,
+        transferToCVRatio: 0.7,
+        returnFromCVRatio: 0.3,
+        targetTransferToCVRatio: 0.4,
+        targetReturnFromCVRatio: 0.6,
     },
     btc: {
         parallel: parallelBots,
@@ -124,7 +128,11 @@ export const testAgentBotSettings: Record<TestChainType, AgentBotSettings> = {
         minBalanceOnServiceAccount: toBNExp(2, 18),
         minBalanceOnWorkAccount: toBNExp(200, 18),
         defaultAgentSettings: defaultCreateAgentSettings,
-        feeSafetyFactorPerKB: 0
+        feeSafetyFactorPerKB: 0,
+        transferToCVRatio: 0.7,
+        returnFromCVRatio: 0.3,
+        targetTransferToCVRatio: 0.4,
+        targetReturnFromCVRatio: 0.6,
     },
     xrp: {
         parallel: parallelBots,
@@ -137,7 +145,11 @@ export const testAgentBotSettings: Record<TestChainType, AgentBotSettings> = {
         minBalanceOnServiceAccount: toBNExp(2, 18),
         minBalanceOnWorkAccount: toBNExp(200, 18),
         defaultAgentSettings: defaultCreateAgentSettings,
-        feeSafetyFactorPerKB: 0
+        feeSafetyFactorPerKB: 0,
+        transferToCVRatio: 0.7,
+        returnFromCVRatio: 0.3,
+        targetTransferToCVRatio: 0.4,
+        targetReturnFromCVRatio: 0.6,
     },
     doge: {
         parallel: parallelBots,
@@ -150,7 +162,11 @@ export const testAgentBotSettings: Record<TestChainType, AgentBotSettings> = {
         minBalanceOnServiceAccount: toBNExp(2, 18),
         minBalanceOnWorkAccount: toBNExp(200, 18),
         defaultAgentSettings: defaultCreateAgentSettings,
-        feeSafetyFactorPerKB: 0
+        feeSafetyFactorPerKB: 0,
+        transferToCVRatio: 0.7,
+        returnFromCVRatio: 0.3,
+        targetTransferToCVRatio: 0.4,
+        targetReturnFromCVRatio: 0.6,
     },
 }
 

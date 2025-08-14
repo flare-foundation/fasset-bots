@@ -43,6 +43,7 @@ describe("Agent bot tests", () => {
     let agentBot: AgentBot;
     let minter: Minter;
     let redeemer: Redeemer;
+    let governance: string;
 
     const ownerManagementAddress = "0xBcAf5dAA7497dfc21D7C009C555E17E8a2574dE5";
     const ownerManagementPrivateKey = "0x713163204991ba62e8f50f5a29c518484e7fe4a8a35f3b932c986748c1fc0940";
@@ -62,6 +63,7 @@ describe("Agent bot tests", () => {
         ownerAddress = accounts[3];
         minterAddress = accounts[4];
         redeemerAddress = accounts[5];
+        governance = accounts[0];
     });
 
     async function initialize() {
@@ -73,7 +75,7 @@ describe("Agent bot tests", () => {
         await web3.eth.sendTransaction({ from: accounts[0], to: ownerManagementAddress, value: toBNExp(1, 18).toString(), gas: 100000 });
         await testWhitelistAndSetWorkAddress(context.agentOwnerRegistry, ownerManagementAddress, ownerManagementPrivateKey, ownerAddress);
         //
-        agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerManagementAddress, undefined, false);
+        agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, ownerManagementAddress, undefined, false);
         minter = await createTestMinter(context, minterAddress, chain);
         redeemer = await createTestRedeemer(context, redeemerAddress);
         await proveAndUpdateUnderlyingBlock(context.attestationProvider, context.assetManager, ownerAddress);
@@ -115,7 +117,8 @@ describe("Agent bot tests", () => {
 
     it("Should perform minting and redemption", async () => {
         // perform minting
-        const crt = await minter.reserveCollateral(agentBot.agent.vaultAddress, 2);
+        const freeCollateralLots = toBN((await agentBot.agent.getAgentInfo()).freeCollateralLots);
+        const crt = await minter.reserveCollateral(agentBot.agent.vaultAddress, freeCollateralLots);
         await agentBot.runStep(orm.em);
         const txHash = await minter.performMintingPayment(crt);
         chain.mine(chain.finalizationBlocks + 1);
@@ -945,7 +948,7 @@ describe("Agent bot tests", () => {
     });
 
     it("Should fail to send notification - faulty notifier", async () => {
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerManagementAddress, undefined, false, [new FaultyNotifierTransport()]);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, ownerManagementAddress, undefined, false, [new FaultyNotifierTransport()]);
         const spyConsole = spy.on(console, "error");
         // create collateral reservation and perform minting
         await createCRAndPerformMinting(minter, agentBot.agent.vaultAddress, 2000, chain);
@@ -967,7 +970,7 @@ describe("Agent bot tests", () => {
     });
 
     it("Should not top up collateral - fails on owner side due to no vault collateral", async () => {
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerManagementAddress, undefined, false);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, ownerManagementAddress, undefined, false);
         const spyTopUpFailed = spy.on(agentBot.notifier, "sendVaultCollateralTopUpFailedAlert");
         const spyLowOwnerBalance = spy.on(agentBot.notifier, "sendLowBalanceOnOwnersAddress");
         const spyVaultTopUp = spy.on(agentBot.notifier, "sendVaultCollateralTopUpAlert");
@@ -997,7 +1000,7 @@ describe("Agent bot tests", () => {
     });
 
     it("Should not top up collateral - fails on owner side due to no NAT", async () => {
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerManagementAddress, undefined, false);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, ownerManagementAddress, undefined, false);
         const ownerBalance = toBN(await web3.eth.getBalance(ownerAddress));
         const agentB = await createTestAgent(context, ownerManagementAddress, undefined, false);
         // calculate minimum amount of native currency to hold by agent owner
@@ -1033,7 +1036,7 @@ describe("Agent bot tests", () => {
     });
 
     it("Should not top up collateral - fails on owner side due to no NAT", async () => {
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerManagementAddress, undefined, false);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, ownerManagementAddress, undefined, false);
         const minter = await createTestMinter(context, minterAddress, chain);
         // create collateral reservation, perform minting and run
         await createCRAndPerformMintingAndRunSteps(minter, agentBot, 2, orm, chain);

@@ -120,6 +120,26 @@ export interface AgentBotFassetSettingsJson {
      * Note: Before changing values, it is advised to perform calculations to balance pinning prevention with the max transaction fee allocated by the smart contract.
      */
     feeSafetyFactorPerKB: number;
+
+    /**
+     * Ratio of minted lots to (minted + free lots) that triggers a transfer to CV.
+     */
+    transferToCVRatio: number;
+
+    /**
+     * Ratio of minted lots to (minted + free lots) that triggers a return from CV.
+     */
+    returnFromCVRatio: number;
+
+    /**
+     * Target ratio of minted lots to (minted + free lots) after CV transfer.
+     */
+    targetTransferToCVRatio: number;
+
+    /**
+     * Target ratio of minted lots to (minted + free lots) after CV return.
+     */
+    targetReturnFromCVRatio: number;
 }
 
 export interface AgentBotSettingsJson {

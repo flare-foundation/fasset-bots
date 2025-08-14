@@ -84,7 +84,7 @@ describe("UserBot cli commands unit tests", () => {
         const fAssetSymbol = "TESTHHSYM";
         userBot = new UserBotCommands(context, fAssetSymbol, minterAddress, userUnderlyingAddress, userDataDir);
         poolUserBot = new PoolUserBotCommands(context, fAssetSymbol, minterAddress);
-        agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerAddress);
+        agentBot = await createTestAgentBotAndMakeAvailable(context, accounts[0], orm, ownerAddress);
         minter = await createTestMinter(context, minterAddress, chain, userUnderlyingAddress);
         redeemer = await createTestRedeemer(context, minterAddress, userUnderlyingAddress);
         return { orm, context, chain, userBot, agentBot, minter, redeemer };

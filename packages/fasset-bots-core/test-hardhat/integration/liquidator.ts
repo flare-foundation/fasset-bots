@@ -13,7 +13,6 @@ import { createTestOrm } from "../../test/test-utils/create-test-orm";
 import { TestAssetBotContext, TestAssetTrackedStateContext, createTestAssetContext, getTestAssetTrackedStateContext } from "../test-utils/create-test-asset-context";
 import { loadFixtureCopyVars } from "../test-utils/hardhat-test-helpers";
 import { createCRAndPerformMintingAndRunSteps, createTestAgentAndMakeAvailable, createTestAgentBotAndMakeAvailable, createTestChallenger, createTestLiquidator, createTestMinter, getAgentStatus } from "../test-utils/helpers";
-import { assetPriceForAgentCr } from "../test-utils/calculations";
 use(spies);
 
 const IERC20 = artifacts.require("IERC20");
@@ -29,6 +28,7 @@ describe("Liquidator tests", () => {
     let challengerAddress: string;
     let chain: MockChain;
     let state: TrackedState;
+    let governance: string;
 
     before(async () => {
         accounts = await web3.eth.getAccounts();
@@ -36,11 +36,12 @@ describe("Liquidator tests", () => {
         minterAddress = accounts[4];
         challengerAddress = accounts[5];
         liquidatorAddress = accounts[6];
+        governance = accounts[0];
     });
 
     async function initialize() {
         orm = await createTestOrm();
-        context = await createTestAssetContext(accounts[0], testChainInfo.xrp);
+        context = await createTestAssetContext(governance, testChainInfo.xrp);
         trackedStateContext = getTestAssetTrackedStateContext(context, true);
         chain = checkedCast(trackedStateContext.blockchainIndexer.chain, MockChain);
         state = new TrackedState(trackedStateContext);
@@ -68,7 +69,7 @@ describe("Liquidator tests", () => {
 
     it("Should not liquidate agent when status from normal -> liquidation after price changes (liquidator have no fassets)", async () => {
         const liquidator = await createTestLiquidator(trackedStateContext, liquidatorAddress, state);
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerAddress);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, ownerAddress);
         const minter = await createTestMinter(context, minterAddress, chain);
         // create collateral reservation, perform minting and run liquidation trigger
         await createCRAndPerformMintingAndRunSteps(minter, agentBot, 2000, orm, chain);
@@ -97,7 +98,7 @@ describe("Liquidator tests", () => {
 
     it("Should liquidate agent when status from normal -> liquidation after price changes", async () => {
         const liquidator = await createTestLiquidator(trackedStateContext, liquidatorAddress, state);
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerAddress);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, ownerAddress);
         const minter = await createTestMinter(context, liquidatorAddress, chain);
         const spyLiquidation = spy.on(agentBot.notifier, "sendLiquidationStartAlert");
         // create collateral reservation, perform minting and run liquidation trigger
@@ -128,7 +129,7 @@ describe("Liquidator tests", () => {
 
     it("Should partially liquidate agent", async () => {
         const liquidator = await createTestLiquidator(trackedStateContext, liquidatorAddress, state);
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, accounts[81]);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, accounts[81]);
         // vaultCollateralToken
         const vaultCollateralToken = await IERC20.at((await agentBot.agent.getVaultCollateral()).token);
         const minter = await createTestMinter(context, minterAddress, chain);
@@ -169,7 +170,7 @@ describe("Liquidator tests", () => {
 
     it("Should liquidate agent due to price change", async () => {
         const liquidator = await createTestLiquidator(trackedStateContext, liquidatorAddress, state);
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, accounts[81]);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, accounts[81]);
         // vaultCollateralToken
         const vaultCollateralToken = await IERC20.at((await agentBot.agent.getVaultCollateral()).token);
         const minter = await createTestMinter(context, minterAddress, chain);
@@ -210,7 +211,7 @@ describe("Liquidator tests", () => {
 
     it("Should liquidate agent due to price change - liquidate everything", async () => {
         const liquidator = await createTestLiquidator(trackedStateContext, liquidatorAddress, state);
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, accounts[81]);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, accounts[81]);
         // vaultCollateralToken
         const vaultCollateralToken = await IERC20.at((await agentBot.agent.getVaultCollateral()).token);
         const minter = await createTestMinter(context, minterAddress, chain);
@@ -267,7 +268,7 @@ describe("Liquidator tests", () => {
 
     it("Should liquidate agent due to price change - liquidate everything (buy missing fAssets)", async () => {
         const liquidator = await createTestLiquidator(trackedStateContext, liquidatorAddress, state);
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, accounts[81]);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, accounts[81]);
         // vaultCollateralToken
         const vaultCollateralToken = await IERC20.at((await agentBot.agent.getVaultCollateral()).token);
         const minter = await createTestMinter(context, minterAddress, chain);
@@ -319,7 +320,7 @@ describe("Liquidator tests", () => {
 
     it("Should liquidate agent due to collateral token invalidation", async () => {
         const liquidator = await createTestLiquidator(trackedStateContext, liquidatorAddress, state);
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, accounts[81]);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, accounts[81]);
         // vaultCollateralToken
         const vaultCollateralToken = await IERC20.at((await agentBot.agent.getVaultCollateral()).token);
         const minter = await createTestMinter(context, minterAddress, chain);
@@ -393,7 +394,7 @@ describe("Liquidator tests", () => {
         const spyLiquidation = spy.on(liquidator.liquidationStrategy, "liquidate");
         const spyChlg = spy.on(challenger, "illegalTransactionChallenge");
         // create test actors
-        const agentBot = await createTestAgentBotAndMakeAvailable(context, orm, ownerAddress);
+        const agentBot = await createTestAgentBotAndMakeAvailable(context, governance, orm, ownerAddress);
         const minter = await createTestMinter(context, minterAddress, chain);
         await challenger.runStep();
         // create collateral reservation and perform minting

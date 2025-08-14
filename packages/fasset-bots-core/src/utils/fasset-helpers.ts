@@ -12,6 +12,7 @@ import { logger } from "./logger";
 import { TokenBalances } from "./token-balances";
 import { web3DeepNormalize } from "./web3normalize";
 import { ChainId } from "../underlying-chain/ChainId";
+import { MaximumTransferToCoreVaultResult } from "../commands/AgentBotCommands";
 
 export function getAgentSettings(agentInfo: AgentInfo): AgentSettings {
     const agentSettings = {} as AgentSettings;
@@ -130,4 +131,13 @@ export function confirmationAllowedAt(announcedAt: BN): BN | null {
     } else {
         return null;
     }
+}
+
+/**
+ * @param agentVault agent's vault address
+ * @returns maximal amount to transfer and minimum amount to be left on underlying
+ */
+export async function getMaximumTransferToCoreVault(context: IAssetAgentContext, agentVault: string): Promise<MaximumTransferToCoreVaultResult> {
+     const allowed = await context.assetManager.maximumTransferToCoreVault(agentVault);
+    return { maximumTransferUBA: allowed[0], minimumLeftAmountUBA: allowed[1] };
 }

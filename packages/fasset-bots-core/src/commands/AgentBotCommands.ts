@@ -860,35 +860,8 @@ export class AgentBotCommands {
     async transferToCoreVault(agentVault: string, amount: string | BN): Promise<EventArgs<TransferToCoreVaultStarted>> {
         logger.info(`Agent ${agentVault} is trying to transfer underlying to core vault.`);
         const { agentBot } = await this.getAgentBot(agentVault);
-        // check that amount is not too high (we don't want the agent to go to full liquidation)
-        const allowedToSend = await this.getMaximumTransferToCoreVault(agentVault);
-        const currency = await Currencies.fassetUnderlyingToken(this.context);
-        if (toBN(amount).gt(allowedToSend.maximumTransferUBA)) {
-            logger.error(`Agent ${agentVault} cannot transfer funds. Requested amount ${currency.formatValue(amount)} is higher than allowed ${currency.formatValue(allowedToSend.maximumTransferUBA)}.`);
-            throw new CommandLineError(`Cannot transfer funds. Requested amount ${currency.formatValue(amount)} is higher than allowed ${currency.formatValue(allowedToSend.maximumTransferUBA)}.`);
-        }
-        // check if enough free underlying to cover underlying fee
-        const coreVaultSourceAddress = await requireNotNull(this.context.coreVaultManager).coreVaultAddress();
-        const underlyingFee = await agentBot.getTransferToCoreVaultMaxFee(coreVaultSourceAddress, toBN(amount));
-        if (underlyingFee.eq(BN_ZERO)) {
-            logger.error(`Agent ${agentVault} cannot transfer funds. Current fee is too high.`);
-            throw new CommandLineError(squashSpace`Cannot transfer funds. Not enough free underlying to pay for underlying transaction fee.`);
-        }
-        // request transfer
-        const res = await this.context.assetManager.transferToCoreVault(agentVault, amount,  { from: agentBot.agent.owner.workAddress });
-        const event = requiredEventArgs(res, "TransferToCoreVaultStarted");
-        logger.info(`Agent ${agentVault} successfully initiated transfer of underlying to core vault.`);
-        await this.notifierFor(agentVault).sendTransferToCVStarted(event.transferRedemptionRequestId);
+        const event = await agentBot.transferToCoreVault(amount);
         return event;
-    }
-
-    /**
-     * @param agentVault agent's vault address
-     * @returns maximal amount to transfer and minimum amount to be left on underlying
-     */
-    async getMaximumTransferToCoreVault(agentVault: string): Promise<MaximumTransferToCoreVaultResult> {
-        const allowed = await this.context.assetManager.maximumTransferToCoreVault(agentVault);
-        return { maximumTransferUBA: allowed[0], minimumLeftAmountUBA: allowed[1] };
     }
 
     /**
@@ -898,10 +871,7 @@ export class AgentBotCommands {
     async returnFromCoreVault(agentVault: string, lots: string | BN): Promise<EventArgs<ReturnFromCoreVaultRequested>> {
         logger.info(`Agent ${agentVault} is trying to request return of underlying from core vault.`);
         const { agentBot } = await this.getAgentBot(agentVault);
-        const res = await this.context.assetManager.requestReturnFromCoreVault(agentVault, lots,  { from: agentBot.agent.owner.workAddress });
-        const event = requiredEventArgs(res, "ReturnFromCoreVaultRequested");
-        logger.info(`Agent ${agentVault} successfully initiated return of underlying from core vault with id ${event.requestId.toString()}.`);
-        this.notifierFor(agentVault).sendReturnFromCVTrigger(event.requestId.toString());
+        const event = await agentBot.returnFromCoreVault(lots);
         return event;
     }
 

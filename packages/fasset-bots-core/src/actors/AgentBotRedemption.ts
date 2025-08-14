@@ -560,4 +560,12 @@ export class AgentBotRedemption {
             return await em.findOneOrFail(AgentRedemption, { agentAddress: this.agent.vaultAddress, requestId: rd.requestId }, { refresh: true });
         }
     }
+
+    async openTransferToCoreVaultIds(em: EM): Promise<AgentRedemption[]> {
+        return await em.createQueryBuilder(AgentRedemption)
+            .select("id")
+            .where({ agentAddress: this.agent.vaultAddress, isTransferToCoreVault: true })
+            .andWhere({ $not: { state: AgentRedemptionState.DONE } })
+            .getResultList();
+    }
 }
