@@ -39,7 +39,7 @@ export class DefaultChallengeStrategy extends ChallengeStrategy<DefaultLiquidati
         await this.context.assetManager.illegalPaymentChallenge(proof, agent.vaultAddress, {
             from: this.address, maxPriorityFeePerGas: this.config?.maxPriorityFeePerGas })
             .catch((e) => scope.exitOnExpectedError(e,
-                ["ChallengeAlreadyLiquidating", "ChallengeTransactionAlreadyConfirmed", "MatchingRedemptionActive", "MatchingAnnouncedPaymentActive"],
+                ["ChallengeAlreadyLiquidating", "ChallengeInvalidAgentStatus", "ChallengeTransactionAlreadyConfirmed", "MatchingRedemptionActive", "MatchingAnnouncedPaymentActive"],
                 ActorBaseKind.CHALLENGER, this.address));
     }
 
@@ -47,7 +47,7 @@ export class DefaultChallengeStrategy extends ChallengeStrategy<DefaultLiquidati
         // due to async nature of challenging there may be some false challenges which will be rejected
         await this.context.assetManager.doublePaymentChallenge(proof1, proof2, agent.vaultAddress, {
             from: this.address, maxPriorityFeePerGas: this.config?.maxPriorityFeePerGas })
-            .catch((e) => scope.exitOnExpectedError(e, ["ChallengeAlreadyLiquidating"],
+            .catch((e) => scope.exitOnExpectedError(e, ["ChallengeAlreadyLiquidating", "ChallengeInvalidAgentStatus"],
                 ActorBaseKind.CHALLENGER, this.address));
     }
 
@@ -55,7 +55,7 @@ export class DefaultChallengeStrategy extends ChallengeStrategy<DefaultLiquidati
         // due to async nature of challenging there may be some false challenges which will be rejected
         await this.context.assetManager.freeBalanceNegativeChallenge(proofs, agent.vaultAddress, {
             from: this.address, maxPriorityFeePerGas: this.config?.maxPriorityFeePerGas })
-            .catch((e) => scope.exitOnExpectedError(e, ["ChallengeAlreadyLiquidating", "MultiplePaymentsChallengeEnoughBalance"],
+            .catch((e) => scope.exitOnExpectedError(e, ["ChallengeAlreadyLiquidating", "ChallengeInvalidAgentStatus", "MultiplePaymentsChallengeEnoughBalance"],
                 ActorBaseKind.CHALLENGER, this.address));
     }
 }
@@ -75,7 +75,7 @@ export class DexChallengeStrategy extends ChallengeStrategy<DexChallengeStrategy
         await challenger.illegalPaymentChallenge(proof, agent.vaultAddress, this.address, arbitrageConfig, {
             from: this.address, maxPriorityFeePerGas: this.config.maxPriorityFeePerGas })
             .catch((e) => scope.exitOnExpectedError(e,
-                ["ChallengeAlreadyLiquidating", "ChallengeTransactionAlreadyConfirmed", "MatchingRedemptionActive", "MatchingAnnouncedPaymentActive"],
+                ["ChallengeAlreadyLiquidating", "ChallengeInvalidAgentStatus", "ChallengeTransactionAlreadyConfirmed", "MatchingRedemptionActive", "MatchingAnnouncedPaymentActive"],
                 ActorBaseKind.CHALLENGER, this.address));
     }
 
@@ -85,7 +85,7 @@ export class DexChallengeStrategy extends ChallengeStrategy<DexChallengeStrategy
         const arbitrageConfig = await this.arbitrageConfig(challenger, agent);
         await challenger.doublePaymentChallenge(proof1, proof2, agent.vaultAddress, this.address, arbitrageConfig, {
             from: this.address, maxPriorityFeePerGas: this.config.maxPriorityFeePerGas })
-            .catch((e) => scope.exitOnExpectedError(e, ["ChallengeAlreadyLiquidating"], ActorBaseKind.CHALLENGER, this.address));
+            .catch((e) => scope.exitOnExpectedError(e, ["ChallengeAlreadyLiquidating", "ChallengeInvalidAgentStatus"], ActorBaseKind.CHALLENGER, this.address));
     }
 
     public async freeBalanceNegativeChallenge(scope: EventScope, agent: TrackedAgentState, proofs: BalanceDecreasingTransaction.Proof[]) {
@@ -94,7 +94,7 @@ export class DexChallengeStrategy extends ChallengeStrategy<DexChallengeStrategy
         const arbitrageConfig = await this.arbitrageConfig(challenger, agent);
         await challenger.freeBalanceNegativeChallenge(proofs, agent.vaultAddress, this.address, arbitrageConfig, {
             from: this.address, maxPriorityFeePerGas: this.config.maxPriorityFeePerGas })
-            .catch((e) => scope.exitOnExpectedError(e, ["ChallengeAlreadyLiquidating", "MultiplePaymentsChallengeEnoughBalance"],
+            .catch((e) => scope.exitOnExpectedError(e, ["ChallengeAlreadyLiquidating", "ChallengeInvalidAgentStatus", "MultiplePaymentsChallengeEnoughBalance"],
                 ActorBaseKind.CHALLENGER, this.address));
     }
 
