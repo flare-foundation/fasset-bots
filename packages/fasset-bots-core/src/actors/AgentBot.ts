@@ -672,7 +672,6 @@ export class AgentBot {
             // transfer to CV
             if (ratio > this.agentBotSettings.transferToCVRatio ) {
                 const openTransfers = await this.redemption.openTransferToCoreVaultIds(rootEm);
-                console.log("openTransfers", openTransfers)
                 if (openTransfers.length == 0) {
                     const target = this.agentBotSettings.targetTransferToCVRatio;
                     // agent wants
@@ -682,7 +681,7 @@ export class AgentBot {
                     const maxAllowedToTransfer = await getMaximumTransferToCoreVault(this.context, this.agent.vaultAddress);
                     // actual return
                     const transferAmount = minBN(transferLotsAmount, maxAllowedToTransfer.maximumTransferUBA);
-                    if (transferAmount.gte(settings.lotSizeAMG)) {
+                    if (transferAmount.gte(toBN(settings.lotSizeAMG))) {
                         await this.transferToCoreVault(transferAmount);
                     }
                 }
