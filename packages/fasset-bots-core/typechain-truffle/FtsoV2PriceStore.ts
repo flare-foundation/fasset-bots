@@ -9,15 +9,25 @@ import { EventData, PastEventOptions } from "web3-eth-contract";
 
 export interface FtsoV2PriceStoreContract
   extends Truffle.Contract<FtsoV2PriceStoreInstance> {
-  "new"(
-    _governanceSettings: string,
-    _initialGovernance: string,
-    _addressUpdater: string,
-    _firstVotingRoundStartTs: number | BN | string,
-    _votingEpochDurationSeconds: number | BN | string,
-    _ftsoProtocolId: number | BN | string,
-    meta?: Truffle.TransactionDetails
-  ): Promise<FtsoV2PriceStoreInstance>;
+  "new"(meta?: Truffle.TransactionDetails): Promise<FtsoV2PriceStoreInstance>;
+}
+
+export interface AdminChanged {
+  name: "AdminChanged";
+  args: {
+    previousAdmin: string;
+    newAdmin: string;
+    0: string;
+    1: string;
+  };
+}
+
+export interface BeaconUpgraded {
+  name: "BeaconUpgraded";
+  args: {
+    beacon: string;
+    0: string;
+  };
 }
 
 export interface GovernanceCallTimelocked {
@@ -72,13 +82,24 @@ export interface TimelockedGovernanceCallExecuted {
   };
 }
 
+export interface Upgraded {
+  name: "Upgraded";
+  args: {
+    implementation: string;
+    0: string;
+  };
+}
+
 export type AllEvents =
+  | AdminChanged
+  | BeaconUpgraded
   | GovernanceCallTimelocked
   | GovernanceInitialised
   | GovernedProductionModeEntered
   | PricesPublished
   | TimelockedGovernanceCallCanceled
-  | TimelockedGovernanceCallExecuted;
+  | TimelockedGovernanceCallExecuted
+  | Upgraded;
 
 export interface FtsoV2PriceStoreInstance extends Truffle.ContractInstance {
   cancelGovernanceCall: {
@@ -159,6 +180,45 @@ export interface FtsoV2PriceStoreInstance extends Truffle.ContractInstance {
 
   governanceSettings(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
+  initialize: {
+    (
+      _governanceSettings: string,
+      _initialGovernance: string,
+      _addressUpdater: string,
+      _firstVotingRoundStartTs: number | BN | string,
+      _votingEpochDurationSeconds: number | BN | string,
+      _ftsoProtocolId: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse<AllEvents>>;
+    call(
+      _governanceSettings: string,
+      _initialGovernance: string,
+      _addressUpdater: string,
+      _firstVotingRoundStartTs: number | BN | string,
+      _votingEpochDurationSeconds: number | BN | string,
+      _ftsoProtocolId: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      _governanceSettings: string,
+      _initialGovernance: string,
+      _addressUpdater: string,
+      _firstVotingRoundStartTs: number | BN | string,
+      _votingEpochDurationSeconds: number | BN | string,
+      _ftsoProtocolId: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _governanceSettings: string,
+      _initialGovernance: string,
+      _addressUpdater: string,
+      _firstVotingRoundStartTs: number | BN | string,
+      _votingEpochDurationSeconds: number | BN | string,
+      _ftsoProtocolId: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
   isExecutor(
     _address: string,
     txDetails?: Truffle.TransactionDetails
@@ -171,6 +231,8 @@ export interface FtsoV2PriceStoreInstance extends Truffle.ContractInstance {
   maxSpreadBIPS(txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
   productionMode(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
+
+  proxiableUUID(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
   publishPrices: {
     (
@@ -367,6 +429,48 @@ export interface FtsoV2PriceStoreInstance extends Truffle.ContractInstance {
     ): Promise<number>;
   };
 
+  upgradeTo: {
+    (
+      newImplementation: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse<AllEvents>>;
+    call(
+      newImplementation: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      newImplementation: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      newImplementation: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  upgradeToAndCall: {
+    (
+      newImplementation: string,
+      data: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse<AllEvents>>;
+    call(
+      newImplementation: string,
+      data: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      newImplementation: string,
+      data: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      newImplementation: string,
+      data: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
   votingEpochDurationSeconds(
     txDetails?: Truffle.TransactionDetails
   ): Promise<BN>;
@@ -452,6 +556,45 @@ export interface FtsoV2PriceStoreInstance extends Truffle.ContractInstance {
 
     governanceSettings(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
+    initialize: {
+      (
+        _governanceSettings: string,
+        _initialGovernance: string,
+        _addressUpdater: string,
+        _firstVotingRoundStartTs: number | BN | string,
+        _votingEpochDurationSeconds: number | BN | string,
+        _ftsoProtocolId: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+      call(
+        _governanceSettings: string,
+        _initialGovernance: string,
+        _addressUpdater: string,
+        _firstVotingRoundStartTs: number | BN | string,
+        _votingEpochDurationSeconds: number | BN | string,
+        _ftsoProtocolId: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        _governanceSettings: string,
+        _initialGovernance: string,
+        _addressUpdater: string,
+        _firstVotingRoundStartTs: number | BN | string,
+        _votingEpochDurationSeconds: number | BN | string,
+        _ftsoProtocolId: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        _governanceSettings: string,
+        _initialGovernance: string,
+        _addressUpdater: string,
+        _firstVotingRoundStartTs: number | BN | string,
+        _votingEpochDurationSeconds: number | BN | string,
+        _ftsoProtocolId: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
     isExecutor(
       _address: string,
       txDetails?: Truffle.TransactionDetails
@@ -464,6 +607,8 @@ export interface FtsoV2PriceStoreInstance extends Truffle.ContractInstance {
     maxSpreadBIPS(txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
     productionMode(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
+
+    proxiableUUID(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
     publishPrices: {
       (
@@ -656,6 +801,48 @@ export interface FtsoV2PriceStoreInstance extends Truffle.ContractInstance {
         _symbols: string[],
         _trustedDecimals: (number | BN | string)[],
         _maxSpreadBIPS: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
+    upgradeTo: {
+      (
+        newImplementation: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+      call(
+        newImplementation: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        newImplementation: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        newImplementation: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
+    upgradeToAndCall: {
+      (
+        newImplementation: string,
+        data: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+      call(
+        newImplementation: string,
+        data: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        newImplementation: string,
+        data: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        newImplementation: string,
+        data: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };

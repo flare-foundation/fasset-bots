@@ -43,6 +43,7 @@ import { IERC20PermitContract } from "./IERC20Permit";
 import { IERC20Contract } from "./IERC20";
 import { IERC165Contract } from "./IERC165";
 import { AgentOwnerRegistryContract } from "./AgentOwnerRegistry";
+import { AgentOwnerRegistryProxyContract } from "./AgentOwnerRegistryProxy";
 import { AgentVaultContract } from "./AgentVault";
 import { AgentVaultFactoryContract } from "./AgentVaultFactory";
 import { IIAgentVaultContract } from "./IIAgentVault";
@@ -153,6 +154,7 @@ import { AddressUpdaterMockContract } from "./AddressUpdaterMock";
 import { GovernanceSettingsMockContract } from "./GovernanceSettingsMock";
 import { WNatMockContract } from "./WNatMock";
 import { FtsoV2PriceStoreContract } from "./FtsoV2PriceStore";
+import { FtsoV2PriceStoreProxyContract } from "./FtsoV2PriceStoreProxy";
 import { IPriceChangeEmitterContract } from "./IPriceChangeEmitter";
 import { IPricePublisherContract } from "./IPricePublisher";
 import { IPriceReaderContract } from "./IPriceReader";
@@ -161,6 +163,7 @@ import { FtsoV2PriceStoreMockContract } from "./FtsoV2PriceStoreMock";
 import { GovernedContract } from "./Governed";
 import { GovernedBaseContract } from "./GovernedBase";
 import { GovernedProxyImplementationContract } from "./GovernedProxyImplementation";
+import { GovernedUUPSProxyImplementationContract } from "./GovernedUUPSProxyImplementation";
 import { IGovernedContract } from "./IGoverned";
 import { GovernedMockContract } from "./GovernedMock";
 import { GovernedWithTimelockMockContract } from "./GovernedWithTimelockMock";
@@ -273,6 +276,7 @@ export type * from "./types";
       require(name: "IERC20"): IERC20Contract;
       require(name: "IERC165"): IERC165Contract;
       require(name: "AgentOwnerRegistry"): AgentOwnerRegistryContract;
+      require(name: "AgentOwnerRegistryProxy"): AgentOwnerRegistryProxyContract;
       require(name: "AgentVault"): AgentVaultContract;
       require(name: "AgentVaultFactory"): AgentVaultFactoryContract;
       require(name: "IIAgentVault"): IIAgentVaultContract;
@@ -423,6 +427,7 @@ export type * from "./types";
       require(name: "GovernanceSettingsMock"): GovernanceSettingsMockContract;
       require(name: "WNatMock"): WNatMockContract;
       require(name: "FtsoV2PriceStore"): FtsoV2PriceStoreContract;
+      require(name: "FtsoV2PriceStoreProxy"): FtsoV2PriceStoreProxyContract;
       require(name: "IPriceChangeEmitter"): IPriceChangeEmitterContract;
       require(name: "IPricePublisher"): IPricePublisherContract;
       require(name: "IPriceReader"): IPriceReaderContract;
@@ -433,6 +438,9 @@ export type * from "./types";
       require(
         name: "GovernedProxyImplementation"
       ): GovernedProxyImplementationContract;
+      require(
+        name: "GovernedUUPSProxyImplementation"
+      ): GovernedUUPSProxyImplementationContract;
       require(name: "IGoverned"): IGovernedContract;
       require(name: "GovernedMock"): GovernedMockContract;
       require(
@@ -613,6 +621,10 @@ export {
   AgentOwnerRegistryContract,
   AgentOwnerRegistryInstance,
 } from "./AgentOwnerRegistry";
+export {
+  AgentOwnerRegistryProxyContract,
+  AgentOwnerRegistryProxyInstance,
+} from "./AgentOwnerRegistryProxy";
 export { AgentVaultContract, AgentVaultInstance } from "./AgentVault";
 export {
   AgentVaultFactoryContract,
@@ -982,6 +994,10 @@ export {
   FtsoV2PriceStoreInstance,
 } from "./FtsoV2PriceStore";
 export {
+  FtsoV2PriceStoreProxyContract,
+  FtsoV2PriceStoreProxyInstance,
+} from "./FtsoV2PriceStoreProxy";
+export {
   IPriceChangeEmitterContract,
   IPriceChangeEmitterInstance,
 } from "./IPriceChangeEmitter";
@@ -1004,6 +1020,10 @@ export {
   GovernedProxyImplementationContract,
   GovernedProxyImplementationInstance,
 } from "./GovernedProxyImplementation";
+export {
+  GovernedUUPSProxyImplementationContract,
+  GovernedUUPSProxyImplementationInstance,
+} from "./GovernedUUPSProxyImplementation";
 export { IGovernedContract, IGovernedInstance } from "./IGoverned";
 export { GovernedMockContract, GovernedMockInstance } from "./GovernedMock";
 export {

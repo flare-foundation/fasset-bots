@@ -39,9 +39,26 @@ export interface AgentRedemptionInCollateral {
   };
 }
 
-export type AllEvents = AgentRedemption | AgentRedemptionInCollateral;
+export interface CollateralUpdated {
+  name: "CollateralUpdated";
+  args: {
+    agentVault: string;
+    token: string;
+    0: string;
+    1: string;
+  };
+}
+
+export type AllEvents =
+  | AgentRedemption
+  | AgentRedemptionInCollateral
+  | CollateralUpdated;
 
 export interface AssetManagerMockInstance extends Truffle.ContractInstance {
+  assetMintingGranularityUBA(
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<BN>;
+
   assetPriceDiv(txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
   assetPriceMul(txDetails?: Truffle.TransactionDetails): Promise<BN>;
@@ -106,6 +123,11 @@ export interface AssetManagerMockInstance extends Truffle.ContractInstance {
   isAgentVaultOwner(
     arg0: string,
     _address: string,
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<boolean>;
+
+  isVaultCollateralToken(
+    arg0: string,
     txDetails?: Truffle.TransactionDetails
   ): Promise<boolean>;
 
@@ -271,6 +293,25 @@ export interface AssetManagerMockInstance extends Truffle.ContractInstance {
     ): Promise<number>;
   };
 
+  setFAssetsBackedByPool: {
+    (
+      _fassetsBackedByPool: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse<AllEvents>>;
+    call(
+      _fassetsBackedByPool: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      _fassetsBackedByPool: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _fassetsBackedByPool: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
   setLotSize: {
     (
       _lotSize: number | BN | string,
@@ -353,28 +394,32 @@ export interface AssetManagerMockInstance extends Truffle.ContractInstance {
 
   updateCollateral: {
     (
-      arg0: string,
-      arg1: string,
+      _agentVault: string,
+      _token: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<Truffle.TransactionResponse<AllEvents>>;
     call(
-      arg0: string,
-      arg1: string,
+      _agentVault: string,
+      _token: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<void>;
     sendTransaction(
-      arg0: string,
-      arg1: string,
+      _agentVault: string,
+      _token: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
-      arg0: string,
-      arg1: string,
+      _agentVault: string,
+      _token: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
 
   methods: {
+    assetMintingGranularityUBA(
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<BN>;
+
     assetPriceDiv(txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
     assetPriceMul(txDetails?: Truffle.TransactionDetails): Promise<BN>;
@@ -439,6 +484,11 @@ export interface AssetManagerMockInstance extends Truffle.ContractInstance {
     isAgentVaultOwner(
       arg0: string,
       _address: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<boolean>;
+
+    isVaultCollateralToken(
+      arg0: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<boolean>;
 
@@ -607,6 +657,25 @@ export interface AssetManagerMockInstance extends Truffle.ContractInstance {
       ): Promise<number>;
     };
 
+    setFAssetsBackedByPool: {
+      (
+        _fassetsBackedByPool: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+      call(
+        _fassetsBackedByPool: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        _fassetsBackedByPool: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        _fassetsBackedByPool: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
     setLotSize: {
       (
         _lotSize: number | BN | string,
@@ -689,23 +758,23 @@ export interface AssetManagerMockInstance extends Truffle.ContractInstance {
 
     updateCollateral: {
       (
-        arg0: string,
-        arg1: string,
+        _agentVault: string,
+        _token: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<Truffle.TransactionResponse<AllEvents>>;
       call(
-        arg0: string,
-        arg1: string,
+        _agentVault: string,
+        _token: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<void>;
       sendTransaction(
-        arg0: string,
-        arg1: string,
+        _agentVault: string,
+        _token: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
       estimateGas(
-        arg0: string,
-        arg1: string,
+        _agentVault: string,
+        _token: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };

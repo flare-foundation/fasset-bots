@@ -25,6 +25,11 @@
     },
     {
       "inputs": [],
+      "name": "UnknownToken",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "buyCollateralPoolTokens",
       "outputs": [],
       "stateMutability": "payable",

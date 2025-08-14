@@ -46,6 +46,11 @@ export interface AgentVaultAndPoolSupportFacetInstance
     txDetails?: Truffle.TransactionDetails
   ): Promise<boolean>;
 
+  isVaultCollateralToken(
+    _token: string,
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<boolean>;
+
   methods: {
     assetPriceNatWei(
       txDetails?: Truffle.TransactionDetails
@@ -71,6 +76,11 @@ export interface AgentVaultAndPoolSupportFacetInstance
 
     isLockedVaultToken(
       _agentVault: string,
+      _token: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<boolean>;
+
+    isVaultCollateralToken(
       _token: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<boolean>;

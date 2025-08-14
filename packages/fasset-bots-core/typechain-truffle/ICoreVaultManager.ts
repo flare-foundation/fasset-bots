@@ -64,6 +64,16 @@ export interface EmergencyPauseSenderRemoved {
   };
 }
 
+export interface EscrowExpired {
+  name: "EscrowExpired";
+  args: {
+    preimageHash: string;
+    amount: BN;
+    0: string;
+    1: BN;
+  };
+}
+
 export interface EscrowFinished {
   name: "EscrowFinished";
   args: {
@@ -218,6 +228,7 @@ export type AllEvents =
   | CustomInstructions
   | EmergencyPauseSenderAdded
   | EmergencyPauseSenderRemoved
+  | EscrowExpired
   | EscrowFinished
   | EscrowInstructions
   | NotAllEscrowsProcessed

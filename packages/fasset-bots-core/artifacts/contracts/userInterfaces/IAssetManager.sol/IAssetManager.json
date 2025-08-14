@@ -4098,7 +4098,7 @@
       "outputs": [
         {
           "internalType": "address[]",
-          "name": "_agentVaults",
+          "name": "_agents",
           "type": "address[]"
         },
         {
@@ -4193,7 +4193,7 @@
       "outputs": [
         {
           "internalType": "address[]",
-          "name": "_agentVaults",
+          "name": "_agents",
           "type": "address[]"
         },
         {

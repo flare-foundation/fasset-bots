@@ -3190,6 +3190,11 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
     txDetails?: Truffle.TransactionDetails
   ): Promise<boolean>;
 
+  isVaultCollateralToken(
+    _token: string,
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<boolean>;
+
   liquidate: {
     (
       _agentVault: string,
@@ -7464,6 +7469,11 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
 
     isPoolTokenSuffixReserved(
       _suffix: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<boolean>;
+
+    isVaultCollateralToken(
+      _token: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<boolean>;
 

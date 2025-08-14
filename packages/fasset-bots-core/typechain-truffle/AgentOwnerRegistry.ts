@@ -9,11 +9,17 @@ import { EventData, PastEventOptions } from "web3-eth-contract";
 
 export interface AgentOwnerRegistryContract
   extends Truffle.Contract<AgentOwnerRegistryInstance> {
-  "new"(
-    _governanceSettings: string,
-    _initialGovernance: string,
-    meta?: Truffle.TransactionDetails
-  ): Promise<AgentOwnerRegistryInstance>;
+  "new"(meta?: Truffle.TransactionDetails): Promise<AgentOwnerRegistryInstance>;
+}
+
+export interface AdminChanged {
+  name: "AdminChanged";
+  args: {
+    previousAdmin: string;
+    newAdmin: string;
+    0: string;
+    1: string;
+  };
 }
 
 export interface AgentDataChanged {
@@ -29,6 +35,14 @@ export interface AgentDataChanged {
     2: string;
     3: string;
     4: string;
+  };
+}
+
+export interface BeaconUpgraded {
+  name: "BeaconUpgraded";
+  args: {
+    beacon: string;
+    0: string;
   };
 }
 
@@ -84,6 +98,14 @@ export interface TimelockedGovernanceCallExecuted {
   };
 }
 
+export interface Upgraded {
+  name: "Upgraded";
+  args: {
+    implementation: string;
+    0: string;
+  };
+}
+
 export interface Whitelisted {
   name: "Whitelisted";
   args: {
@@ -113,13 +135,16 @@ export interface WorkAddressChanged {
 }
 
 export type AllEvents =
+  | AdminChanged
   | AgentDataChanged
+  | BeaconUpgraded
   | GovernanceCallTimelocked
   | GovernanceInitialised
   | GovernedProductionModeEntered
   | ManagerChanged
   | TimelockedGovernanceCallCanceled
   | TimelockedGovernanceCallExecuted
+  | Upgraded
   | Whitelisted
   | WhitelistingRevoked
   | WorkAddressChanged;
@@ -195,6 +220,29 @@ export interface AgentOwnerRegistryInstance extends Truffle.ContractInstance {
 
   governanceSettings(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
+  initialize: {
+    (
+      _governanceSettings: string,
+      _initialGovernance: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse<AllEvents>>;
+    call(
+      _governanceSettings: string,
+      _initialGovernance: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      _governanceSettings: string,
+      _initialGovernance: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _governanceSettings: string,
+      _initialGovernance: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
   isExecutor(
     _address: string,
     txDetails?: Truffle.TransactionDetails
@@ -208,6 +256,8 @@ export interface AgentOwnerRegistryInstance extends Truffle.ContractInstance {
   manager(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
   productionMode(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
+
+  proxiableUUID(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
   revokeAddress: {
     (_address: string, txDetails?: Truffle.TransactionDetails): Promise<
@@ -370,6 +420,48 @@ export interface AgentOwnerRegistryInstance extends Truffle.ContractInstance {
     estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
   };
 
+  upgradeTo: {
+    (
+      newImplementation: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse<AllEvents>>;
+    call(
+      newImplementation: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      newImplementation: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      newImplementation: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  upgradeToAndCall: {
+    (
+      newImplementation: string,
+      data: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse<AllEvents>>;
+    call(
+      newImplementation: string,
+      data: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      newImplementation: string,
+      data: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      newImplementation: string,
+      data: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
   whitelistAndDescribeAgent: {
     (
       _managementAddress: string,
@@ -476,6 +568,29 @@ export interface AgentOwnerRegistryInstance extends Truffle.ContractInstance {
 
     governanceSettings(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
+    initialize: {
+      (
+        _governanceSettings: string,
+        _initialGovernance: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+      call(
+        _governanceSettings: string,
+        _initialGovernance: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        _governanceSettings: string,
+        _initialGovernance: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        _governanceSettings: string,
+        _initialGovernance: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
     isExecutor(
       _address: string,
       txDetails?: Truffle.TransactionDetails
@@ -489,6 +604,8 @@ export interface AgentOwnerRegistryInstance extends Truffle.ContractInstance {
     manager(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
     productionMode(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
+
+    proxiableUUID(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
     revokeAddress: {
       (_address: string, txDetails?: Truffle.TransactionDetails): Promise<
@@ -649,6 +766,48 @@ export interface AgentOwnerRegistryInstance extends Truffle.ContractInstance {
       call(txDetails?: Truffle.TransactionDetails): Promise<void>;
       sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
       estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
+    };
+
+    upgradeTo: {
+      (
+        newImplementation: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+      call(
+        newImplementation: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        newImplementation: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        newImplementation: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
+    upgradeToAndCall: {
+      (
+        newImplementation: string,
+        data: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+      call(
+        newImplementation: string,
+        data: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        newImplementation: string,
+        data: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        newImplementation: string,
+        data: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
     };
 
     whitelistAndDescribeAgent: {

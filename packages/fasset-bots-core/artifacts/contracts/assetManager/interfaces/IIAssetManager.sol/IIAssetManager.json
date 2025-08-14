@@ -4532,7 +4532,7 @@
       "outputs": [
         {
           "internalType": "address[]",
-          "name": "_agentVaults",
+          "name": "_agents",
           "type": "address[]"
         },
         {
@@ -4627,7 +4627,7 @@
       "outputs": [
         {
           "internalType": "address[]",
-          "name": "_agentVaults",
+          "name": "_agents",
           "type": "address[]"
         },
         {
@@ -5449,6 +5449,25 @@
         }
       ],
       "name": "isPoolTokenSuffixReserved",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "contract IERC20",
+          "name": "_token",
+          "type": "address"
+        }
+      ],
+      "name": "isVaultCollateralToken",
       "outputs": [
         {
           "internalType": "bool",
