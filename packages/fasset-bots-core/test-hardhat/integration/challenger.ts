@@ -106,7 +106,7 @@ describe("Challenger tests", () => {
         expect(spyChlg).to.have.been.called.once;
     });
 
-    it.only("Should challenge illegal payment - reference for nonexisting redemption", async () => {
+    it("Should challenge illegal payment - reference for nonexisting redemption", async () => {
         const challenger = await createTestChallenger(context, challengerAddress, state);
         const spyChlg = spy.on(challenger, "illegalTransactionChallenge");
         // create test actors
