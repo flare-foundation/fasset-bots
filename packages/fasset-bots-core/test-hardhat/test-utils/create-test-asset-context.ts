@@ -39,7 +39,9 @@ const CollateralPoolToken = artifacts.require("CollateralPoolToken");
 const CollateralPoolTokenFactory = artifacts.require("CollateralPoolTokenFactory");
 const FakeERC20 = artifacts.require("FakeERC20");
 const AgentOwnerRegistry = artifacts.require("AgentOwnerRegistry");
+const AgentOwnerRegistryProxy = artifacts.require("AgentOwnerRegistryProxy");
 const FtsoV2PriceStoreMock = artifacts.require("FtsoV2PriceStoreMock");
+const FtsoV2PriceStoreProxy = artifacts.require('FtsoV2PriceStoreProxy');
 const IPriceChangeEmitter = artifacts.require("IPriceChangeEmitter");
 const CoreVaultManager = artifacts.require('CoreVaultManager');
 const CoreVaultManagerProxy = artifacts.require('CoreVaultManagerProxy');
@@ -116,7 +118,9 @@ export async function createTestChainContracts(governance: string, updateExecuto
     // create ftsov2 price store
     const priceStore = await createMockFtsoV2PriceStore(governanceSettings.address, governance, addressUpdater.address, supportedChains);
     // create allow-all agent owner registry
-    const agentOwnerRegistry = await AgentOwnerRegistry.new(governanceSettings.address, governance);
+    const agentOwnerRegistryImpl = await AgentOwnerRegistry.new();
+    const agentOwnerRegistryProxy = await AgentOwnerRegistryProxy.new(agentOwnerRegistryImpl.address, governanceSettings.address, governance);
+    const agentOwnerRegistry = await AgentOwnerRegistry.at(agentOwnerRegistryProxy.address);
     // add some contracts to address updater
     await addressUpdater.addOrUpdateContractNamesAndAddresses(
         ["GovernanceSettings", "AddressUpdater", "FdcHub", "Relay", "FdcVerification", "WNat"],
@@ -151,8 +155,11 @@ export async function createMockFtsoV2PriceStore(governanceSettingsAddress: stri
     const firstVotingRoundStartTs = currentTime.toNumber() - 1 * WEEKS;
     const ftsoScalingProtocolId = 100;
     // create store
-    const priceStore = await FtsoV2PriceStoreMock.new(governanceSettingsAddress, initialGovernance, addressUpdater,
+    const priceStoreImpl = await FtsoV2PriceStoreMock.new();
+    const priceStoreProxy = await FtsoV2PriceStoreProxy.new(priceStoreImpl.address,
+        governanceSettingsAddress, initialGovernance, addressUpdater,
         firstVotingRoundStartTs, votingEpochDurationSeconds, ftsoScalingProtocolId);
+    const priceStore = await FtsoV2PriceStoreMock.at(priceStoreProxy.address);
     // setup
     const feedIdArr = ["0xc1", "0xc2", "0xc3", "0xc4"];
     const symbolArr = ["NAT", "testUSDC", "testUSDT", "testETH"];

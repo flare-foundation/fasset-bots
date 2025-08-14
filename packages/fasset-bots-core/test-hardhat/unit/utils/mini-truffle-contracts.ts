@@ -71,20 +71,18 @@ describe("mini truffle and artifacts tests", () => {
 
         it("methods .call, .sendTransaction and .estimateGas should work", async () => {
             const FtsoV2PriceStoreMock = artifacts.require("FtsoV2PriceStoreMock");
+            const FtsoV2PriceStoreProxy = artifacts.require("FtsoV2PriceStoreProxy");
             const governanceSettings = accounts[0];
             const initialGovernance = accounts[0];
             const addressUpdater = accounts[0];
             const startTs = 0;
             const epochDuration = 120;
             const ftsoProtocolId = 0;
-            const priceStore = await FtsoV2PriceStoreMock.new(
-                governanceSettings,
-                initialGovernance,
-                addressUpdater,
-                startTs,
-                epochDuration,
-                ftsoProtocolId
-            );
+            const priceStoreImpl = await FtsoV2PriceStoreMock.new();
+            const priceStoreProxy = await FtsoV2PriceStoreProxy.new(priceStoreImpl.address,
+                governanceSettings, initialGovernance, addressUpdater,
+                startTs, epochDuration, ftsoProtocolId);
+            const priceStore = await FtsoV2PriceStoreMock.at(priceStoreProxy.address);
             const symbol = "BTC";
             const feedId = "0x" + "42".padStart(42, "0");
             const price = 42;
@@ -110,20 +108,18 @@ describe("mini truffle and artifacts tests", () => {
 
         it("methods .call, .sendTransaction and .estimateGas should work", async () => {
             const FtsoV2PriceStoreMock = artifacts.require("FtsoV2PriceStoreMock");
+            const FtsoV2PriceStoreProxy = artifacts.require("FtsoV2PriceStoreProxy");
             const governanceSettings = accounts[0];
             const initialGovernance = accounts[0];
             const addressUpdater = accounts[0];
             const startTs = 0;
             const epochDuration = 120;
             const ftsoProtocolId = 0;
-            const priceStore = await FtsoV2PriceStoreMock.new(
-                governanceSettings,
-                initialGovernance,
-                addressUpdater,
-                startTs,
-                epochDuration,
-                ftsoProtocolId
-            );
+            const priceStoreImpl = await FtsoV2PriceStoreMock.new();
+            const priceStoreProxy = await FtsoV2PriceStoreProxy.new(priceStoreImpl.address,
+                governanceSettings, initialGovernance, addressUpdater,
+                startTs, epochDuration, ftsoProtocolId);
+            const priceStore = await FtsoV2PriceStoreMock.at(priceStoreProxy.address);
             const symbol = "BTC";
             const feedId = "0x" + "42".padStart(42, "0");
             const price = 42;
@@ -149,20 +145,18 @@ describe("mini truffle and artifacts tests", () => {
 
         it("methods .call, .sendTransaction and .estimateGas should work through .methods", async () => {
             const FtsoV2PriceStoreMock = artifacts.require("FtsoV2PriceStoreMock");
+            const FtsoV2PriceStoreProxy = artifacts.require("FtsoV2PriceStoreProxy");
             const governanceSettings = accounts[0];
             const initialGovernance = accounts[0];
             const addressUpdater = accounts[0];
             const startTs = 0;
             const epochDuration = 120;
             const ftsoProtocolId = 0;
-            const priceStore = await FtsoV2PriceStoreMock.new(
-                governanceSettings,
-                initialGovernance,
-                addressUpdater,
-                startTs,
-                epochDuration,
-                ftsoProtocolId
-            );
+            const priceStoreImpl = await FtsoV2PriceStoreMock.new();
+            const priceStoreProxy = await FtsoV2PriceStoreProxy.new(priceStoreImpl.address,
+                governanceSettings, initialGovernance, addressUpdater,
+                startTs, epochDuration, ftsoProtocolId);
+            const priceStore = await FtsoV2PriceStoreMock.at(priceStoreProxy.address);
             const symbol = "BTC";
             const feedId = "0x" + "42".padStart(42, "0");
             const price = 42;
