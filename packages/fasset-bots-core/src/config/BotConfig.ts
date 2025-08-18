@@ -72,6 +72,7 @@ export interface AgentBotSettings {
     returnFromCVRatio: number;
     targetTransferToCVRatio: number;
     targetReturnFromCVRatio: number;
+    useAutomaticCoreVaultTransferAndReturn: boolean;
 }
 
 export type BotFAssetAgentConfig = RequireFields<BotFAssetConfig, "wallet" | "blockchainIndexerClient" | "flareDataConnector" | "verificationClient" | "agentBotSettings">;
@@ -244,6 +245,7 @@ function createAgentBotSettings(agentBotSettings: AgentBotSettingsJson, fassetSe
         returnFromCVRatio: Number(fassetSettings.returnFromCVRatio),
         targetTransferToCVRatio: Number(fassetSettings.targetTransferToCVRatio),
         targetReturnFromCVRatio: Number(fassetSettings.targetReturnFromCVRatio),
+        useAutomaticCoreVaultTransferAndReturn: fassetSettings.useAutomaticCoreVaultTransferAndReturn
     }
 }
 

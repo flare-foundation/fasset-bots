@@ -655,6 +655,7 @@ export class AgentBot {
 
     async checkTransferOrReturnFromCVNeeded(rootEm: EM) {
         try {
+            if (!this.agentBotSettings.useAutomaticCoreVaultTransferAndReturn) return;
             if (this.stopOrRestartRequested()) return;
             const coreVaultSourceAddress = await this.context.coreVaultManager?.coreVaultAddress();
             if (!coreVaultSourceAddress) return;

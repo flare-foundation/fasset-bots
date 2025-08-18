@@ -140,6 +140,13 @@ export interface AgentBotFassetSettingsJson {
      * Target ratio of minted lots to (minted + free lots) after CV return.
      */
     targetReturnFromCVRatio: number;
+
+    /**
+     * If true, the bot will automatically manage CoreVault transfers and returns
+     * based on `targetTransferToCVRatio` and `targetReturnFromCVRatio`.
+     * Otherwise, the automation will be turned off.
+     */
+    useAutomaticCoreVaultTransferAndReturn: boolean;
 }
 
 export interface AgentBotSettingsJson {

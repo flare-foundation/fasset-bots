@@ -38,6 +38,10 @@
                 "transferToCVRatio": {
                     "description": "Ratio of minted lots to (minted + free lots) that triggers a transfer to CV.",
                     "type": "number"
+                },
+                "useAutomaticCoreVaultTransferAndReturn": {
+                    "description": "If true, the bot will automatically manage CoreVault transfers and returns\nbased on `targetTransferToCVRatio` and `targetReturnFromCVRatio`.\nOtherwise, the automation will be turned off.",
+                    "type": "boolean"
                 }
             },
             "required": [
@@ -47,7 +51,8 @@
                 "returnFromCVRatio",
                 "targetReturnFromCVRatio",
                 "targetTransferToCVRatio",
-                "transferToCVRatio"
+                "transferToCVRatio",
+                "useAutomaticCoreVaultTransferAndReturn"
             ],
             "type": "object"
         },
@@ -441,6 +446,10 @@
                 "transferToCVRatio": {
                     "description": "Ratio of minted lots to (minted + free lots) that triggers a transfer to CV.",
                     "type": "number"
+                },
+                "useAutomaticCoreVaultTransferAndReturn": {
+                    "description": "If true, the bot will automatically manage CoreVault transfers and returns\nbased on `targetTransferToCVRatio` and `targetReturnFromCVRatio`.\nOtherwise, the automation will be turned off.",
+                    "type": "boolean"
                 }
             },
             "type": "object"

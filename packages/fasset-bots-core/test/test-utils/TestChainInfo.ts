@@ -116,6 +116,7 @@ export const testAgentBotSettings: Record<TestChainType, AgentBotSettings> = {
         returnFromCVRatio: 0.3,
         targetTransferToCVRatio: 0.4,
         targetReturnFromCVRatio: 0.6,
+        useAutomaticCoreVaultTransferAndReturn: true,
     },
     btc: {
         parallel: parallelBots,
@@ -133,6 +134,7 @@ export const testAgentBotSettings: Record<TestChainType, AgentBotSettings> = {
         returnFromCVRatio: 0.3,
         targetTransferToCVRatio: 0.4,
         targetReturnFromCVRatio: 0.6,
+        useAutomaticCoreVaultTransferAndReturn: true,
     },
     xrp: {
         parallel: parallelBots,
@@ -150,6 +152,7 @@ export const testAgentBotSettings: Record<TestChainType, AgentBotSettings> = {
         returnFromCVRatio: 0.3,
         targetTransferToCVRatio: 0.4,
         targetReturnFromCVRatio: 0.6,
+        useAutomaticCoreVaultTransferAndReturn: true,
     },
     doge: {
         parallel: parallelBots,
@@ -167,6 +170,7 @@ export const testAgentBotSettings: Record<TestChainType, AgentBotSettings> = {
         returnFromCVRatio: 0.3,
         targetTransferToCVRatio: 0.4,
         targetReturnFromCVRatio: 0.6,
+        useAutomaticCoreVaultTransferAndReturn: true,
     },
 }
 

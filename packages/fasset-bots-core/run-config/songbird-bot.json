@@ -59,7 +59,8 @@
                 "transferToCVRatio": 0.7,
                 "returnFromCVRatio": 0.3,
                 "targetTransferToCVRatio": 0.4,
-                "targetReturnFromCVRatio": 0.6
+                "targetReturnFromCVRatio": 0.6,
+                "useAutomaticCoreVaultTransferAndReturn": true
             },
             "FDOGE": {
                 "recommendedOwnerBalance": "50",
@@ -68,7 +69,8 @@
                 "transferToCVRatio": 0.7,
                 "returnFromCVRatio": 0.3,
                 "targetTransferToCVRatio": 0.4,
-                "targetReturnFromCVRatio": 0.6
+                "targetReturnFromCVRatio": 0.6,
+                "useAutomaticCoreVaultTransferAndReturn": true
             }
         }
     },

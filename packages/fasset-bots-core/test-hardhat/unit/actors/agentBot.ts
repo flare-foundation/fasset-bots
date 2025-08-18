@@ -14,7 +14,7 @@ import { MockChain } from "../../../src/mock/MockChain";
 import { MockFlareDataConnectorClient } from "../../../src/mock/MockFlareDataConnectorClient";
 import { ContractWithEvents, requiredEventArgs } from "../../../src/utils/events/truffle";
 import { attestationWindowSeconds } from "../../../src/utils/fasset-helpers";
-import { MINUTES, ZERO_ADDRESS, checkedCast, maxBN, sleep, toBN } from "../../../src/utils/helpers";
+import { MINUTES, ZERO_ADDRESS, checkedCast, maxBN, toBN } from "../../../src/utils/helpers";
 import { artifacts, web3 } from "../../../src/utils/web3";
 import { latestBlockTimestampBN } from "../../../src/utils/web3helpers";
 import { testAgentBotSettings, testChainInfo } from "../../../test/test-utils/TestChainInfo";

@@ -92,6 +92,7 @@ describe("Toplevel runner and commands integration test - massively parallel ver
         returnFromCVRatio: 0.3,
         targetTransferToCVRatio: 0.4,
         targetReturnFromCVRatio: 0.6,
+        useAutomaticCoreVaultTransferAndReturn: true,
     };
 
     // const testChainInfos = [testXrpChainInfo, simCoinXChainInfo];
