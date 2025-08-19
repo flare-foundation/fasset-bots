@@ -6,7 +6,7 @@ import { AgentBotRunner, ITimeKeeperService } from "../../src/actors/AgentBotRun
 import { Challenger } from "../../src/actors/Challenger";
 import { Liquidator } from "../../src/actors/Liquidator";
 import { SystemKeeper } from "../../src/actors/SystemKeeper";
-import { BotFAssetConfig, Secrets } from "../../src/config";
+import { AgentBotSettings, BotFAssetConfig, Secrets } from "../../src/config";
 import { AgentVaultInitSettings, createAgentVaultInitSettings, loadAgentSettings } from "../../src/config/AgentVaultInitSettings";
 import { AssetContractRetriever } from "../../src/config/AssetContractRetriever";
 import { ORM } from "../../src/config/orm";
@@ -60,6 +60,7 @@ export async function createTestAgentBot(
     autoSetWorkAddress: boolean = true,
     notifiers: NotifierTransport[] = testNotifierTransports,
     options?: AgentVaultInitSettings,
+    agentBotOptions?: Partial<AgentBotSettings>
 ): Promise<AgentBot> {
     await automaticallySetWorkAddressAndWhitelistAgent(context, autoSetWorkAddress, ownerManagementAddress);
     const owner = await Agent.getOwnerAddressPair(context, ownerManagementAddress);
@@ -69,7 +70,7 @@ export async function createTestAgentBot(
     const addressValidityProof = await AgentBot.initializeUnderlyingAddress(context, owner, ownerUnderlyingAddress, vaultUnderlyingAddress);
     const agentVaultSettings = options ?? await createAgentVaultInitSettings(context, loadAgentSettings(DEFAULT_AGENT_SETTINGS_PATH_HARDHAT));
     agentVaultSettings.poolTokenSuffix = DEFAULT_POOL_TOKEN_SUFFIX();
-    const agentBotSettings = requireNotNull(testAgentBotSettings[context.chainInfo.chainId.chainName as TestChainType]);
+    const agentBotSettings = { ...requireNotNull(testAgentBotSettings[context.chainInfo.chainId.chainName as TestChainType]), ...agentBotOptions };
     const agentBot = await AgentBot.create(orm.em, context, agentBotSettings, owner, ownerUnderlyingAddress, addressValidityProof, agentVaultSettings, notifiers);
     agentBot.timekeeper = { latestProof: undefined };
     await context.coreVaultManager?.addAllowedDestinationAddresses([vaultUnderlyingAddress], { from: governance })

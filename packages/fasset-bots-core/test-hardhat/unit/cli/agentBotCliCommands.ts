@@ -762,8 +762,45 @@ describe("AgentBot cli commands unit tests", () => {
         }
     });
 
-    it("Should create 'returnFromCV' redemption request and cancel it", async () => {
+    it("Should automatically create 'transferToCV' redemption request when backing is high", async () => {
         const bot = await createAgentBot();
+        const vaultAddress = bot.agent.vaultAddress;
+        await mintAndDepositVaultCollateralToOwner(bot.agent, toBN(depositAmountUSDC), ownerAddress);
+        await botCliCommands.depositCollateralForLots(bot.agent.vaultAddress, toBN(10), 1.1);
+        await botCliCommands.enterAvailableList(vaultAddress);
+        const amountToWithdraw = toBN(10e6);
+        // topup
+        await fundUnderlying(context, bot.owner.workAddress, amountToWithdraw.muln(2));
+        await botCliCommands.underlyingTopUp(bot.agent.vaultAddress, amountToWithdraw.muln(2));
+        for (let i = 0; i < 5; i++) {
+            await bot.runStep(orm.em);
+            await time.increase(100);
+            chain.mine(10);
+        }
+        // execute minting
+        const lotSize = await botCliCommands.infoBot().getLotSizeBN();
+        const minter = await createTestMinter(context, minterAddress, chain, undefined, lotSize.muln(20));
+        const crt = await minter.reserveCollateral(vaultAddress, 10);
+        const txHash = await minter.performMintingPayment(crt);
+        chain.mine(chain.finalizationBlocks + 1);
+        await minter.executeMinting(crt, txHash);
+        const info1 = await bot.agent.getAgentInfo();
+        assert.equal(String(info1.freeCollateralLots), "0");
+        // run bot for a while to trigger automatic transfer to CV
+        for (let i = 0; i < 10; i++) {
+            await updateAgentBotUnderlyingBlockProof(context, bot);
+            await time.advanceBlock();
+            chain.mine();
+            await bot.runStep(orm.em);
+        }
+        // transfer to CV should reduce the collateral utilization
+        const info2 = await bot.agent.getAgentInfo();
+        assert.equal(String(info2.freeCollateralLots), "6");
+    });
+
+    it("Should create 'returnFromCV' redemption request and cancel it", async () => {
+        const bot = await createTestAgentBot(context, governance, botCliCommands.orm, botCliCommands.owner.managementAddress, botCliCommands.ownerUnderlyingAddress,
+            undefined, undefined, undefined, { useAutomaticCoreVaultTransferAndReturn: false });
         const vaultAddress = bot.agent.vaultAddress;
         await mintAndDepositVaultCollateralToOwner(bot.agent, toBN(depositAmountUSDC), ownerAddress);
         await botCliCommands.depositToVault(vaultAddress, depositAmountUSDC);
@@ -841,7 +878,8 @@ describe("AgentBot cli commands unit tests", () => {
     });
 
     it("Should create and confirm'returnFromCV' redemption request", async () => {
-        const bot = await createAgentBot();
+        const bot = await createTestAgentBot(context, governance, botCliCommands.orm, botCliCommands.owner.managementAddress, botCliCommands.ownerUnderlyingAddress,
+            undefined, undefined, undefined, { useAutomaticCoreVaultTransferAndReturn: false });
         const vaultAddress = bot.agent.vaultAddress;
         await mintAndDepositVaultCollateralToOwner(bot.agent, toBN(depositAmountUSDC), ownerAddress);
         await botCliCommands.depositToVault(vaultAddress, depositAmountUSDC);
@@ -915,5 +953,90 @@ describe("AgentBot cli commands unit tests", () => {
             }
             assert.isBelow(i, 50);  // prevent infinite loops
         }
+    });
+
+    it("Should automatically create 'returnFromCV' redemption request", async () => {
+        const lotSize = await botCliCommands.infoBot().getLotSize();
+        const bot = await createTestAgentBot(context, governance, botCliCommands.orm, botCliCommands.owner.managementAddress, botCliCommands.ownerUnderlyingAddress,
+            undefined, undefined, undefined, { useAutomaticCoreVaultTransferAndReturn: true, transferToCVRatio: 1 });
+        const vaultAddress = bot.agent.vaultAddress;
+        await mintAndDepositVaultCollateralToOwner(bot.agent, toBN(depositAmountUSDC), ownerAddress);
+        await botCliCommands.depositCollateralForLots(bot.agent.vaultAddress, toBN(10), 1.1);
+        await botCliCommands.enterAvailableList(vaultAddress);
+        const amountToWithdraw = toBN(10e6);
+        // topup
+        await fundUnderlying(context, bot.owner.workAddress, amountToWithdraw.muln(2));
+        await botCliCommands.underlyingTopUp(bot.agent.vaultAddress, amountToWithdraw.muln(2));
+        for (let i = 0; i < 5; i++) {
+            await bot.runStep(orm.em);
+            await time.increase(100);
+            chain.mine(10);
+        }
+        // execute minting
+        const minter = await createTestMinter(context, minterAddress, chain);
+        const crt = await minter.reserveCollateral(vaultAddress, 10);
+        const txHash = await minter.performMintingPayment(crt);
+        chain.mine(chain.finalizationBlocks + 1);
+        await minter.executeMinting(crt, txHash);
+        // transfer to core vault
+        const result = await getMaximumTransferToCoreVault(botCliCommands.context, vaultAddress);
+        const res = await botCliCommands.transferToCoreVault(vaultAddress, result.maximumTransferUBA);
+        const transferRedemptionId = toBN(res.transferRedemptionRequestId);
+        // run agent's steps and wait for redemption with request id = transferRedemptionId
+        for (let i = 0; ; i++) {
+            await updateAgentBotUnderlyingBlockProof(context, bot);
+            await time.advanceBlock();
+            chain.mine();
+            await bot.runStep(orm.em);
+            // check if redemption exist
+            orm.em.clear();
+            const redemption = await orm.em.findOne(AgentRedemption, { requestId: transferRedemptionId } as FilterQuery<AgentRedemption>);
+            if (redemption) {
+                console.log(`Agent step ${i}, state = ${redemption.state}`);
+                if (redemption.state === AgentRedemptionState.DONE) break;
+            }
+            assert.isBelow(i, 50);  // prevent infinite loops
+        }
+        // should not start return from CV until transfer to CV redemption is finished
+        const allReturnsFromCoreVaultBefore = await orm.em.find(ReturnFromCoreVault, {});
+        assert.equal(allReturnsFromCoreVaultBefore.length, 0);
+        // and only dust should be minted now
+        const info1 = await bot.agent.getAgentInfo();
+        assert.isBelow(Number(info1.mintedUBA), lotSize);
+        // allow automatic return from CV to start and finish
+        for (let i = 0; ; i++) {
+            await updateAgentBotUnderlyingBlockProof(context, bot);
+            await time.advanceBlock();
+            chain.mine();
+            await bot.runStep(orm.em);
+            // check if redemption exist
+            orm.em.clear();
+            const allReturnsFromCoreVault = await orm.em.find(ReturnFromCoreVault, {});
+            assert.isAtMost(allReturnsFromCoreVault.length, 1);
+            const [returnFromCoreVault] = allReturnsFromCoreVault;
+            if (returnFromCoreVault) {
+                console.log(`Agent step ${i}, state = ${returnFromCoreVault.state}`);
+                if (returnFromCoreVault.state === ReturnFromCoreVaultState.STARTED) break;
+            }
+            assert.isBelow(i, 50);  // prevent infinite loops
+        }
+        await triggerInstructionsAndPayFromCV(bot);
+        // run agent's steps and wait for return from cv to be performed
+        for (let i = 0; ; i++) {
+            await updateAgentBotUnderlyingBlockProof(context, bot);
+            await time.advanceBlock();
+            chain.mine();
+            await bot.runStep(orm.em);
+            // check if redemption exist
+            orm.em.clear();
+            const [returnFromCoreVault] = await orm.em.find(ReturnFromCoreVault, { });
+            if (returnFromCoreVault) {
+                console.log(`Agent step ${i}, state = ${returnFromCoreVault.state}`);
+                if (returnFromCoreVault.state === ReturnFromCoreVaultState.DONE) break;
+            }
+            assert.isBelow(i, 50);  // prevent infinite loops
+        }
+        const info2 = await bot.agent.getAgentInfo();
+        assert.isAtLeast(Number(info2.mintedUBA), 6 * lotSize);
     });
 });

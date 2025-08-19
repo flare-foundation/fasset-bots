@@ -40,7 +40,12 @@
             "FTestXRP": {
                 "recommendedOwnerBalance": "50",
                 "minimumFreeUnderlyingBalance": "0.01",
-                "feeSafetyFactorPerKB": 0
+                "feeSafetyFactorPerKB": 0,
+                "useAutomaticCoreVaultTransferAndReturn": false,
+                "transferToCVRatio": 0.7,
+                "targetTransferToCVRatio": 0.4,
+                "returnFromCVRatio": 0.3,
+                "targetReturnFromCVRatio": 0.6
             }
         }
     },

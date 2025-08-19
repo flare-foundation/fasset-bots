@@ -885,7 +885,7 @@ export class AgentBotCommands {
         const res = await this.context.assetManager.cancelReturnFromCoreVault(agentVault, { from: agentBot.agent.owner.workAddress });
         const event = requiredEventArgs(res, "ReturnFromCoreVaultCancelled");
         logger.info(`Agent ${agentVault} successfully cancelled return of underlying from core vault with id ${event.requestId.toString()}.`);
-        this.notifierFor(agentVault).sendReturnFromCVCancelledTrigger(event.requestId.toString())
+        await this.notifierFor(agentVault).sendReturnFromCVCancelledTrigger(event.requestId.toString())
     }
 
     /**

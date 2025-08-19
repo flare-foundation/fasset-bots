@@ -665,13 +665,13 @@ export class AgentBot {
             const lotSize = Number(settings.lotSizeAMG) * Number(settings.assetMintingGranularityUBA);
             const freeLots = Number(agentInfo.freeCollateralLots);
             const mintedLots = Number(toBN(agentInfo.mintedUBA).divn(lotSize));
+            const lockedLots = Number(toBN(agentInfo.mintedUBA).add(toBN(agentInfo.reservedUBA)).add(toBN(agentInfo.redeemingUBA)).divn(lotSize));
 
-            const totalLots = mintedLots + freeLots;
+            const totalLots = lockedLots + freeLots;
             if (totalLots === 0) return;
-            const ratio = mintedLots / totalLots;
 
-            // transfer to CV
-            if (ratio > this.agentBotSettings.transferToCVRatio ) {
+            // transfer to CV - mintedLots must be large enough
+            if (mintedLots / totalLots > this.agentBotSettings.transferToCVRatio ) {
                 const openTransfers = await this.redemption.openTransferToCoreVaultIds(rootEm);
                 if (openTransfers.length == 0) {
                     const target = this.agentBotSettings.targetTransferToCVRatio;
@@ -687,8 +687,9 @@ export class AgentBot {
                     }
                 }
             }
-            // return from CV
-            if (ratio < this.agentBotSettings.returnFromCVRatio) {
+
+            // return from CV - lockedLots must be small enough (= freeLots must be large enough)
+            if (lockedLots / totalLots < this.agentBotSettings.returnFromCVRatio) {
                 const openReturns = await this.returnFromCoreVaultBot.openReturnFromCoreVaultIds(rootEm);
                 if (openReturns.length == 0) {
                     const target = this.agentBotSettings.targetReturnFromCVRatio;
@@ -769,7 +770,7 @@ export class AgentBot {
         const res = await this.context.assetManager.requestReturnFromCoreVault(agentVault, lots,  { from: this.agent.owner.workAddress });
         const event = requiredEventArgs(res, "ReturnFromCoreVaultRequested");
         logger.info(`Agent ${agentVault} successfully initiated return of underlying from core vault with id ${event.requestId.toString()}.`);
-        this.notifier.sendReturnFromCVTrigger(event.requestId.toString());
+        await this.notifier.sendReturnFromCVTrigger(event.requestId.toString());
         return event;
     }
 }
