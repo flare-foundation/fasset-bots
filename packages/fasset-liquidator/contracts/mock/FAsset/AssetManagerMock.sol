@@ -3,12 +3,13 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
-import "@flarenetwork/fasset/contracts/utils/lib/MathUtils.sol";
-import "@flarenetwork/fasset/contracts/utils/lib/SafePct.sol";
-import "@flarenetwork/fasset/contracts/assetManager/mock/FakePriceReader.sol";
+import "@flarenetwork/fasset/contracts/utils/library/MathUtils.sol";
+import "@flarenetwork/fasset/contracts/utils/library/SafePct.sol";
+import "@flarenetwork/fasset/contracts/ftso/mock/FakePriceReader.sol";
 import "@flarenetwork/fasset/contracts/userInterfaces/data/AgentInfo.sol";
 import "@flarenetwork/fasset/contracts/userInterfaces/data/AssetManagerSettings.sol";
 import "@flarenetwork/fasset/contracts/assetManager/library/CollateralTypes.sol";
+import "@flarenetwork/flare-periphery-contracts/flare/IFdcVerification.sol";
 import "./AgentMock.sol";
 
 contract AssetManagerMock {

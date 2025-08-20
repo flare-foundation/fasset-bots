@@ -7,7 +7,7 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IAssetManager, IIAssetManager} from "@flarenetwork/fasset/contracts/assetManager/interfaces/IIAssetManager.sol";
-import {IIAgentVault} from "@flarenetwork/fasset/contracts/assetManager/interfaces/IIAgentVault.sol";
+import {IIAgentVault} from "@flarenetwork/fasset/contracts/agentVault/interfaces/IIAgentVault.sol";
 import {ILiquidator} from "./interfaces/ILiquidator.sol";
 import {ArbitrageConfig, EcosystemData, DexPairConfig} from "./lib/Structs.sol";
 import {UniswapV2} from "./lib/UniswapV2.sol";

@@ -4,7 +4,7 @@ import type { HardhatUserConfig } from "hardhat/config"
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: '0.8.23',
+    version: '0.8.27',
     settings: {
       metadata: {
         bytecodeHash: 'none'
