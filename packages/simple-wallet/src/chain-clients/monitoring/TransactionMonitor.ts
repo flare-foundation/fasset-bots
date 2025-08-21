@@ -1,15 +1,15 @@
-import { EntityManager, RequiredEntityData } from "@mikro-orm/core";
+import { EntityManager } from "@mikro-orm/core";
 import { toBN } from "web3-utils";
-import { fetchMonitoringState, fetchTransactionEntities, retryDatabaseTransaction, transactional, updateMonitoringState } from "../../db/dbutils";
+import { fetchMonitoringState, fetchTransactionEntities, retryDatabaseTransaction, updateMonitoringState } from "../../db/dbutils";
 import { TransactionEntity, TransactionStatus } from "../../entity/transaction";
-import { ChainType, MONITOR_EXPIRATION_INTERVAL, MONITOR_LOCK_WAIT_DELAY, MONITOR_LOOP_SLEEP, MONITOR_PING_INTERVAL, RANDOM_SLEEP_MS_MAX, RESTART_IN_DUE_NO_RESPONSE } from "../../utils/constants";
+import { BlockchainFeeService } from "../../fee-service/fee-service";
+import { ITransactionMonitor } from "../../interfaces/IWalletTransaction";
+import { errorMessage } from "../../utils/axios-utils";
+import { ChainType, MONITOR_EXPIRATION_INTERVAL, MONITOR_LOOP_SLEEP, MONITOR_PING_INTERVAL, RESTART_IN_DUE_NO_RESPONSE } from "../../utils/constants";
 import { logger } from "../../utils/logger";
 import { loggerAsyncStorage } from "../../utils/logger-config";
-import { createMonitoringId, getRandomInt, sleepMs } from "../../utils/utils";
-import { BlockchainFeeService } from "../../fee-service/fee-service";
-import { MonitoringStateEntity } from "../../entity/monitoringState";
-import { errorMessage } from "../../utils/axios-utils";
-import { ITransactionMonitor } from "../../interfaces/IWalletTransaction";
+import { createMonitoringId, sleepMs } from "../../utils/utils";
+import { MonitoringLock } from "./MonitoringLock";
 
 export interface IMonitoredWallet {
     submitPreparedTransactions(txEnt: TransactionEntity): Promise<void>;
@@ -32,12 +32,13 @@ class StopTransactionMonitor extends Error {}
 
 export class TransactionMonitor implements ITransactionMonitor {
     private monitoring = false;
-    private chainType: ChainType;
-    private rootEm: EntityManager;
-    private runningThreads: Map<Promise<void>, string> = new Map();
-    private createWallet: CreateWalletMethod;
-    private monitoringId: string;
-    private feeService: BlockchainFeeService | undefined;
+    private readonly chainType: ChainType;
+    private readonly rootEm: EntityManager;
+    private readonly runningThreads: Map<Promise<void>, string> = new Map();
+    private readonly createWallet: CreateWalletMethod;
+    private readonly monitoringId: string;
+    private readonly feeService: BlockchainFeeService | undefined;
+    private readonly monitoringLock: MonitoringLock;
 
     constructor(chainType: ChainType, rootEm: EntityManager, createWallet: CreateWalletMethod, feeService?: BlockchainFeeService) {
         this.chainType = chainType;
@@ -45,6 +46,7 @@ export class TransactionMonitor implements ITransactionMonitor {
         this.createWallet = createWallet;
         this.monitoringId = createMonitoringId(`${chainType}-m`);
         this.feeService = feeService;
+        this.monitoringLock = new MonitoringLock(this.chainType, this.monitoringId);
     }
 
     getId(): string {
@@ -60,7 +62,7 @@ export class TransactionMonitor implements ITransactionMonitor {
             logger.error(`Monitor ${this.monitoringId} already used`);
             return true;
         }
-        const acquiredLock = await this.waitAndAcquireMonitoringLock(this.rootEm);
+        const acquiredLock = await this.monitoringLock.waitAndAcquire(this.rootEm);
         if (!acquiredLock) {
             return false;   // monitoring is already running elsewhere
         }
@@ -100,7 +102,7 @@ export class TransactionMonitor implements ITransactionMonitor {
             this.monitoring = false;
             // wait for all 3 threads to stop
             await this.waitForThreadsToStop();
-            await this.releaseMonitoringLock(this.rootEm);
+            await this.monitoringLock.release(this.rootEm);
             logger.info(`Monitoring stopped for ${this.monitoringId}`);
         } else if (monitoringState?.processOwner != null) {
             logger.info(`Monitoring will NOT stop. Process ${this.monitoringId} is not owner of current process ${monitoringState.processOwner}`);
@@ -144,94 +146,6 @@ export class TransactionMonitor implements ITransactionMonitor {
         this.runningThreads.set(thread, name);
     }
 
-    /**
-     * Only one monitoring process can be alive at any time; this is taken care of by this method.
-     */
-    async waitAndAcquireMonitoringLock(threadEm: EntityManager) {
-        const randomMs = getRandomInt(0, RANDOM_SLEEP_MS_MAX);
-        await sleepMs(randomMs);
-        // try to acquire free lock
-        const start = await this.acquireMonitoringLock(threadEm);
-        if (start.acquired) {
-            logger.info(`Monitoring created for chain ${this.monitoringId}`);
-            return true;
-        }
-        // lock is marked as locked, wait a bit to see if it is alive or should be taken over
-        logger.info(`Monitoring possibly running for chain ${this.monitoringId} - waiting for liveness confirmation or expiration`);
-        const startTime = Date.now();
-        while (Date.now() - startTime < MONITOR_EXPIRATION_INTERVAL + 2 * MONITOR_PING_INTERVAL) {   // condition not really necessary - loop should always finish before this
-            await sleepMs(MONITOR_LOCK_WAIT_DELAY);
-            // try to acquire lock again
-            const next = await this.acquireMonitoringLock(threadEm);
-            // if the lock expired or was released in the meantime, it will be acquired now
-            if (next.acquired) {
-                logger.info(`Monitoring created for chain ${this.monitoringId} - old lock released or expired`);
-                return true;
-            }
-            // if the lock ping tme increased, the thread holding it is apparently still active, so we give up and leave the old thread to do the work
-            if (next.lastPing > start.lastPing) {
-                logger.info(`Another monitoring instance is already running for chain ${this.monitoringId}`);
-                return false;
-            }
-        }
-        logger.warn(`Timeout waiting for monitoring lock for chain ${this.monitoringId}`);
-        return false;
-    }
-
-    async acquireMonitoringLock(threadEm: EntityManager) {
-        return await retryDatabaseTransaction(`trying to obtain monitoring lock for chain ${this.monitoringId}`, async () => {
-            return await transactional(threadEm, async em => {
-                const monitoringState = await fetchMonitoringState(em, this.chainType);
-                const now = Date.now();
-                if (monitoringState == null) {
-                    // no lock has been created for this chain yet - create new
-                    em.create(MonitoringStateEntity,
-                        {
-                            chainType: this.chainType,
-                            lastPingInTimestamp: toBN(now),
-                            processOwner: this.monitoringId
-                        } as RequiredEntityData<MonitoringStateEntity>,
-                        { persist: true });
-                    return { acquired: true } as const;
-                } else {
-                    const lastPing = monitoringState.lastPingInTimestamp.toNumber();
-                    if (now > lastPing + MONITOR_EXPIRATION_INTERVAL) {
-                        // old lock expired or released (marked by lastPing==0) - take over lock
-                        monitoringState.lastPingInTimestamp = toBN(now);
-                        monitoringState.processOwner = this.monitoringId;
-                        return { acquired: true } as const;
-                    } else {
-                        // just return the lock state
-                        return { acquired: false, lastPing } as const;
-                    }
-                }
-            });
-        });
-    }
-
-    async holdsMonitoringLock(threadEm: EntityManager): Promise<boolean> {
-        const now = Date.now();
-        const monitoringState = await fetchMonitoringState(threadEm, this.chainType);
-        if (!monitoringState || monitoringState.processOwner !== this.monitoringId) {
-            return false;
-        }
-        const elapsed = now - monitoringState.lastPingInTimestamp.toNumber();
-        if (elapsed >= MONITOR_EXPIRATION_INTERVAL) {
-            logger.error(`Running monitor lock expired for chain ${this.monitoringId} (${elapsed/1000}s since last ping) - stopping monitor.`);
-        }
-        return elapsed < MONITOR_EXPIRATION_INTERVAL;
-    }
-
-    async releaseMonitoringLock(threadEm: EntityManager) {
-        await retryDatabaseTransaction(`stopping monitor for chain ${this.monitoringId}`, async () => {
-            await updateMonitoringState(threadEm, this.chainType, (monitoringEnt) => {
-                if (monitoringEnt.processOwner === this.monitoringId) {
-                    monitoringEnt.processOwner = "";
-                    monitoringEnt.lastPingInTimestamp = toBN(0);
-                }
-            });
-        });
-    }
 
     private async updatePingLoop(threadEm: EntityManager): Promise<void> {
         while (this.monitoring) {
@@ -306,7 +220,7 @@ export class TransactionMonitor implements ITransactionMonitor {
     }
 
     private async checkIfMonitoringStopped(threadEm: EntityManager) {
-        const monitoringAlive = this.monitoring && await this.holdsMonitoringLock(threadEm);
+        const monitoringAlive = this.monitoring && await this.monitoringLock.holds(threadEm);
         if (!monitoringAlive) {
             logger.info(`Monitoring should be stopped for chain ${this.monitoringId}`);
             this.monitoring = false;    // notify other threads that lock was lost
