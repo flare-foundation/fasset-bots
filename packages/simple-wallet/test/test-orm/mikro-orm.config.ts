@@ -27,6 +27,12 @@ const config: CreateOrmOptions = {
     type: "mysql"
 };
 
+export const configPostgresql: CreateOrmOptions = {
+    ...config,
+    port: 5432,
+    type: "postgresql"
+}
+
 export async function initializeTestMikroORM(customConfig?: CreateOrmOptions): Promise<MikroORM> {
     const configOptions = customConfig ?? config;
     const orm = await MikroORM.init(configOptions);

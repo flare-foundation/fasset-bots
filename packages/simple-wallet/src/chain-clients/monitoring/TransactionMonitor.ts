@@ -1,6 +1,5 @@
 import { EntityManager } from "@mikro-orm/core";
-import { toBN } from "web3-utils";
-import { fetchMonitoringState, fetchTransactionEntities, retryDatabaseTransaction, updateMonitoringState } from "../../db/dbutils";
+import { fetchMonitoringState, fetchTransactionEntities } from "../../db/dbutils";
 import { TransactionEntity, TransactionStatus } from "../../entity/transaction";
 import { BlockchainFeeService } from "../../fee-service/fee-service";
 import { ITransactionMonitor } from "../../interfaces/IWalletTransaction";
@@ -150,16 +149,10 @@ export class TransactionMonitor implements ITransactionMonitor {
     private async updatePingLoop(threadEm: EntityManager): Promise<void> {
         while (this.monitoring) {
             try {
-                await retryDatabaseTransaction(`updating ping status for chain ${this.monitoringId}`, async () => {
-                    await updateMonitoringState(threadEm, this.chainType, (monitoringEnt) => {
-                        if (monitoringEnt.processOwner === this.monitoringId) {
-                            monitoringEnt.lastPingInTimestamp = toBN(Date.now());
-                        } else {
-                            logger.error(`Monitoring thread was taken over from ${this.monitoringId} by ${monitoringEnt.processOwner}`);
-                            this.monitoring = false;
-                        }
-                    });
-                });
+                const result = await this.monitoringLock.ping(threadEm);
+                if (result === "takenOver") {
+                    this.monitoring = false;
+                }
             } catch (error) {
                 logger.error(`${String(error)} - retrying in ${MONITOR_PING_INTERVAL}sec`);    // error will always be "Too many failed attepmts..."
             }

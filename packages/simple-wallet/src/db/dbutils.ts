@@ -1,4 +1,4 @@
-import { EntityManager, FilterQuery, RequiredEntityData, TransactionOptions } from "@mikro-orm/core";
+import { EntityManager, FilterQuery, LockMode, RequiredEntityData, TransactionOptions } from "@mikro-orm/core";
 import BN from "bn.js";
 import { TransactionEntity, TransactionStatus } from "../entity/transaction";
 import { TransactionInputEntity } from "../entity/transactionInput";
@@ -219,8 +219,8 @@ export async function setAccountIsDeleting(rootEm: EntityManager, address: strin
 }
 
 // monitoring
-export async function fetchMonitoringState(rootEm: EntityManager, chainType: string): Promise<MonitoringStateEntity | null> {
-    return await rootEm.findOne(MonitoringStateEntity, { chainType }, { refresh: true });
+export async function fetchMonitoringState(rootEm: EntityManager, chainType: string, lockMode: LockMode = LockMode.NONE): Promise<MonitoringStateEntity | null> {
+    return await rootEm.findOne(MonitoringStateEntity, { chainType }, { refresh: true, lockMode });
 }
 
 export async function updateMonitoringState(
@@ -229,7 +229,7 @@ export async function updateMonitoringState(
     modify: (stateEnt: MonitoringStateEntity) => void
 ): Promise<void> {
     await transactional(rootEm, async (em) => {
-        const stateEnt = await fetchMonitoringState(em, chainType);
+        const stateEnt = await fetchMonitoringState(em, chainType, LockMode.PESSIMISTIC_WRITE);
         /* istanbul ignore if */
         if (!stateEnt) {
             return;
