@@ -59,7 +59,7 @@ export class TransactionMonitor implements ITransactionMonitor {
 
     async startMonitoring(): Promise<void> {
         if (this.initializing || this.runningThreads.size > 0) {
-            logger.error(`Monitor ${this.monitoringId} already used`);
+            logger.info(`Monitor ${this.monitoringId} already used or initializing`);
             return;
         }
         this.initializing = true;
@@ -99,15 +99,17 @@ export class TransactionMonitor implements ITransactionMonitor {
     }
 
     async stopMonitoring(): Promise<void> {
-        logger.info(`Monitoring will stop for ${this.monitoringId} ...`);
+        logger.info(`Monitoring stop requested for ${this.monitoringId} ...`);
         const monitoringState = await fetchMonitoringState(this.rootEm, this.chainType);
         if (monitoringState?.processOwner === this.monitoringId) {
+            logger.info(`Stopping wallet monitoring ${this.monitoringId} ...`);
             console.log(`Stopping wallet monitoring ${this.monitoringId} ...`);
             this.monitoring = false;
             // wait for all 3 threads to stop
             await this.waitForThreadsToStop();
             await this.monitoringLock.release(this.rootEm);
             logger.info(`Monitoring stopped for ${this.monitoringId}`);
+            console.log(`Monitoring stopped for ${this.monitoringId}`);
         } else if (monitoringState?.processOwner != null) {
             logger.info(`Monitoring will NOT stop. Process ${this.monitoringId} is not owner of current process ${monitoringState.processOwner}`);
         } else {
