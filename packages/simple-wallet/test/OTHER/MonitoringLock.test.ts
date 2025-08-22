@@ -3,13 +3,13 @@ import { MonitoringLock } from "../../src/chain-clients/monitoring/MonitoringLoc
 import { updateMonitoringState } from "../../src/db/dbutils";
 import { ChainType, MONITOR_EXPIRATION_INTERVAL, MONITOR_LOCK_WAIT_DELAY, MONITOR_PING_INTERVAL } from "../../src/utils/constants";
 import { sleepMs } from "../../src/utils/utils";
-import { initializeNoDropTestMikroORM, ORM } from "../test-orm/mikro-orm.config";
+import { initializeTestMikroORM, ORM } from "../test-orm/mikro-orm.config";
 
 describe("MonitoringLock tests", () => {
     let testOrm: ORM;
 
     beforeEach(async () => {
-        testOrm = await initializeNoDropTestMikroORM();
+        testOrm = await initializeTestMikroORM();
     });
 
     function createTestLock(monitoringId: string) {
@@ -21,13 +21,18 @@ describe("MonitoringLock tests", () => {
         return lock;
     }
 
+    async function createActiveLock() {
+        const oldlock = createTestLock(`monitor-xyz`);
+        await oldlock.acquire(testOrm.em);
+    }
+
     async function createExpiredLock() {
         const oldlock = createTestLock(`monitor-xyz`);
         await oldlock.acquire(testOrm.em);
         await updateMonitoringState(testOrm.em, oldlock.chainType, (l) => { l.lastPingInTimestamp = l.lastPingInTimestamp.subn(oldlock.monitorExpirationInterval + 1000); });
     }
 
-    async function testAcquire(n: number, create: (i: number) => MonitoringLock) {
+    async function testAcquire(n: number, expectLocks: number, create: (i: number) => MonitoringLock) {
         const locks: MonitoringLock[] = [];
         for (let i = 0; i < n; i++) {
             locks.push(create(i));
@@ -40,10 +45,10 @@ describe("MonitoringLock tests", () => {
                 totalAcquires++;
             }
         }));
-        assert.equal(totalAcquires, 1);
+        assert.equal(totalAcquires, expectLocks);
     }
 
-    async function testWaitAndAcquire(n: number, create: (i: number) => MonitoringLock) {
+    async function testWaitAndAcquire(n: number, expectLocks: number, create: (i: number) => MonitoringLock) {
         const locks: MonitoringLock[] = [];
         for (let i = 0; i < n; i++) {
             locks.push(create(i));
@@ -59,50 +64,74 @@ describe("MonitoringLock tests", () => {
                 await lock.ping(threadEm);
             }
         }));
-        assert.equal(totalAcquires, 1);
+        assert.equal(totalAcquires, expectLocks);
     }
 
     describe("test acquire", () => {
         it("test acquire - locks with same chainType and different monitoringId", async () => {
-            await testAcquire(5, i => createTestLock(`monitor-${i}`));
+            await testAcquire(5, 1, i => createTestLock(`monitor-${i}`));
         });
 
         it("test acquire - many times with same lock", async () => {
             const lock = createTestLock(`monitor-1`);
-            await testAcquire(5, i => lock);
+            await testAcquire(5, 1, i => lock);
         });
 
         it("test acquire - locks with same chainType and different monitoringId, have expired lock before", async () => {
             await createExpiredLock();
-            await testAcquire(5, i => createTestLock(`monitor-${i}`));
+            await testAcquire(5, 1, i => createTestLock(`monitor-${i}`));
         });
 
         it("test acquire - many times with same lock, have expired lock before", async () => {
             await createExpiredLock();
             const lock = createTestLock(`monitor-1`);
-            await testAcquire(5, i => lock);
+            await testAcquire(5, 1, i => lock);
+        });
+
+        it("test acquire - locks with same chainType and different monitoringId, have active lock before", async () => {
+            await createActiveLock();
+            await testAcquire(5, 0, i => createTestLock(`monitor-${i}`));
+        });
+
+        it("test acquire - many times with same lock, have active lock before", async () => {
+            await createActiveLock();
+            const lock = createTestLock(`monitor-1`);
+            await testAcquire(5, 0, i => lock);
         });
     });
 
     describe("test waitAndAcquire", () => {
         it("test waitAndAcquire - locks with same chainType and different monitoringId", async () => {
-            await testWaitAndAcquire(5, i => createTestLock(`monitor-${i}`));
+            await testWaitAndAcquire(5, 1, i => createTestLock(`monitor-${i}`));
         });
 
         it("test waitAndAcquire - many times with same lock", async () => {
             const lock = createTestLock(`monitor-1`);
-            await testWaitAndAcquire(5, i => lock);
+            await testWaitAndAcquire(5, 1, i => lock);
         });
 
         it("test waitAndAcquire - locks with same chainType and different monitoringId, have expired lock before", async () => {
             await createExpiredLock();
-            await testWaitAndAcquire(5, i => createTestLock(`monitor-${i}`));
+            await testWaitAndAcquire(5, 1, i => createTestLock(`monitor-${i}`));
         });
 
         it("test waitAndAcquire - many times with same lock, have expired lock before", async () => {
             await createExpiredLock();
             const lock = createTestLock(`monitor-1`);
-            await testWaitAndAcquire(5, i => lock);
+            await testWaitAndAcquire(5, 1, i => lock);
+        });
+
+        it("test waitAndAcquire - locks with same chainType and different monitoringId, have active lock before", async () => {
+            await createActiveLock();
+            // Here the locks will wait that active one expires, and then one will be acquired.
+            await testWaitAndAcquire(5, 1, i => createTestLock(`monitor-${i}`));
+        });
+
+        it("test waitAndAcquire - many times with same lock, have active lock before", async () => {
+            await createActiveLock();
+            const lock = createTestLock(`monitor-1`);
+            // Here the locks will wait that active one expires, and then one will be acquired.
+            await testWaitAndAcquire(5, 1, i => lock);
         });
 
         it("test waitAndAcquire - allow only one monitor lock per chainType", async () => {
@@ -112,7 +141,10 @@ describe("MonitoringLock tests", () => {
                 monitorLock.waitAndAcquire(testOrm.em)
             );
             const results = await Promise.all(promises);
-            expect(results.filter(r => r === true)).to.have.lengthOf(1);
-     });
+            // The correct amount of acquires here (on empty db) is 2: initially one lock is acquired. Since there are no pings,
+            // all other waitAndAcquire calls will wait for its expiration. Once the first lock expires, one more lock will be acquired.
+            // At that time all other waitAndAcquire calls will see that the lock time was updated, so they will give up because the lock is apparently active.
+            expect(results.filter(r => r === true)).to.have.lengthOf(2);
+        });
     });
 });
