@@ -52,7 +52,7 @@ export interface WriteWalletInterface extends WalletAccountGenerationInterface {
 export interface ITransactionMonitor {
    getId(): string;
    isMonitoring(): boolean;
-   startMonitoring(): Promise<boolean>;
+   startMonitoring(): Promise<void>;
    stopMonitoring(): Promise<void>;
 
    /**

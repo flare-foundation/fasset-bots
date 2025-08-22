@@ -237,9 +237,8 @@ export class MockTransactionMonitor implements ITransactionMonitor {
         return this.monitoring;
     }
 
-    async startMonitoring(): Promise<boolean> {
+    async startMonitoring(): Promise<void> {
         this.monitoring = true;
-        return false;
     }
 
     async stopMonitoring(): Promise<void> {

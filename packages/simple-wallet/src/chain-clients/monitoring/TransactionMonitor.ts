@@ -38,6 +38,7 @@ export class TransactionMonitor implements ITransactionMonitor {
     private readonly monitoringId: string;
     private readonly feeService: BlockchainFeeService | undefined;
     private readonly monitoringLock: MonitoringLock;
+    private initializing: boolean = false;
 
     constructor(chainType: ChainType, rootEm: EntityManager, createWallet: CreateWalletMethod, feeService?: BlockchainFeeService) {
         this.chainType = chainType;
@@ -56,41 +57,45 @@ export class TransactionMonitor implements ITransactionMonitor {
         return this.monitoring || this.runningThreads.size > 0;
     }
 
-    async startMonitoring(): Promise<boolean> {
-        if (this.runningThreads.size > 0) {
+    async startMonitoring(): Promise<void> {
+        if (this.initializing || this.runningThreads.size > 0) {
             logger.error(`Monitor ${this.monitoringId} already used`);
-            return true;
+            return;
         }
-        const acquiredLock = await this.monitoringLock.waitAndAcquire(this.rootEm);
-        if (!acquiredLock) {
-            return false;   // monitoring is already running elsewhere
-        }
-        // mark started
-        this.monitoring = true;
-        logger.info(`Monitoring started for chain ${this.monitoringId}`);
-        // start pinger
-        this.startThread(this.rootEm, `ping-${this.monitoringId}`, async (em) => {
-            await this.updatePingLoop(em);
-        });
-        // start fee monitoring
-        const feeService = this.feeService;
-        if (feeService) {
-            feeService.monitoringId = this.monitoringId;
-            feeService.initialSetup = true;
-            this.startThread(this.rootEm, `fee-service-${this.monitoringId}`, async (threadEm) => {
-                await feeService.monitorFees(threadEm, () => this.monitoring);
-            });
-        }
-        // start main loop
-        this.startThread(this.rootEm, `monitoring-${this.monitoringId}`, async (threadEm) => {
-            const waitStart = Date.now();
-            while (feeService && !(feeService?.hasEnoughTimestampHistory() || Date.now() - waitStart > 60_000)) {
-                await sleepMs(500);    // wait for setupHistory to be complete (or fail)
+        this.initializing = true;
+        try {
+            const acquiredLock = await this.monitoringLock.waitAndAcquire(this.rootEm);
+            if (!acquiredLock) {
+                return;   // monitoring is already running elsewhere
             }
-            const wallet = this.createWallet({ monitoringId: this.monitoringId, walletEm: threadEm, feeService: feeService });
-            await this.monitoringMainLoop(threadEm, wallet);
-        });
-        return true;
+            // mark started
+            this.monitoring = true;
+            logger.info(`Monitoring started for chain ${this.monitoringId}`);
+            // start pinger
+            this.startThread(this.rootEm, `ping-${this.monitoringId}`, async (em) => {
+                await this.updatePingLoop(em);
+            });
+            // start fee monitoring
+            const feeService = this.feeService;
+            if (feeService) {
+                feeService.monitoringId = this.monitoringId;
+                feeService.initialSetup = true;
+                this.startThread(this.rootEm, `fee-service-${this.monitoringId}`, async (threadEm) => {
+                    await feeService.monitorFees(threadEm, () => this.monitoring);
+                });
+            }
+            // start main loop
+            this.startThread(this.rootEm, `monitoring-${this.monitoringId}`, async (threadEm) => {
+                const waitStart = Date.now();
+                while (feeService && !(feeService?.hasEnoughTimestampHistory() || Date.now() - waitStart > 60_000)) {
+                    await sleepMs(500);    // wait for setupHistory to be complete (or fail)
+                }
+                const wallet = this.createWallet({ monitoringId: this.monitoringId, walletEm: threadEm, feeService: feeService });
+                await this.monitoringMainLoop(threadEm, wallet);
+            });
+        } finally {
+            this.initializing = false;
+        }
     }
 
     async stopMonitoring(): Promise<void> {
