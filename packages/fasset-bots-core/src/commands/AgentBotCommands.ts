@@ -422,7 +422,7 @@ export class AgentBotCommands {
         const token = await IERC20.at(tokenAddress);
         const currency = await Currencies.erc20(token);
         const amount = currency.parse(amountStr);
-        await agentVaultInstance.withdrawCollateral(token.address, amount, this.owner.workAddress, { from: this.owner.workAddress });
+        await agentVaultInstance.transferExternalToken(token.address, amount, { from: this.owner.workAddress });
     }
 
     /**
