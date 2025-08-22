@@ -1,15 +1,15 @@
-import { assert } from "chai";
+import { assert, expect } from "chai";
 import { MonitoringLock } from "../../src/chain-clients/monitoring/MonitoringLock";
 import { updateMonitoringState } from "../../src/db/dbutils";
 import { ChainType, MONITOR_EXPIRATION_INTERVAL, MONITOR_LOCK_WAIT_DELAY, MONITOR_PING_INTERVAL } from "../../src/utils/constants";
 import { sleepMs } from "../../src/utils/utils";
-import { initializeTestMikroORM, ORM } from "../test-orm/mikro-orm.config";
+import { initializeNoDropTestMikroORM, ORM } from "../test-orm/mikro-orm.config";
 
 describe("MonitoringLock tests", () => {
     let testOrm: ORM;
 
     beforeEach(async () => {
-        testOrm = await initializeTestMikroORM();
+        testOrm = await initializeNoDropTestMikroORM();
     });
 
     function createTestLock(monitoringId: string) {
@@ -104,5 +104,15 @@ describe("MonitoringLock tests", () => {
             const lock = createTestLock(`monitor-1`);
             await testWaitAndAcquire(5, i => lock);
         });
+
+        it("test waitAndAcquire - allow only one monitor lock per chainType", async () => {
+            const monitorLock = createTestLock(`monitor-1`);
+            const NUM_CALLS = 500;
+            const promises = Array.from({ length: NUM_CALLS }, () =>
+                monitorLock.waitAndAcquire(testOrm.em)
+            );
+            const results = await Promise.all(promises);
+            expect(results.filter(r => r === true)).to.have.lengthOf(1);
+     });
     });
 });
