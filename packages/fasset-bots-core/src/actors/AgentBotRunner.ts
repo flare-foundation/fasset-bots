@@ -276,7 +276,7 @@ export class AgentBotRunner {
 
     async ensureWalletMonitoringRunning() {
         logger.info(`Starting wallet monitor liveness check.`);
-        const sleepFor = 30_000;
+        const sleepFor = 120_000;
         while (!this.readyToStop()) {
             try {
                 await sleep(sleepFor);
