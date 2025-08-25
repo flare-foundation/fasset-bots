@@ -5,6 +5,10 @@
 			"path": "."
 		},
 		{
+			"name": "📦 common",
+			"path": "packages/fasset-bots-common"
+		},
+		{
 			"name": "📦 core",
 			"path": "packages/fasset-bots-core"
 		},
