@@ -28,6 +28,9 @@
       "path": "packages/fasset-bots-cli"
     },
     {
+      "path": "packages/fasset-bots-common"
+    },
+    {
       "path": "packages/fasset-bots-core"
     },
     {

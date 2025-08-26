@@ -1,6 +1,6 @@
 import { AgentSettingsConfig } from "./AgentSettingsConfig";
-import type { NotificationLevel } from "../../utils/notifier/BaseNotifier";
 import type { LiquidatorBotStrategyDefinition, ChallengerBotStrategyDefinition } from "./BotStrategyConfig";
+import { ApiNotifierConfig } from "../../utils/notifier/ApiNotifierConfig";
 
 export type DatabaseType = "mysql" | "sqlite" | "postgresql";
 
@@ -58,12 +58,6 @@ export interface BotNativeChainInfo {
     faucet?: string;
 }
 
-
-export interface ApiNotifierConfig {
-    apiUrl: string;
-    apiKey?: string;
-    level?: NotificationLevel;
-}
 
 export interface PricePublisherConfig {
     enabled: boolean;

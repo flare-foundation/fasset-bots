@@ -1,6 +1,5 @@
 import {
     AccountSecrets,
-    addConsoleTransportForTests,
     createNote,
     createWallet,
     decryptTestSecrets,
@@ -12,17 +11,18 @@ import {
 import {
     DOGE, DogecoinWalletConfig,
     ITransactionMonitor,
-    logger,
     TransactionStatus,
     WalletAddressEntity
 } from "../../src";
-import config, {initializeMainnetMikroORM, ORM} from "../test-orm/mikro-orm.config";
-import {setMonitoringStatus} from "../test-util/entity_utils";
-import {expect, use} from "chai";
-import {toBNExp} from "../../src/utils/bnutils";
+import config, { initializeMainnetMikroORM, ORM } from "../test-orm/mikro-orm.config";
+import { setMonitoringStatus } from "../test-util/entity_utils";
+import { expect, use } from "chai";
+import { toBNExp } from "../../src/utils/bnutils";
 import chaiAsPromised from "chai-as-promised";
-import {DBWalletKeys} from "../test-orm/WalletKeys";
-import {BTC_DOGE_DEC_PLACES} from "../../src/utils/constants";
+import { DBWalletKeys } from "../test-orm/WalletKeys";
+import { BTC_DOGE_DEC_PLACES } from "../../src/utils/constants";
+import { addConsoleTransportForTests } from "@flarenetwork/fasset-bots-common";
+import { logger } from "../../src/utils/logger";
 
 use(chaiAsPromised);
 

@@ -1,13 +1,15 @@
 import sinon from "sinon";
-import { BitcoinWalletConfig, BTC, logger } from "../../src";
 import { toBN } from "web3-utils";
-import { addConsoleTransportForTests } from "../test-util/common_utils";
 import config, { initializeTestMikroORM, ORM } from "../test-orm/mikro-orm.config";
 import { UnprotectedDBWalletKeys } from "../test-orm/UnprotectedDBWalletKey";
 import { createAndPersistTransactionEntity, createUTXO } from "../test-util/entity_utils";
 import { expect } from "chai";
 import { TransactionUTXOService } from "../../src/chain-clients/utxo/TransactionUTXOService";
 import { getMinimumAllowedUTXOValue, getRelayFeePerKB } from "../../src/chain-clients/utxo/UTXOUtils";
+import { addConsoleTransportForTests } from "@flarenetwork/fasset-bots-common";
+import { BitcoinWalletConfig } from "../../src/interfaces/IWalletTransaction";
+import { logger } from "../../src/utils/logger";
+import { BTC } from "../../src";
 
 const walletSecret = "wallet_secret";
 const amountToSendSatoshi = toBN(10000);

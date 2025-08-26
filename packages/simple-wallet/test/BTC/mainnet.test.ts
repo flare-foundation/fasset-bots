@@ -1,6 +1,6 @@
 import {
     AccountSecrets,
-    addConsoleTransportForTests, createNote, createWallet, decryptTestSecrets,
+    createNote, createWallet, decryptTestSecrets,
     loop, promptPassword,
     resetMonitoringOnForceExit, waitForTxToFinishWithStatus
 } from "../test-util/common_utils";
@@ -8,16 +8,17 @@ import {
     BitcoinWalletConfig,
     BTC,
     ITransactionMonitor,
-    logger,
     TransactionStatus,
     WalletAddressEntity
 } from "../../src";
 import { toBN } from "../../src/utils/bnutils";
-import config, {initializeMainnetMikroORM, ORM} from "../test-orm/mikro-orm.config";
+import config, { initializeMainnetMikroORM, ORM } from "../test-orm/mikro-orm.config";
 import { setMonitoringStatus } from "../test-util/entity_utils";
 import { expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import {DBWalletKeys} from "../test-orm/WalletKeys";
+import { DBWalletKeys } from "../test-orm/WalletKeys";
+import { addConsoleTransportForTests } from "@flarenetwork/fasset-bots-common";
+import { logger } from "../../src/utils/logger";
 
 use(chaiAsPromised);
 

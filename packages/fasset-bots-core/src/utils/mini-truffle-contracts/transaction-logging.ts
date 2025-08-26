@@ -1,8 +1,6 @@
 import "dotenv/config";
 
-import { createCustomizedLogger } from "@flarenetwork/simple-wallet";
-import { Logger } from "winston";
-
+import { createCustomizedLogger, Logger } from "@flarenetwork/fasset-bots-common";
 
 export const transactionLogger: Logger = createCustomizedLogger({
     json: "log/transactions/transactions-%DATE%.log.json",

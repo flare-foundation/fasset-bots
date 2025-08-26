@@ -3,7 +3,7 @@ import { createLogger, format, type Logger } from "winston";
 import { Console } from "winston/lib/winston/transports";
 import DailyRotateFile from "winston-daily-rotate-file";
 import * as Transport from "winston-transport";
-import { redact } from "./secret-redact";
+import { redact } from "../utils/secret-redact";
 
 
 export const loggerAsyncStorage = new AsyncLocalStorage<string>();
@@ -60,4 +60,22 @@ export function createCustomizedLogger(paths: LoggerPaths): Logger {
         transports.push(...transports.map((transport) => new Console({ ...commonOptions, format: transport.format })));
     }
     return createLogger({ transports });
+}
+
+export function addConsoleTransportForTests(logger: Logger) {
+    const consoleTransport = new Console({
+        format: format.combine(
+            format.colorize(),
+            format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+            format.printf(({ timestamp, level, message }) => {
+                return `[${timestamp}] ${level}: ${message}`;
+            })
+        ),
+    });
+
+    logger.add(consoleTransport);
+
+    return () => {
+        logger.remove(consoleTransport);
+    };
 }

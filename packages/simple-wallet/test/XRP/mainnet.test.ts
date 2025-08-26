@@ -1,7 +1,6 @@
 import {
     AccountSecrets,
     AccountSecretsForStressTest,
-    addConsoleTransportForTests,
     createNote,
     createWallet,
     decryptTestSecrets,
@@ -11,14 +10,6 @@ import {
     waitForTxToBeReplacedWithStatus,
     waitForTxToFinishWithStatus
 } from "../test-util/common_utils";
-import {
-    ITransactionMonitor,
-    logger,
-    RippleWalletConfig,
-    TransactionStatus,
-    WalletAddressEntity,
-    XRP
-} from "../../src";
 import config, { initializeMainnetMikroORM, ORM } from "../test-orm/mikro-orm.config";
 import { setMonitoringStatus } from "../test-util/entity_utils";
 import { expect, use } from "chai";
@@ -26,6 +17,9 @@ import { toBN, toBNExp } from "../../src/utils/bnutils";
 import chaiAsPromised from "chai-as-promised";
 import { DBWalletKeys } from "../test-orm/WalletKeys";
 import { XRP_DECIMAL_PLACES } from "../../src/utils/constants";
+import { addConsoleTransportForTests } from "@flarenetwork/fasset-bots-common";
+import { RippleWalletConfig, XRP, ITransactionMonitor, WalletAddressEntity, TransactionStatus } from "../../src";
+import { logger } from "../../src/utils/logger";
 
 use(chaiAsPromised);
 

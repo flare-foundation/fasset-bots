@@ -1,7 +1,6 @@
 import "dotenv/config";
-import { createCustomizedLogger } from "@flarenetwork/simple-wallet";
-import type { Logger } from "winston";
 
+import { createCustomizedLogger, Logger } from "@flarenetwork/fasset-bots-common";
 
 const mainFileName = (require.main?.filename ?? "").replace(/\\/g, "/");
 const fnMatch = mainFileName.match(/\/src\/(cli|run)\/([^/]+)\.(cjs|mjs|js|ts)$/);

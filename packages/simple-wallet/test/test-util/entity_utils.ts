@@ -1,10 +1,3 @@
-import {
-    logger,
-    TransactionEntity,
-    TransactionStatus,
-    WalletAddressEntity,
-    XRP,
-} from "../../src";
 import { ChainType } from "../../src/utils/constants";
 import BN from "bn.js";
 import { TransactionInputEntity } from "../../src/entity/transactionInput";
@@ -12,6 +5,8 @@ import { toBN } from "web3-utils";
 import { EntityManager, RequiredEntityData } from "@mikro-orm/core";
 import { transactional, updateMonitoringState } from "../../src/db/dbutils";
 import {MempoolUTXO} from "../../src/interfaces/IBlockchainAPI";
+import { TransactionEntity, TransactionStatus, XRP, WalletAddressEntity } from "../../src";
+import { logger } from "../../src/utils/logger";
 
 export function createTransactionEntity(source: string, destination: string, txHash: string, inputs?: TransactionEntity[], status?: TransactionStatus): TransactionEntity {
     const txEnt = new TransactionEntity();

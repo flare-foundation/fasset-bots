@@ -1,38 +1,38 @@
-import {BTC, TransactionStatus} from "../../src";
-import {BitcoinWalletConfig, ICreateWalletResponse, ITransactionMonitor} from "../../src/interfaces/IWalletTransaction";
+import { BTC, TransactionStatus } from "../../src";
+import { BitcoinWalletConfig, ICreateWalletResponse, ITransactionMonitor } from "../../src/interfaces/IWalletTransaction";
 import chaiAsPromised from "chai-as-promised";
-import {expect, use} from "chai";
-import {toBN, toBNExp} from "../../src/utils/bnutils";
-import {getCurrentTimestampInSeconds, sleepMs} from "../../src/utils/utils";
-import {initializeTestMikroORM, ORM} from "../test-orm/mikro-orm.config";
-import {UnprotectedDBWalletKeys} from "../test-orm/UnprotectedDBWalletKey";
+import { expect, use } from "chai";
+import { toBN, toBNExp } from "../../src/utils/bnutils";
+import { getCurrentTimestampInSeconds, sleepMs } from "../../src/utils/utils";
+import { initializeTestMikroORM, ORM } from "../test-orm/mikro-orm.config";
+import { UnprotectedDBWalletKeys } from "../test-orm/UnprotectedDBWalletKey";
 import {
-    addConsoleTransportForTests,
     loop,
     resetMonitoringOnForceExit,
     waitForTxToFinishWithStatus,
     walletAddressesIncludedInInputs,
     walletAddressesIncludedInOutputs,
 } from "../test-util/common_utils";
-import {logger} from "../../src/utils/logger";
+import { logger } from "../../src/utils/logger";
 import BN from "bn.js";
-import {BTC_DOGE_DEC_PLACES, BTC_DUST_AMOUNT, ChainType} from "../../src/utils/constants";
+import { BTC_DOGE_DEC_PLACES, BTC_DUST_AMOUNT, ChainType } from "../../src/utils/constants";
 import * as dbutils from "../../src/db/dbutils";
 import {
     fetchTransactionEntityById,
     getTransactionInfoById,
 } from "../../src/db/dbutils";
-import {DriverException} from "@mikro-orm/core";
+import { DriverException } from "@mikro-orm/core";
 import * as utxoUtils from "../../src/chain-clients/utxo/UTXOUtils";
 import {
     createAndPersistTransactionEntity, setMonitoringStatus,
     setWalletStatusInDB,
 } from "../test-util/entity_utils";
 import sinon from "sinon";
-import {TransactionFeeService} from "../../src/chain-clients/utxo/TransactionFeeService";
-import {MempoolUTXO, UTXORawTransactionInput} from "../../src/interfaces/IBlockchainAPI";
-import {TransactionMonitor} from "../../src/chain-clients/monitoring/TransactionMonitor";
-import {TransactionUTXOService} from "../../src/chain-clients/utxo/TransactionUTXOService";
+import { TransactionFeeService } from "../../src/chain-clients/utxo/TransactionFeeService";
+import { MempoolUTXO, UTXORawTransactionInput } from "../../src/interfaces/IBlockchainAPI";
+import { TransactionMonitor } from "../../src/chain-clients/monitoring/TransactionMonitor";
+import { TransactionUTXOService } from "../../src/chain-clients/utxo/TransactionUTXOService";
+import { addConsoleTransportForTests } from "@flarenetwork/fasset-bots-common";
 
 use(chaiAsPromised);
 // bitcoin test network with fundedAddress "mvvwChA3SRa5X8CuyvdT4sAcYNvN5FxzGE" at

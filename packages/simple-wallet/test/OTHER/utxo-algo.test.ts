@@ -1,23 +1,21 @@
-import {
-    BitcoinWalletConfig,
-    BTC,
-    logger,
-} from "../../src";
-import {addConsoleTransportForTests} from "../test-util/common_utils";
-import {initializeTestMikroORM, ORM} from "../test-orm/mikro-orm.config";
-import {UnprotectedDBWalletKeys} from "../test-orm/UnprotectedDBWalletKey";
+import { initializeTestMikroORM, ORM } from "../test-orm/mikro-orm.config";
+import { UnprotectedDBWalletKeys } from "../test-orm/UnprotectedDBWalletKey";
 import chaiAsPromised from "chai-as-promised";
 import BN from "bn.js";
-import {toBN} from "web3-utils";
-import {expect, use} from "chai";
-import {TransactionFeeService} from "../../src/chain-clients/utxo/TransactionFeeService";
+import { toBN } from "web3-utils";
+import { expect, use } from "chai";
+import { TransactionFeeService } from "../../src/chain-clients/utxo/TransactionFeeService";
 import { createTransactionEntityBase, createUTXO } from "../test-util/entity_utils";
 import sinon from "sinon";
 import { toBNExp } from "../../src/utils/bnutils";
 import { BTC_DOGE_DEC_PLACES, MEMPOOL_CHAIN_LENGTH_LIMIT } from "../../src/utils/constants";
 import * as utxoUtils from "../../src/chain-clients/utxo/UTXOUtils";
-import {TransactionUTXOService} from "../../src/chain-clients/utxo/TransactionUTXOService";
+import { TransactionUTXOService } from "../../src/chain-clients/utxo/TransactionUTXOService";
 import { getMinimumUsefulUTXOValue } from "../../src/chain-clients/utxo/UTXOUtils";
+import { addConsoleTransportForTests } from "@flarenetwork/fasset-bots-common";
+import { BitcoinWalletConfig } from "../../src/interfaces/IWalletTransaction";
+import { BTC } from "../../src";
+import { logger } from "../../src/utils/logger";
 
 use(chaiAsPromised);
 

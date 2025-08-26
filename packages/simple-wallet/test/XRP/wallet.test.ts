@@ -16,13 +16,12 @@ import {
 import { TransactionStatus } from "../../src/entity/transaction";
 import {
     AccountSecretsForStressTest,
-    addConsoleTransportForTests,
     loop,
     resetMonitoringOnForceExit,
     waitForTxToBeReplacedWithStatus,
     waitForTxToFinishWithStatus,
 } from "../test-util/common_utils";
-import config, { initializeTestMikroORM, ORM } from "../test-orm/mikro-orm.config";
+import { initializeTestMikroORM, ORM } from "../test-orm/mikro-orm.config";
 import { UnprotectedDBWalletKeys } from "../test-orm/UnprotectedDBWalletKey";
 import { logger } from "../../src/utils/logger";
 import { sleepMs } from "../../src/utils/utils";
@@ -38,6 +37,7 @@ import { XrpWalletImplementation } from "../../src/chain-clients/implementations
 import { SubmitTransactionRequest, XRPBlockchainAPI } from "../../src/blockchain-apis/XRPBlockchainAPI";
 import fs from "fs";
 import xrpl from "xrpl";
+import { addConsoleTransportForTests } from "@flarenetwork/fasset-bots-common";
 
 
 use(chaiAsPromised);

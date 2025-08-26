@@ -5,7 +5,6 @@
     ],
     "exclude": [
         "src/verification/**/*.ts",
-        "src/mock/*.ts",
-        "src/utils/printlog.ts"
+        "src/mock/*.ts"
     ]
 }

@@ -1,11 +1,10 @@
 import axios, { AxiosError, AxiosInstance } from "axios";
 import chalk from "chalk";
-import { formatArgs } from "../formatting";
 import { systemTimestamp } from "../helpers";
 import { logger } from "../logger";
 import { BotType, NotificationLevel, NotifierTransport } from "./BaseNotifier";
 import { createAxiosConfig } from "@flarenetwork/simple-wallet";
-import type { ApiNotifierConfig } from "../../config";
+import { ApiNotifierConfig } from "./ApiNotifierConfig";
 
 export class ConsoleNotifierTransport implements NotifierTransport {
     async send(type: BotType, address: string, level: NotificationLevel, title: string, message: string) {
@@ -91,7 +90,7 @@ export class ApiNotifierTransport implements NotifierTransport {
             .catch((e: AxiosError) => {
                 const status = e.response?.status ?? "unknown status";
                 const errorMessage = (e.response?.data as any)?.error ?? "unknown error";
-                logger.error(`Notifier error: cannot send notification ${formatArgs(request)}: ${status}: ${errorMessage}`);
+                logger.error(`Notifier error: cannot send notification ${JSON.stringify(request)}: ${status}: ${errorMessage}`);
                 console.error(`${chalk.red("Notifier error:")} cannot send notification (${request.level} to ${request.bot_type}) "${request.title}: ${request.description}"`)
             });
     }

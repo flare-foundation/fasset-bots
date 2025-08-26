@@ -19,7 +19,6 @@ import { FairLock } from "../utils/FairLock";
 import { formatArgs, formatTimestamp, squashSpace } from "../utils/formatting";
 import { BN_ZERO, BNish, DAYS, MINUTES, TRANSACTION_FEE_CV_MAX_IN_DROPS, TRANSACTION_FEE_FACTOR_CV_REDEMPTION, ZERO_ADDRESS, assertNotNull, getOrCreate, maxBN, minBN, requireNotNull, sleepUntil, toBN } from "../utils/helpers";
 import { logger } from "../utils/logger";
-import { loggerAsyncStorage } from "@flarenetwork/simple-wallet";
 import { AgentNotifier } from "../utils/notifier/AgentNotifier";
 import { NotifierTransport } from "../utils/notifier/BaseNotifier";
 import { artifacts, web3 } from "../utils/web3";
@@ -37,6 +36,7 @@ import { AgentBotUpdateSettings } from "./AgentBotUpdateSettings";
 import { AgentTokenBalances } from "./AgentTokenBalances";
 import { AgentBotReturnFromCoreVault } from "./AgentBotReturnFromCoreVault";
 import { AgentStatus } from "../fasset/AssetManagerTypes";
+import { loggerAsyncStorage } from "@flarenetwork/fasset-bots-common";
 
 const PING_RESPONSE_MIN_INTERVAL_PER_SENDER_MS = 2 * MINUTES * 1000;
 

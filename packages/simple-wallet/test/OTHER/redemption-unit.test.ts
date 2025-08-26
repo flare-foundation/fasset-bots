@@ -1,9 +1,3 @@
-import {
-    BitcoinWalletConfig,
-    BTC,
-    logger,
-} from "../../src";
-import { addConsoleTransportForTests } from "../test-util/common_utils";
 import { initializeTestMikroORM, ORM } from "../test-orm/mikro-orm.config";
 import { UnprotectedDBWalletKeys } from "../test-orm/UnprotectedDBWalletKey";
 import chaiAsPromised from "chai-as-promised";
@@ -18,6 +12,10 @@ import { BTC_DOGE_DEC_PLACES } from "../../src/utils/constants";
 import { TransactionUTXOService } from "../../src/chain-clients/utxo/TransactionUTXOService";
 import { Transaction } from "bitcore-lib";
 import { getMinimumUsefulUTXOValue } from "../../src/chain-clients/utxo/UTXOUtils";
+import { addConsoleTransportForTests } from "@flarenetwork/fasset-bots-common";
+import { BitcoinWalletConfig } from "../../src/interfaces/IWalletTransaction";
+import { BTC } from "../../src";
+import { logger } from "../../src/utils/logger";
 
 use(chaiAsPromised);
 

@@ -6,9 +6,9 @@ import { ITransactionMonitor } from "../../interfaces/IWalletTransaction";
 import { errorMessage } from "../../utils/axios-utils";
 import { ChainType, MONITOR_EXPIRATION_INTERVAL, MONITOR_LOOP_SLEEP, MONITOR_PING_INTERVAL, RESTART_IN_DUE_NO_RESPONSE } from "../../utils/constants";
 import { logger } from "../../utils/logger";
-import { loggerAsyncStorage } from "../../utils/logger-config";
 import { createMonitoringId, sleepMs } from "../../utils/utils";
 import { MonitoringLock } from "./MonitoringLock";
+import { loggerAsyncStorage } from "@flarenetwork/fasset-bots-common";
 
 export interface IMonitoredWallet {
     submitPreparedTransactions(txEnt: TransactionEntity): Promise<void>;

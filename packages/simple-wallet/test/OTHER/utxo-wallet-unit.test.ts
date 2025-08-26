@@ -1,14 +1,6 @@
-import {
-    BitcoinWalletConfig,
-    BTC,
-    ICreateWalletResponse,
-    ITransactionMonitor,
-    logger,
-    TransactionStatus,
-} from "../../src";
 import config, { initializeTestMikroORM, ORM } from "../test-orm/mikro-orm.config";
 import { UnprotectedDBWalletKeys } from "../test-orm/UnprotectedDBWalletKey";
-import { addConsoleTransportForTests, waitForTxToFinishWithStatus } from "../test-util/common_utils";
+import { waitForTxToFinishWithStatus } from "../test-util/common_utils";
 import { UTXOWalletImplementation } from "../../src/chain-clients/implementations/UTXOWalletImplementation";
 import sinon from "sinon";
 import { updateTransactionEntity } from "../../src/db/dbutils";
@@ -22,6 +14,9 @@ import { BtcWalletImplementation } from "../../src/chain-clients/implementations
 import { TransactionUTXOService } from "../../src/chain-clients/utxo/TransactionUTXOService";
 import { TransactionFeeService } from "../../src/chain-clients/utxo/TransactionFeeService";
 import { UTXOBlockchainAPI } from "../../src/blockchain-apis/UTXOBlockchainAPI";
+import { addConsoleTransportForTests } from "@flarenetwork/fasset-bots-common";
+import { BitcoinWalletConfig, ITransactionMonitor, ICreateWalletResponse, BTC, TransactionStatus } from "../../src";
+import { logger } from "../../src/utils/logger";
 
 const fundedMnemonic = "theme damage online elite clown fork gloom alpha scorpion welcome ladder camp rotate cheap gift stone fog oval soda deputy game jealous relax muscle";
 const fundedAddress = "tb1qyghw9dla9vl0kutujnajvl6eyj0q2nmnlnx3j0";

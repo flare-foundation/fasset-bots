@@ -2,12 +2,11 @@ import { DOGE, TransactionStatus } from "../../src";
 import { DogecoinWalletConfig, ITransactionMonitor } from "../../src/interfaces/IWalletTransaction";
 import chaiAsPromised from "chai-as-promised";
 import { expect, use } from "chai";
-import { BTC_DOGE_DEC_PLACES, ChainType, DOGE_DUST_AMOUNT, DOGE_MIN_ALLOWED_AMOUNT_TO_SEND } from "../../src/utils/constants";
+import { BTC_DOGE_DEC_PLACES, ChainType, DOGE_DUST_AMOUNT } from "../../src/utils/constants";
 import { toBN, toBNExp } from "../../src/utils/bnutils";
 import { initializeTestMikroORM, ORM } from "../test-orm/mikro-orm.config";
 import { UnprotectedDBWalletKeys } from "../test-orm/UnprotectedDBWalletKey";
 import {
-    addConsoleTransportForTests,
     loop,
     resetMonitoringOnForceExit,
     waitForTxToFinishWithStatus,
@@ -21,6 +20,7 @@ import { fetchTransactionEntityById, updateTransactionEntity } from "../../src/d
 import { createTransactionEntity, setMonitoringStatus } from "../test-util/entity_utils";
 import { TEST_DOGE_ACCOUNTS } from "./accounts";
 import { getDustAmount, getMinimumAllowedUTXOValue } from "../../src/chain-clients/utxo/UTXOUtils";
+import { addConsoleTransportForTests } from "@flarenetwork/fasset-bots-common";
 
 use(chaiAsPromised);
 

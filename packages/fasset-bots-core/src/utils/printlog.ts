@@ -1,6 +1,6 @@
+import { LoggerQueryOptions } from "@flarenetwork/fasset-bots-common";
 import chalk from "chalk";
 import { Command } from "commander";
-import { QueryOptions } from "winston";
 import { logger } from "./logger";
 
 const levels: Record<string, number> = { debug: 0, verbose: 0, info: 1, notice: 2, warning: 3, warn: 3, error: 4, crit: 5, alert: 6, emerg: 7 };
@@ -20,7 +20,7 @@ const colors: Record<string, string> = {
 function printQuery(fromTime: Date, toTime: Date | undefined, search: string | undefined, minLevel: number, maxLevel: number) {
     search = search?.toLowerCase();
 
-    const queryOptions: QueryOptions = {
+    const queryOptions: LoggerQueryOptions = {
         from: fromTime,
         fields: ["level", "timestamp", "message", "stack"],
         order: "asc",

@@ -3,10 +3,8 @@ import { TransactionEntity, TransactionStatus } from "../../src";
 import { sleepMs } from "../../src/utils/utils";
 import { ChainType } from "../../src/utils/constants";
 import { EntityManager } from "@mikro-orm/core";
-import {BTC, decryptText, DOGE, XRP} from "../../src";
+import { BTC, decryptText, DOGE, XRP } from "../../src";
 import { fetchTransactionEntityById } from "../../src/db/dbutils";
-import winston, { Logger } from "winston";
-import { logger } from "../../src";
 import { toBN } from "../../src/utils/bnutils";
 import { isORMError } from "../../src";
 import {
@@ -17,10 +15,12 @@ import {
 } from "../../src/interfaces/IBlockchainAPI";
 import { UTXOBlockchainAPI } from "../../src/blockchain-apis/UTXOBlockchainAPI";
 import { AxiosInstance, AxiosResponse } from "axios";
-import {read} from "read";
+import { read } from "read";
 import fs from "fs";
 import { UTXOWalletImplementation } from "../../src/chain-clients/implementations/UTXOWalletImplementation";
 import BN from "bn.js";
+import { logger } from "../../src/utils/logger";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const bitcore = require('bitcore-lib');
 
 export const PASSWORD_MIN_LENGTH = 16;
@@ -96,24 +96,6 @@ export async function waitForTxToBeReplacedWithStatus(sleepInterval: number, tim
     });
 
     return fetchTransactionEntityById(wClient.rootEm, txId);
-}
-
-export function addConsoleTransportForTests (logger: Logger) {
-    const consoleTransport = new winston.transports.Console({
-        format: winston.format.combine(
-            winston.format.colorize(),
-            winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-            winston.format.printf(({ timestamp, level, message }) => {
-                return `[${timestamp}] ${level}: ${message}`;
-            })
-        ),
-    });
-
-    logger.add(consoleTransport);
-
-    return () => {
-        logger.remove(consoleTransport);
-    };
 }
 
 export function resetMonitoringOnForceExit<T extends ITransactionMonitor>(wClient: T) {
