@@ -18,6 +18,9 @@
   "references": [
     {
       "path": "../simple-wallet"
+    },
+    {
+      "path": "../fasset-bots-common"
     }
   ]
 }

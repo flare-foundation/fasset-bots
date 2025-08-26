@@ -1,16 +1,21 @@
 {
-    "extends": "../../tsconfig.json",
-    "compilerOptions": {
-        "composite": true,
-        "outDir": "./dist",
-        "typeRoots": [
-            "./node_modules/@types",
-            "./src/@types"
-        ]
-    },
-    "include": [
-        "src/**/*",
-        "test/**/*",
-        "src/@types/**/*.d.ts"
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "./dist",
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/@types"
     ]
+  },
+  "include": [
+    "src/**/*",
+    "test/**/*",
+    "src/@types/**/*.d.ts"
+  ],
+  "references": [
+    {
+      "path": "../fasset-bots-common"
+    }
+  ]
 }

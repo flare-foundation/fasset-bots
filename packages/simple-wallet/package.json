@@ -42,6 +42,7 @@
         "test-mainnet-xrp": "yarn run -T mocha test/XRP/mainnet.test.ts"
     },
     "dependencies": {
+        "@flarenetwork/fasset-bots-common": "workspace:*",
         "@mikro-orm/core": "5.8.4",
         "@mikro-orm/knex": "5.8.4",
         "@mikro-orm/mysql": "5.8.4",
@@ -71,9 +72,6 @@
         "ripple-keypairs": "2.0.0",
         "source-map-support": "0.5.21",
         "web3-utils": "1.10.2",
-        "winston": "3.13.1",
-        "winston-daily-rotate-file": "5.0.0",
-        "winston-transport": "4.7.1",
         "xrpl": "2.3.1"
     },
     "devDependencies": {
