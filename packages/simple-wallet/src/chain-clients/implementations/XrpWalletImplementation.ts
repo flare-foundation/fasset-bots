@@ -241,7 +241,7 @@ export class XrpWalletImplementation extends XrpAccountGeneration implements Wri
          await this.getServerInfo();
          return true;
       } catch (error) /* istanbul ignore next */ {
-         logger.error(`Cannot ger response from server: ${errorMessage(error)}`);
+         logger.error(`Cannot get response from server: ${errorMessage(error)}`);
          return false;
       }
    }

@@ -139,7 +139,7 @@ export class AgentNotifier extends BaseNotifier<AgentNotificationKey> {
     }
 
     async agentCreationValidationUnderlyingComplete() {
-        await this.info(AgentNotificationKey.AGENT_CREATION_VALIDATION, `Succesfully validated underlying address for new agent vault.`);
+        await this.info(AgentNotificationKey.AGENT_CREATION_VALIDATION, `Successfully validated underlying address for new agent vault.`);
     }
 
     async agentCreating() {
