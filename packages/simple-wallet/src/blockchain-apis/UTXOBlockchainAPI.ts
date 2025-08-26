@@ -1,20 +1,17 @@
+import { createAxiosInstance, tryWithClients } from "@flarenetwork/fasset-bots-common";
+import { AxiosInstance, AxiosResponse } from "axios";
+import BN from "bn.js";
+import { getConfirmedAfter, getDustAmount } from "../chain-clients/utxo/UTXOUtils";
 import {
-    EstimateFeeResponse,
-    FeeStatsResponse,
-    IBlockchainAPI,
-    MempoolUTXO,
+    EstimateFeeResponse, FeeStatsResponse, IBlockchainAPI, MempoolUTXO,
     UTXOAddressResponse, UTXOBlockHeightResponse, UTXOBlockResponse, UTXORawTransactionInput, UTXOResponse,
     UTXOTransactionResponse,
 } from "../interfaces/IBlockchainAPI";
-import { AxiosInstance, AxiosResponse } from "axios";
 import { WalletServiceConfigBase } from "../interfaces/IWalletTransaction";
-import { ChainType, DOGE_DEFAULT_FEE_PER_KB, SATS_PER_BTC_DOGE } from "../utils/constants";
-import BN from "bn.js";
 import { toBN } from "../utils/bnutils";
-import { getConfirmedAfter, getDustAmount } from "../chain-clients/utxo/UTXOUtils";
-import { createAxiosInstance, tryWithClients } from "../utils/axios-utils";
-import { stuckTransactionConstants } from "../utils/utils";
+import { ChainType, DOGE_DEFAULT_FEE_PER_KB, SATS_PER_BTC_DOGE } from "../utils/constants";
 import { logger } from "../utils/logger";
+import { stuckTransactionConstants } from "../utils/utils";
 
 
 export class UTXOBlockchainAPI implements IBlockchainAPI {

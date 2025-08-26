@@ -1,16 +1,14 @@
-import {
-    ChainType,
-} from "../../utils/constants";
-import BN from "bn.js";
-import { logger } from "../../utils/logger";
-import { toBN } from "web3-utils";
-import { enforceMinimalAndMaximalFee, getDefaultFeePerKB, getTransactionDescendants } from "./UTXOUtils";
+import { errorMessage } from "@flarenetwork/fasset-bots-common";
 import { EntityManager } from "@mikro-orm/core";
-import { TransactionEntity } from "../../entity/transaction";
-import { errorMessage } from "../../utils/axios-utils";
-import { updateTransactionEntity } from "../../db/dbutils";
+import BN from "bn.js";
+import { toBN } from "web3-utils";
 import { UTXOBlockchainAPI } from "../../blockchain-apis/UTXOBlockchainAPI";
+import { updateTransactionEntity } from "../../db/dbutils";
+import { TransactionEntity } from "../../entity/transaction";
+import { ChainType } from "../../utils/constants";
+import { logger } from "../../utils/logger";
 import { IUtxoWalletServices } from "./IUtxoWalletServices";
+import { enforceMinimalAndMaximalFee, getDefaultFeePerKB, getTransactionDescendants } from "./UTXOUtils";
 
 export class TransactionFeeService {
     readonly services: IUtxoWalletServices;

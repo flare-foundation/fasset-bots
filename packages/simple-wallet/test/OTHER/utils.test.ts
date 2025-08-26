@@ -1,4 +1,9 @@
-import {expect} from "chai";
+import { createAxiosInstance, DEFAULT_RATE_LIMIT_OPTIONS } from "@flarenetwork/fasset-bots-common";
+import { expect } from "chai";
+import fs from "fs";
+import { FeeStatsResponse, UTXOBlockHeightResponse } from "../../src/interfaces/IBlockchainAPI";
+import { toBN, toNumber } from "../../src/utils/bnutils";
+import { ChainType } from "../../src/utils/constants";
 import {
     bytesToHex,
     convertToTimestamp,
@@ -8,11 +13,6 @@ import {
     stuckTransactionConstants,
     unPrefix0x,
 } from "../../src/utils/utils";
-import {toBN, toNumber} from "../../src/utils/bnutils";
-import {ChainType, DEFAULT_RATE_LIMIT_OPTIONS} from "../../src/utils/constants";
-import {createAxiosInstance} from "../../src";
-import {FeeStatsResponse, UTXOBlockHeightResponse} from "../../src/interfaces/IBlockchainAPI";
-import fs from "fs";
 
 const BTCMccConnectionTestInitial = {
     urls: [process.env.BTC_URL ?? ""],

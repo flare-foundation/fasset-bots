@@ -1,23 +1,9 @@
+import { errorMessage } from "@flarenetwork/fasset-bots-common";
+import { EntityManager } from "@mikro-orm/core";
 import axios, { AxiosError } from "axios";
 import * as bitcore from "bitcore-lib";
-import {
-    checkIfShouldStillSubmit, createMonitoringId, getCurrentTimestampInSeconds,
-    sleepMs,
-    stuckTransactionConstants
-} from "../../utils/utils";
-import { toBN, toBNExp } from "../../utils/bnutils";
-import { BTC_DOGE_DEC_PLACES, ChainType, MAX_UTXO_TX_SIZE_IN_B, MEMPOOL_WAITING_TIME, UNKNOWN_DESTINATION, UNKNOWN_SOURCE } from "../../utils/constants";
-import {
-    BaseWalletConfig,
-    ITransactionMonitor,
-    IWalletKeys,
-    SignedObject,
-    TransactionInfo,
-    UTXOFeeParams,
-    WriteWalletInterface,
-} from "../../interfaces/IWalletTransaction";
-
 import BN from "bn.js";
+import { UTXOBlockchainAPI } from "../../blockchain-apis/UTXOBlockchainAPI";
 import {
     checkIfIsDeleting, createInitialTransactionEntity,
     failDueToNoTimeToSubmit,
@@ -29,24 +15,19 @@ import {
     resetTransactionEntity,
     transactional, updateTransactionEntity
 } from "../../db/dbutils";
-import { logger } from "../../utils/logger";
-import { UTXOAccountGeneration } from "../account-generation/UTXOAccountGeneration";
 import { TransactionEntity, TransactionStatus } from "../../entity/transaction";
 import { BlockchainFeeService } from "../../fee-service/fee-service";
-import { EntityManager } from "@mikro-orm/core";
+import { AxiosTransactionSubmissionError, UTXORawTransaction } from "../../interfaces/IBlockchainAPI";
 import {
-    checkUTXONetworkStatus,
-    getAccountBalance, getCore,
-    getMinimumAllowedUTXOValue,
-    getMinimumUsefulUTXOValue,
-    getTransactionDescendants,
-} from "../utxo/UTXOUtils";
-import { CreateWalletOverrides, IMonitoredWallet, TransactionMonitor } from "../monitoring/TransactionMonitor";
-import { TransactionService } from "../utxo/TransactionService";
-import { TransactionUTXOService } from "../utxo/TransactionUTXOService";
-import { TransactionFeeService } from "../utxo/TransactionFeeService";
+    BaseWalletConfig,
+    ITransactionMonitor,
+    IWalletKeys,
+    SignedObject,
+    TransactionInfo,
+    UTXOFeeParams,
+    WriteWalletInterface,
+} from "../../interfaces/IWalletTransaction";
 import {
-    errorMessage,
     isORMError,
     LessThanDustAmountError,
     MissingFieldError,
@@ -54,9 +35,27 @@ import {
     NotEnoughUTXOsError,
     RBFRestrictionsNotMetError,
 } from "../../utils/axios-utils";
-import { AxiosTransactionSubmissionError, UTXORawTransaction } from "../../interfaces/IBlockchainAPI";
-import { UTXOBlockchainAPI } from "../../blockchain-apis/UTXOBlockchainAPI";
+import { toBN, toBNExp } from "../../utils/bnutils";
+import { BTC_DOGE_DEC_PLACES, ChainType, MAX_UTXO_TX_SIZE_IN_B, MEMPOOL_WAITING_TIME, UNKNOWN_DESTINATION, UNKNOWN_SOURCE } from "../../utils/constants";
+import { logger } from "../../utils/logger";
+import {
+    checkIfShouldStillSubmit, createMonitoringId, getCurrentTimestampInSeconds,
+    sleepMs,
+    stuckTransactionConstants
+} from "../../utils/utils";
+import { UTXOAccountGeneration } from "../account-generation/UTXOAccountGeneration";
+import { CreateWalletOverrides, IMonitoredWallet, TransactionMonitor } from "../monitoring/TransactionMonitor";
 import { IUtxoWalletServices } from "../utxo/IUtxoWalletServices";
+import { TransactionFeeService } from "../utxo/TransactionFeeService";
+import { TransactionService } from "../utxo/TransactionService";
+import { TransactionUTXOService } from "../utxo/TransactionUTXOService";
+import {
+    checkUTXONetworkStatus,
+    getAccountBalance, getCore,
+    getMinimumAllowedUTXOValue,
+    getMinimumUsefulUTXOValue,
+    getTransactionDescendants,
+} from "../utxo/UTXOUtils";
 
 export abstract class UTXOWalletImplementation extends UTXOAccountGeneration implements WriteWalletInterface, IMonitoredWallet, IUtxoWalletServices {
     inTestnet: boolean;

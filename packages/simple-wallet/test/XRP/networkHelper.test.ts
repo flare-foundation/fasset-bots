@@ -1,5 +1,5 @@
+import { DEFAULT_RATE_LIMIT_OPTIONS } from "@flarenetwork/fasset-bots-common";
 import { expect } from "chai";
-import { DEFAULT_RATE_LIMIT_OPTIONS } from "../../src/utils/constants";
 import { XRP } from "../../src";
 import { RippleWalletConfig } from "../../src/interfaces/IWalletTransaction";
 import { initializeTestMikroORM } from "../test-orm/mikro-orm.config";

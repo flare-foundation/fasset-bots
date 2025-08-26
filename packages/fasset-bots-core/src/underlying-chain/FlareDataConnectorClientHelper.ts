@@ -1,23 +1,23 @@
+import { createAxiosConfig, tryWithClients } from "@flarenetwork/fasset-bots-common";
 import {
     ARBase, ARESBase, AddressValidity, AttestationDefinitionStore, BalanceDecreasingTransaction,
     ConfirmedBlockHeightExists, Payment, ReferencedPaymentNonexistence, decodeAttestationName
 } from "@flarenetwork/state-connector-protocol";
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from "axios";
 import { IFdcHubInstance, IFdcRequestFeeConfigurationsInstance, IFdcVerificationInstance, IRelayInstance } from "../../typechain-truffle";
+import { FspStatusResult } from "../utils/data-access-layer-types";
 import { findRequiredEvent } from "../utils/events/truffle";
 import { formatArgs } from "../utils/formatting";
 import { DEFAULT_RETRIES, ZERO_BYTES32, retry, retryCall, sleep } from "../utils/helpers";
 import { logger } from "../utils/logger";
 import { artifacts } from "../utils/web3";
+import { blockTimestamp } from "../utils/web3helpers";
 import { web3DeepNormalize } from "../utils/web3normalize";
 import { attestationProved } from "./AttestationHelper";
 import {
     AttestationNotProved, AttestationProof, AttestationRequestId, FDC_PROTOCOL_ID,
     FlareDataConnectorClientError, IFlareDataConnectorClient, OptionalAttestationProof
 } from "./interfaces/IFlareDataConnectorClient";
-import { blockTimestamp } from "../utils/web3helpers";
-import { createAxiosConfig, tryWithClients } from "@flarenetwork/simple-wallet";
-import { FspStatusResult } from "../utils/data-access-layer-types";
 
 export interface PrepareRequestResult {
     abiEncodedRequest: string;

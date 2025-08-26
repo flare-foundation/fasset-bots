@@ -1,9 +1,10 @@
+import { RateLimitOptions } from "@flarenetwork/fasset-bots-common";
 import { EntityManager } from "@mikro-orm/core";
+import BN from "bn.js";
+import { UTXOBlockchainAPI } from "../blockchain-apis/UTXOBlockchainAPI";
+import { XRPBlockchainAPI } from "../blockchain-apis/XRPBlockchainAPI";
 import { TransactionStatus } from "../entity/transaction";
 import { ChainType } from "../utils/constants";
-import BN from "bn.js";
-import { XRPBlockchainAPI } from "../blockchain-apis/XRPBlockchainAPI";
-import { UTXOBlockchainAPI } from "../blockchain-apis/UTXOBlockchainAPI";
 
 export interface WalletAccountGenerationInterface {
    chainType: ChainType;
@@ -95,14 +96,6 @@ export interface UTXOFeeParams {
 }
 
 export type FeeParams = XRPFeeParams | UTXOFeeParams;
-
-export interface RateLimitOptions {
-   maxRequests?: number;
-   perMilliseconds?: number;
-   maxRPS?: number;
-   timeoutMs?: number;
-   retries?: number;
-}
 
 export interface StuckTransaction {
    blockOffset?: number; // How many block to wait for transaction to be validated

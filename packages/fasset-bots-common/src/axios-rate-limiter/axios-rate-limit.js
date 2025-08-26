@@ -1,4 +1,10 @@
 // Adopted from: https://github.com/aishek/axios-rate-limit
+
+/**
+ * @import { AxiosInstance } from "axios";
+ * @import { RateLimitOptions, RateLimitedAxiosInstance } from "./axios-rate-limit-types";
+ */
+
 // eslint-disable-next-line no-undef
 const axiosRetry = require("axios-retry");
 
@@ -193,11 +199,9 @@ AxiosRateLimit.prototype.onRetry = function (retryCount) {
  *   http.getMaxRPS() // 3
  *   http.setRateLimitOptions({ maxRequests: 6, perMilliseconds: 150 }) // same options as constructor
  *
- * @param {Object} axios axios instance
- * @param {Object} options options for rate limit, available for live update
- * @param {Number} options.maxRequests max requests to perform concurrently in given amount of time.
- * @param {Number} options.perMilliseconds amount of time to limit concurrent requests.
- * @returns {Object} axios instance with interceptors added
+ * @param {AxiosInstance} axios axios instance
+ * @param {RateLimitOptions} options options for rate limit, available for live update
+ * @returns {RateLimitedAxiosInstance} axios instance with interceptors added
  */
 function axiosRateLimit(axios, options) {
    var rateLimitInstance = new AxiosRateLimit(axios);

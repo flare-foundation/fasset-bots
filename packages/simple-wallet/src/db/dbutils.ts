@@ -1,5 +1,7 @@
+import { errorMessage, updateErrorWithFullStackTrace } from "@flarenetwork/fasset-bots-common";
 import { EntityManager, FilterQuery, LockMode, RequiredEntityData, TransactionOptions } from "@mikro-orm/core";
 import BN from "bn.js";
+import { MonitoringStateEntity } from "../entity/monitoringState";
 import { TransactionEntity, TransactionStatus } from "../entity/transaction";
 import { TransactionInputEntity } from "../entity/transactionInput";
 import { WalletAddressEntity } from "../entity/wallet";
@@ -8,9 +10,7 @@ import { TransactionInfo } from "../interfaces/IWalletTransaction";
 import { toBN } from "../utils/bnutils";
 import { ChainType } from "../utils/constants";
 import { logger } from "../utils/logger";
-import { getCurrentTimestampInSeconds, updateErrorWithFullStackTrace } from "../utils/utils";
-import { errorMessage } from "../utils/axios-utils";
-import { MonitoringStateEntity } from "../entity/monitoringState";
+import { getCurrentTimestampInSeconds } from "../utils/utils";
 
 // transaction operations
 export async function createInitialTransactionEntity(

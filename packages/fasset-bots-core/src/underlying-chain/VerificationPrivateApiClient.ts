@@ -1,10 +1,10 @@
-import axios, { AxiosError, AxiosInstance } from "axios";
+import { createAxiosConfig, tryWithClients } from "@flarenetwork/fasset-bots-common";
 import { ARBase, AddressValidity, decodeAttestationName } from "@flarenetwork/state-connector-protocol";
+import axios, { AxiosError, AxiosInstance } from "axios";
 import { formatArgs } from "../utils/formatting";
 import { ZERO_BYTES32 } from "../utils/helpers";
 import { logger } from "../utils/logger";
 import { IVerificationApiClient } from "./interfaces/IVerificationApiClient";
-import { createAxiosConfig, tryWithClients } from "@flarenetwork/simple-wallet";
 
 export class VerificationApiError extends Error {}
 

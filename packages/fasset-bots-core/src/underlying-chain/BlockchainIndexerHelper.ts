@@ -1,11 +1,11 @@
-import { IBlock, IBlockChain, IBlockId, ITransaction, TxInputOutput, TX_BLOCKED, TX_FAILED, TX_SUCCESS } from "./interfaces/IBlockChain";
+import { createAxiosConfig, tryWithClients } from "@flarenetwork/fasset-bots-common";
 import axios, { AxiosInstance } from "axios";
-import { DEFAULT_RETRIES, prefix0x, requireNotNull, retry, sleep, toBN, ZERO_BYTES32 } from "../utils/helpers";
+import BN from "bn.js";
 import { formatArgs } from "../utils/formatting";
+import { DEFAULT_RETRIES, prefix0x, requireNotNull, retry, sleep, toBN, ZERO_BYTES32 } from "../utils/helpers";
 import { logger } from "../utils/logger";
 import { ChainId } from "./ChainId";
-import BN from "bn.js";
-import { createAxiosConfig, tryWithClients } from "@flarenetwork/simple-wallet";
+import { IBlock, IBlockChain, IBlockId, ITransaction, TX_BLOCKED, TX_FAILED, TX_SUCCESS, TxInputOutput } from "./interfaces/IBlockChain";
 
 // Satoshi to BTC 100_000_000
 export const BTC_MDU = 1e8;

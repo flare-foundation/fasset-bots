@@ -1,10 +1,10 @@
+import { createAxiosConfig } from "@flarenetwork/fasset-bots-common";
 import axios, { AxiosError, AxiosInstance } from "axios";
 import chalk from "chalk";
 import { systemTimestamp } from "../helpers";
 import { logger } from "../logger";
-import { BotType, NotificationLevel, NotifierTransport } from "./BaseNotifier";
-import { createAxiosConfig } from "@flarenetwork/simple-wallet";
 import { ApiNotifierConfig } from "./ApiNotifierConfig";
+import { BotType, NotificationLevel, NotifierTransport } from "./BaseNotifier";
 
 export class ConsoleNotifierTransport implements NotifierTransport {
     async send(type: BotType, address: string, level: NotificationLevel, title: string, message: string) {

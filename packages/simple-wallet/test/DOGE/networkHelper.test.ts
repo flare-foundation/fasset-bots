@@ -1,8 +1,8 @@
+import { DEFAULT_RATE_LIMIT_OPTIONS } from "@flarenetwork/fasset-bots-common";
 import { expect } from "chai";
-import { DEFAULT_RATE_LIMIT_OPTIONS } from "../../src/utils/constants";
+import { DOGE } from "../../src";
 import { initializeTestMikroORM } from "../test-orm/mikro-orm.config";
 import { UnprotectedDBWalletKeys } from "../test-orm/UnprotectedDBWalletKey";
-import { DOGE } from "../../src";
 
 describe("Dogecoin network helper tests", () => {
 

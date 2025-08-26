@@ -1,7 +1,7 @@
-import { BaseWalletConfig } from "../interfaces/IWalletTransaction";
+import { createAxiosInstance, tryWithClients } from "@flarenetwork/fasset-bots-common";
 import { AxiosInstance, AxiosResponse } from "axios";
 import type { AccountInfoRequest, AccountInfoResponse, ServerInfoResponse, SubmitResponse, TxResponse } from "xrpl";
-import { createAxiosInstance, tryWithClients } from "../utils/axios-utils";
+import { BaseWalletConfig } from "../interfaces/IWalletTransaction";
 
 export class XRPBlockchainAPI {
     clients: AxiosInstance[] = [];

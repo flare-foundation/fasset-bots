@@ -1,4 +1,15 @@
-import {logger} from "../../utils/logger";
+import { errorMessage } from "@flarenetwork/fasset-bots-common";
+import { EntityManager } from "@mikro-orm/core";
+import * as bitcore from "bitcore-lib";
+import dogecore from "bitcore-lib-doge";
+import BN from "bn.js";
+import { UTXOBlockchainAPI } from "../../blockchain-apis/UTXOBlockchainAPI";
+import { fetchTransactionEntityById } from "../../db/dbutils";
+import { TransactionEntity } from "../../entity/transaction";
+import { TransactionInputEntity } from "../../entity/transactionInput";
+import { MempoolUTXO } from "../../interfaces/IBlockchainAPI";
+import { TransactionData } from "../../interfaces/IWalletTransaction";
+import { toBN, toBNExp } from "../../utils/bnutils";
 import {
     BTC_DEFAULT_FEE_PER_KB, BTC_DOGE_DEC_PLACES,
     BTC_DUST_AMOUNT,
@@ -15,19 +26,8 @@ import {
     UTXO_OUTPUT_SIZE,
     UTXO_OUTPUT_SIZE_SEGWIT,
 } from "../../utils/constants";
-import BN from "bn.js";
-import { toBN, toBNExp } from "../../utils/bnutils";
-import * as bitcore from "bitcore-lib";
-import dogecore from "bitcore-lib-doge";
-import {TransactionEntity} from "../../entity/transaction";
-import {EntityManager} from "@mikro-orm/core";
-import {UTXOWalletImplementation} from "../implementations/UTXOWalletImplementation";
-import {errorMessage} from "../../utils/axios-utils";
-import {UTXOBlockchainAPI} from "../../blockchain-apis/UTXOBlockchainAPI";
-import {TransactionInputEntity} from "../../entity/transactionInput";
-import {fetchTransactionEntityById} from "../../db/dbutils";
-import { MempoolUTXO } from "../../interfaces/IBlockchainAPI";
-import { TransactionData } from "../../interfaces/IWalletTransaction";
+import { logger } from "../../utils/logger";
+import { UTXOWalletImplementation } from "../implementations/UTXOWalletImplementation";
 
 /*
  * COMMON UTILS

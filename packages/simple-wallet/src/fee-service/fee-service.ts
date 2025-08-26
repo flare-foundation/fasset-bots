@@ -1,8 +1,8 @@
+import { errorMessage } from "@flarenetwork/fasset-bots-common";
 import { EntityManager } from "@mikro-orm/core";
 import BN from "bn.js";
 import { UTXOBlockchainAPI } from "../blockchain-apis/UTXOBlockchainAPI";
 import { getDefaultFeePerKB } from "../chain-clients/utxo/UTXOUtils";
-import { errorMessage } from "../utils/axios-utils";
 import { toBN } from "../utils/bnutils";
 import { ChainType } from "../utils/constants";
 import { logger } from "../utils/logger";
@@ -50,7 +50,7 @@ export class BlockchainFeeService {
 
         let weightedFeeSum = toBN(0);
         let totalWeight = 0;
-        let gettingFeeStatsFromInfo: string[] = [];
+        const gettingFeeStatsFromInfo: string[] = [];
         for (let index = 1; index <= this.calculateFeeBlocks; index++) {
             const blockHeight = this.currentBlockHeight - this.calculateFeeBlocks + index;
             const historyFee = this.feeHistory.data.get(blockHeight);

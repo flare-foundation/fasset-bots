@@ -1,43 +1,42 @@
 import elliptic from "elliptic";
-import xrpl, { xrpToDrops, convertStringToHex, encodeForSigning, encode as xrplEncode, hashes as xrplHashes } from "xrpl"; // package has some member access issues
+import xrpl, { convertStringToHex, encodeForSigning, encode as xrplEncode, hashes as xrplHashes, xrpToDrops } from "xrpl"; // package has some member access issues
 
+import { errorMessage } from "@flarenetwork/fasset-bots-common";
+import { EntityManager } from "@mikro-orm/core";
+import BN from "bn.js";
 import { deriveAddress, sign } from "ripple-keypairs";
-import { bytesToHex, prefix0x, stuckTransactionConstants, isValidHexString, checkIfFeeTooHigh, getCurrentTimestampInSeconds, checkIfShouldStillSubmit, roundUpXrpToDrops, sleepMs, createMonitoringId } from "../../utils/utils";
-import { toBN } from "../../utils/bnutils";
-import { ChainType, DELETE_ACCOUNT_OFFSET, XRP_PENDING_TIMEOUT, WAIT_TO_APPEAR_IN_XRP, XRP_MINIMAL_FEE_DROPS } from "../../utils/constants";
 import type { AccountInfoRequest, AccountInfoResponse } from "xrpl";
+import { XRPBlockchainAPI } from "../../blockchain-apis/XRPBlockchainAPI";
+import {
+   checkIfIsDeleting,
+   createInitialTransactionEntity,
+   failTransaction,
+   fetchTransactionEntityById,
+   getTransactionInfoById,
+   handleMissingPrivateKey,
+   handleNoTimeToSubmitLeft,
+   setAccountIsDeleting,
+   updateTransactionEntity
+} from "../../db/dbutils";
+import { TransactionEntity, TransactionStatus } from "../../entity/transaction";
 import type {
-   WriteWalletInterface,
+   ITransactionMonitor,
+   IWalletKeys,
    RippleWalletConfig,
-   XRPFeeParams,
    SignedObject,
    TransactionInfo,
-   IWalletKeys,
-   ITransactionMonitor,
+   WriteWalletInterface,
+   XRPFeeParams,
 } from "../../interfaces/IWalletTransaction";
-import BN from "bn.js";
-import {
-   updateTransactionEntity,
-   createInitialTransactionEntity,
-   getTransactionInfoById,
-   fetchTransactionEntityById,
-   failTransaction,
-   handleMissingPrivateKey,
-   checkIfIsDeleting,
-   setAccountIsDeleting,
-   handleNoTimeToSubmitLeft
-} from "../../db/dbutils";
+import { toBN } from "../../utils/bnutils";
+import { ChainType, DELETE_ACCOUNT_OFFSET, WAIT_TO_APPEAR_IN_XRP, XRP_MINIMAL_FEE_DROPS, XRP_PENDING_TIMEOUT } from "../../utils/constants";
+import { logger } from "../../utils/logger";
+import { bytesToHex, checkIfFeeTooHigh, checkIfShouldStillSubmit, createMonitoringId, getCurrentTimestampInSeconds, isValidHexString, prefix0x, roundUpXrpToDrops, sleepMs, stuckTransactionConstants } from "../../utils/utils";
+import { XrpAccountGeneration } from "../account-generation/XrpAccountGeneration";
+import { CreateWalletOverrides, IMonitoredWallet, TransactionMonitor } from "../monitoring/TransactionMonitor";
 
 const ed25519 = new elliptic.eddsa("ed25519");
 const secp256k1 = new elliptic.ec("secp256k1");
-
-import { logger } from "../../utils/logger";
-import { XrpAccountGeneration } from "../account-generation/XrpAccountGeneration";
-import { TransactionStatus, TransactionEntity } from "../../entity/transaction";
-import { EntityManager } from "@mikro-orm/core";
-import { XRPBlockchainAPI } from "../../blockchain-apis/XRPBlockchainAPI";
-import { CreateWalletOverrides, IMonitoredWallet, TransactionMonitor } from "../monitoring/TransactionMonitor";
-import { errorMessage } from "../../utils/axios-utils";
 
 export class XrpWalletImplementation extends XrpAccountGeneration implements WriteWalletInterface, IMonitoredWallet {
    chainType: ChainType;

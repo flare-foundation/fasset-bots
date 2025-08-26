@@ -1,10 +1,10 @@
+import { errorMessage } from "@flarenetwork/fasset-bots-common";
 import { EntityManager } from "@mikro-orm/core";
 import BN from "bn.js";
 import { transactional } from "../db/dbutils";
 import { HistoryItem } from "../entity/historyItem";
 import { logger } from "../utils/logger";
 import { requireDefined } from "../utils/utils";
-import { errorMessage } from "../utils/axios-utils";
 
 export const MAX_DB_HISTORY_BLOCKS = 1000;
 export const DB_PRUNE_TIME = 3600 * 1000; // 1 hour

@@ -1151,6 +1151,7 @@ __metadata:
   dependencies:
     "@types/chai": 4.3.6
     axios: 1.5.1
+    axios-retry: 3.8.0
     chai: 4.5.0
     chalk: 4.1.2
     dotenv: 16.3.1
@@ -1298,7 +1299,6 @@ __metadata:
     "@types/node": 20.7.0
     "@types/sinon": 17.0.3
     axios: 1.5.1
-    axios-retry: 3.8.0
     bip32: 5.0.0-rc.0
     bip39: 3.0.4
     bip84: 0.2.9

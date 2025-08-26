@@ -1,4 +1,3 @@
-import { RateLimitOptions } from "../interfaces/IWalletTransaction";
 import { toBN, toBNExp } from "./bnutils";
 
 export const MNEMONIC_STRENGTH = 256;
@@ -79,13 +78,6 @@ export const DOGE_TESTNET = {
 
 ///////////////////////////////////////////////////////////////////////////
 // network configs
-
-export const DEFAULT_RATE_LIMIT_OPTIONS: RateLimitOptions = {
-   maxRPS: 100,
-   maxRequests: 1000,
-   timeoutMs: 20000,
-   retries: 10,
-};
 
 // Approximate times between blocks, in milliseconds
 export const BTC_LEDGER_CLOSE_TIME_MS = 600_000; // 10min
