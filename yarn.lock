@@ -1092,7 +1092,7 @@ __metadata:
     "@types/express": ^4.17.18
     "@types/glob": 8.1.0
     "@types/mocha": 10.0.1
-    "@types/node": 20.7.0
+    "@types/node": 22.9.0
     "@types/node-cron": ^3.0.11
     "@types/passport": ^1.0.13
     "@types/passport-http": ^0.3.9
@@ -1112,7 +1112,7 @@ __metadata:
     reflect-metadata: ^0.1.13
     rxjs: ^7.8.1
     source-map-support: 0.5.21
-    typescript: 5.2.2
+    typescript: 5.9.2
     web3: 1.10.2
     web3-core: 1.10.2
     web3-eth: 1.10.2
@@ -1133,7 +1133,7 @@ __metadata:
     commander: 11.0.0
     dotenv: 16.3.1
     source-map-support: 0.5.21
-    typescript: 5.2.2
+    typescript: 5.9.2
     web3: 1.10.2
   bin:
     agent-bot: dist/src/cli/agent-bot.js
@@ -1150,6 +1150,7 @@ __metadata:
   resolution: "@flarenetwork/fasset-bots-common@workspace:packages/fasset-bots-common"
   dependencies:
     "@types/chai": 4.3.6
+    "@types/node": 22.9.0
     axios: 1.5.1
     axios-retry: 3.8.0
     chai: 4.5.0
@@ -1157,7 +1158,7 @@ __metadata:
     dotenv: 16.3.1
     glob: 10.3.10
     source-map-support: 0.5.21
-    typescript: 5.8.3
+    typescript: 5.9.2
     typescript-json-schema: 0.61.0
     winston: 3.10.0
     winston-daily-rotate-file: 4.7.1
@@ -1186,7 +1187,7 @@ __metadata:
     "@types/chai-spies": 1.0.4
     "@types/glob": 8.1.0
     "@types/mocha": 10.0.1
-    "@types/node": 20.7.0
+    "@types/node": 22.9.0
     ajv: 8.12.0
     axios: 1.5.1
     axios-mock-adapter: 1.22.0
@@ -1203,7 +1204,7 @@ __metadata:
     rewire: 7.0.0
     source-map-support: 0.5.21
     typechain: 8.3.0
-    typescript: 5.8.3
+    typescript: 5.9.2
     typescript-json-schema: 0.61.0
     web3: 1.10.2
     web3-core: 1.10.2
@@ -1230,7 +1231,7 @@ __metadata:
     "@types/chai": ^4.3.6
     "@types/dotenv": ^8.2.0
     "@types/mocha": ^10.0.1
-    "@types/node": ^20.5.7
+    "@types/node": 22.9.0
     blazeswap: "git+https://github.com/kuco23/blazeswap.git#main"
     chai: ^4.3.10
     chalk: 4.1.2
@@ -1246,7 +1247,7 @@ __metadata:
     ts-node: ^10.9.1
     tsx: ^4.7.1
     typechain: ^8.2.0
-    typescript: ^4.6.3
+    typescript: 5.9.2
   languageName: unknown
   linkType: soft
 
@@ -1296,7 +1297,7 @@ __metadata:
     "@types/elliptic": 6.4.18
     "@types/eslint__js": 8.42.3
     "@types/mocha": 10.0.8
-    "@types/node": 20.7.0
+    "@types/node": 22.9.0
     "@types/sinon": 17.0.3
     axios: 1.5.1
     bip32: 5.0.0-rc.0
@@ -1320,7 +1321,7 @@ __metadata:
     ripple-keypairs: 2.0.0
     sinon: 18.0.0
     source-map-support: 0.5.21
-    typescript: 5.6.2
+    typescript: 5.9.2
     wallet-address-validator: 0.2.4
     web3-utils: 1.10.2
     xrpl: 2.3.1
@@ -3415,10 +3416,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:20.7.0":
-  version: 20.7.0
-  resolution: "@types/node@npm:20.7.0"
-  checksum: 1b2919925c213f4d2039ada7a8354c998e144f7291db8d719ef58ea9924ab636c113690073b0ec3b82ba62907385f7e0f51e9d1583c1a818776daa5156d3a590
+"@types/node@npm:22.9.0":
+  version: 22.9.0
+  resolution: "@types/node@npm:22.9.0"
+  dependencies:
+    undici-types: ~6.19.8
+  checksum: c014eb3b8a110f1b87b614a40ef288d13e6b08ae9d5dafbd38951a2eebc24d352dc55330ed9d00c97ee9e64483c3cc14c4aa914c5df7ca7b9eaa1a30b2340dbd
   languageName: node
   linkType: hard
 
@@ -3440,15 +3443,6 @@ __metadata:
   version: 16.18.54
   resolution: "@types/node@npm:16.18.54"
   checksum: 208e8fc64f605e9cd55ab5e620a0fd019d8fe5629e3e3c5de869a149b731ab0fac5720c516dccc0ecc834ac27df754723dfe6554551663f016ba5096ea8851df
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^20.5.7":
-  version: 20.11.16
-  resolution: "@types/node@npm:20.11.16"
-  dependencies:
-    undici-types: ~5.26.4
-  checksum: 51f0831c1219bf4698e7430aeb9892237bd851deeb25ce23c5bb0ceefcc77c3b114e48f4e98d9fc26def5a87ba9d8079f0281dd37bee691140a93f133812c152
   languageName: node
   linkType: hard
 
@@ -7253,7 +7247,7 @@ __metadata:
     rimraf: 5.0.5
     source-map-support: 0.5.21
     ts-node: 10.9.1
-    typescript: 5.2.2
+    typescript: 5.9.2
   languageName: unknown
   linkType: soft
 
@@ -13774,33 +13768,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:5.6.2":
-  version: 5.6.2
-  resolution: "typescript@npm:5.6.2"
+"typescript@npm:5.9.2":
+  version: 5.9.2
+  resolution: "typescript@npm:5.9.2"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 48777e1dabd9044519f56cd012b0296e3b72bafe12b7e8e34222751d45c67e0eba5387ecdaa6c14a53871a29361127798df6dc8d1d35643a0a47cb0b1c65a33a
-  languageName: node
-  linkType: hard
-
-"typescript@npm:5.8.3":
-  version: 5.8.3
-  resolution: "typescript@npm:5.8.3"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: cb1d081c889a288b962d3c8ae18d337ad6ee88a8e81ae0103fa1fecbe923737f3ba1dbdb3e6d8b776c72bc73bfa6d8d850c0306eed1a51377d2fccdfd75d92c4
-  languageName: node
-  linkType: hard
-
-"typescript@npm:^4.6.3":
-  version: 4.9.5
-  resolution: "typescript@npm:4.9.5"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: ee000bc26848147ad423b581bd250075662a354d84f0e06eb76d3b892328d8d4440b7487b5a83e851b12b255f55d71835b008a66cbf8f255a11e4400159237db
+  checksum: f619cf6773cfe31409279711afd68cdf0859780006c50bc2a7a0c3227f85dea89a3b97248846326f3a17dad72ea90ec27cf61a8387772c680b2252fd02d8497b
   languageName: node
   linkType: hard
 
@@ -13824,33 +13798,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@5.6.2#~builtin<compat/typescript>":
-  version: 5.6.2
-  resolution: "typescript@patch:typescript@npm%3A5.6.2#~builtin<compat/typescript>::version=5.6.2&hash=29ae49"
+"typescript@patch:typescript@5.9.2#~builtin<compat/typescript>":
+  version: 5.9.2
+  resolution: "typescript@patch:typescript@npm%3A5.9.2#~builtin<compat/typescript>::version=5.9.2&hash=29ae49"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: c084ee1ab865f108c787e6233a5f63c126c482c0c8e87ec998ac5288a2ad54b603e1ea8b8b272355823b833eb31b9fabb99e8c6152283e1cb47e3a76bd6faf6c
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@5.8.3#~builtin<compat/typescript>":
-  version: 5.8.3
-  resolution: "typescript@patch:typescript@npm%3A5.8.3#~builtin<compat/typescript>::version=5.8.3&hash=29ae49"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 1b503525a88ff0ff5952e95870971c4fb2118c17364d60302c21935dedcd6c37e6a0a692f350892bafcef6f4a16d09073fe461158547978d2f16fbe4cb18581c
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@^4.6.3#~builtin<compat/typescript>":
-  version: 4.9.5
-  resolution: "typescript@patch:typescript@npm%3A4.9.5#~builtin<compat/typescript>::version=4.9.5&hash=289587"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 1f8f3b6aaea19f0f67cba79057674ba580438a7db55057eb89cc06950483c5d632115c14077f6663ea76fd09fce3c190e6414bb98582ec80aa5a4eaf345d5b68
+  checksum: e42a701947325500008334622321a6ad073f842f5e7d5e7b588a6346b31fdf51d56082b9ce5cef24312ecd3e48d6c0d4d44da7555f65e2feec18cf62ec540385
   languageName: node
   linkType: hard
 
@@ -13910,10 +13864,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:~5.26.4":
-  version: 5.26.5
-  resolution: "undici-types@npm:5.26.5"
-  checksum: 3192ef6f3fd5df652f2dc1cd782b49d6ff14dc98e5dced492aa8a8c65425227da5da6aafe22523c67f035a272c599bb89cfe803c1db6311e44bed3042fc25487
+"undici-types@npm:~6.19.8":
+  version: 6.19.8
+  resolution: "undici-types@npm:6.19.8"
+  checksum: de51f1b447d22571cf155dfe14ff6d12c5bdaec237c765085b439c38ca8518fc360e88c70f99469162bf2e14188a7b0bcb06e1ed2dc031042b984b0bb9544017
   languageName: node
   linkType: hard
 

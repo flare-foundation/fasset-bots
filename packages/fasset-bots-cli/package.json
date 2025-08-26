@@ -41,7 +41,7 @@
         "web3": "1.10.2"
     },
     "devDependencies": {
-        "typescript": "5.2.2"
+        "typescript": "5.9.2"
     },
     "packageManager": "yarn@3.6.4"
 }
