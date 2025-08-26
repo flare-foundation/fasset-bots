@@ -182,7 +182,6 @@ export class AgentBotReturnFromCoreVault {
             returnFromCoreVault = await this.updateReturnFromCoreVault(rootEm, returnFromCoreVault, {
                 state: ReturnFromCoreVaultState.DONE,
             });
-            await this.notifier.sendReturnFromCVPerformed(returnFromCoreVault.requestId.toString());
             logger.info(`Agent ${this.agent.vaultAddress} confirmed return from core vault payment for ${returnFromCoreVault.requestId.toString()} with proof ${JSON.stringify(web3DeepNormalize(proof))}.`);
         } else {
             logger.info(`Agent ${this.agent.vaultAddress} cannot obtain payment proof for return from core vault ${returnFromCoreVault.requestId.toString()} in round ${returnFromCoreVault.proofRequestRound} and data ${returnFromCoreVault.proofRequestData}.`);
