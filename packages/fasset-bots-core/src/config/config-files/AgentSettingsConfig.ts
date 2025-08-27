@@ -1,6 +1,3 @@
-// Mapped to integer in JSON schema.
-type integer = number;
-
 export interface AgentSettingsConfig {
     /**
      * Token suffix for the new collateral pool's token.

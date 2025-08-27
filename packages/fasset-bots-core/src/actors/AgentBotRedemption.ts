@@ -1,3 +1,4 @@
+import { TransactionStatus } from "@flarenetwork/simple-wallet";
 import { ConfirmedBlockHeightExists } from "@flarenetwork/state-connector-protocol";
 import { RequiredEntityData } from "@mikro-orm/core";
 import BN from "bn.js";
@@ -10,14 +11,13 @@ import { AttestationHelperError, attestationProved } from "../underlying-chain/A
 import { IBlock } from "../underlying-chain/interfaces/IBlockChain";
 import { AttestationNotProved } from "../underlying-chain/interfaces/IFlareDataConnectorClient";
 import { EventArgs } from "../utils/events/common";
+import { lastFinalizedUnderlyingBlock, maxFeeMultiplier } from "../utils/fasset-helpers";
 import { squashSpace } from "../utils/formatting";
-import { assertNotNull, BN_ZERO, BNish, errorIncluded, MAX_BIPS, messageForExpectedError, requireNotNull, toBN, TRANSACTION_FEE_FACTOR_CV_REDEMPTION, UTXO_BLOCK_SIZE_IN_KB } from "../utils/helpers";
+import { assertNotNull, BN_ZERO, BNish, errorIncluded, MAX_BIPS, messageForExpectedError, requireNotNull, toBN, UTXO_BLOCK_SIZE_IN_KB } from "../utils/helpers";
 import { logger } from "../utils/logger";
 import { AgentNotifier } from "../utils/notifier/AgentNotifier";
 import { web3DeepNormalize } from "../utils/web3normalize";
 import { AgentBot } from "./AgentBot";
-import { TransactionStatus } from "@flarenetwork/simple-wallet";
-import { lastFinalizedUnderlyingBlock, maxFeeMultiplier } from "../utils/fasset-helpers";
 
 const REDEMPTION_BATCH = 1000;
 

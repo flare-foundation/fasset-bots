@@ -1,10 +1,10 @@
+import BN from "bn.js";
 import chalk from "chalk";
 import { Secrets } from "../config";
 import { closeBotConfig, createBotConfig } from "../config/BotConfig";
 import { loadAgentConfigFile } from "../config/config-file-loader";
 import { createNativeContext } from "../config/create-asset-context";
 import { IAssetNativeChainContext } from "../fasset-bots/IAssetBotContext";
-import { TokenExitType } from "../fasset/AssetManagerTypes";
 import { assertNotNullCmd } from "../utils/command-line-errors";
 import { requiredEventArgs } from "../utils/events/truffle";
 import { BNish } from "../utils/helpers";
@@ -12,7 +12,6 @@ import { logger } from "../utils/logger";
 import { authenticatedHttpProvider, initWeb3 } from "../utils/web3";
 import { InfoBotCommands } from "./InfoBotCommands";
 import { CleanupRegistration, CollateralPool } from "./UserBotCommands";
-import BN from "bn.js";
 
 
 export class PoolUserBotCommands {

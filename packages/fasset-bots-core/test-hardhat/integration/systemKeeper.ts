@@ -150,7 +150,7 @@ describe("System keeper tests", () => {
         await context.priceStore.setCurrentPriceFromTrustedProviders(context.chainInfo.symbol, toBNExp(10, 4), 0);
         // mock price changes and run liquidation trigger
         await context.priceStore.finalizePrices();
-        await systemKeeper.runStep();;
+        await systemKeeper.runStep();
         // check agent status
         const status4 = await getAgentStatus(agentBot);
         assert.equal(status4, AgentStatus.NORMAL);

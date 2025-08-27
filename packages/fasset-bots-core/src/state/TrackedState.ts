@@ -1,7 +1,7 @@
 import BN from "bn.js";
 import { AgentDestroyed } from "../../typechain-truffle/IIAssetManager";
 import { IAssetNativeChainContext } from "../fasset-bots/IAssetBotContext";
-import { AgentInfo, AgentStatus, AssetManagerSettings, CollateralClass, CollateralType } from "../fasset/AssetManagerTypes";
+import { AgentStatus, AssetManagerSettings, CollateralClass, CollateralType } from "../fasset/AssetManagerTypes";
 import { isPriceChangeEvent } from "../utils";
 import { Web3ContractEventDecoder } from "../utils/events/Web3ContractEventDecoder";
 import { EventArgs, EvmEvent, eventOrder } from "../utils/events/common";

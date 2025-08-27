@@ -1,18 +1,18 @@
-import BN, { max } from "bn.js";
-import { logger } from "../../utils/logger";
-import { createInitialTransactionEntity, setAccountIsDeleting, } from "../../db/dbutils";
 import { EntityManager } from "@mikro-orm/core";
-import { ChainType, MAX_NUM_OF_INPUT_UTXOS, } from "../../utils/constants";
-import { TransactionEntity } from "../../entity/transaction";
 import { Transaction } from "bitcore-lib";
-import { calculateFeePerKBFromTransactionEntity, getAccountBalance, getCore, getDustAmount, getMinimalAllowedFeePerKB, getOutputSize, getRelayFeePerKB, getMinimumUsefulUTXOValue } from "./UTXOUtils";
-import { toBN } from "../../utils/bnutils";
-import { TransactionUTXOService } from "./TransactionUTXOService";
-import { TransactionFeeService } from "./TransactionFeeService";
-import { LessThanDustAmountError, MissingFieldError, NegativeFeeError, NotEnoughUTXOsError, RBFRestrictionsNotMetError } from "../../utils/axios-utils";
-import { TransactionData, UTXO } from "../../interfaces/IWalletTransaction";
-import { IUtxoWalletServices } from "./IUtxoWalletServices";
+import BN, { max } from "bn.js";
+import { createInitialTransactionEntity, setAccountIsDeleting, } from "../../db/dbutils";
+import { TransactionEntity } from "../../entity/transaction";
 import { MempoolUTXO } from "../../interfaces/IBlockchainAPI";
+import { TransactionData } from "../../interfaces/IWalletTransaction";
+import { LessThanDustAmountError, MissingFieldError, NegativeFeeError, NotEnoughUTXOsError, RBFRestrictionsNotMetError } from "../../utils/axios-utils";
+import { toBN } from "../../utils/bnutils";
+import { ChainType, MAX_NUM_OF_INPUT_UTXOS, } from "../../utils/constants";
+import { logger } from "../../utils/logger";
+import { IUtxoWalletServices } from "./IUtxoWalletServices";
+import { TransactionFeeService } from "./TransactionFeeService";
+import { TransactionUTXOService } from "./TransactionUTXOService";
+import { calculateFeePerKBFromTransactionEntity, getAccountBalance, getDustAmount, getMinimalAllowedFeePerKB, getMinimumUsefulUTXOValue, getOutputSize, getRelayFeePerKB } from "./UTXOUtils";
 
 
 export class TransactionService {

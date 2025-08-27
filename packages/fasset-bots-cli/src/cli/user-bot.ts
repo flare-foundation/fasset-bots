@@ -305,7 +305,7 @@ program
             if (poolFeeBalance.gt(BN_ZERO)) {
                 const res = await bot.withdrawPoolFees(poolAddress, poolFeeBalance);
                 const br = await TokenBalances.fasset(bot.context);
-                console.log(`User ${bot.nativeAddress} withdrew pool fees ${br.format(poolFeeBalance)}.`);
+                console.log(`User ${bot.nativeAddress} withdrew pool fees ${br.format(res.withdrawnFeesUBA)}.`);
             }
         } catch (error) {
             console.error(`Error while withdrawing pool fees for user ${bot.nativeAddress}: ${error}`);

@@ -13,17 +13,17 @@ import { Minter } from "../mock/Minter";
 import { Redeemer } from "../mock/Redeemer";
 import { attestationProved } from "../underlying-chain/AttestationHelper";
 import { IVerificationApiClient } from "../underlying-chain/interfaces/IVerificationApiClient";
+import { Currencies } from "../utils";
 import { CommandLineError, assertNotNullCmd, requireNotNullCmd } from "../utils/command-line-errors";
+import { findEvent } from "../utils/events/truffle";
 import { proveAndUpdateUnderlyingBlock } from "../utils/fasset-helpers";
 import { formatArgs } from "../utils/formatting";
-import { BN_ZERO, BNish, ZERO_ADDRESS, requireNotNull, sumBN, toBN } from "../utils/helpers";
+import { BNish, ZERO_ADDRESS, requireNotNull, sumBN, toBN } from "../utils/helpers";
 import { logger } from "../utils/logger";
-import { artifacts, authenticatedHttpProvider, initWeb3, web3 } from "../utils/web3";
+import { artifacts, authenticatedHttpProvider, initWeb3 } from "../utils/web3";
 import { latestBlockTimestamp } from "../utils/web3helpers";
 import { web3DeepNormalize } from "../utils/web3normalize";
 import { InfoBotCommands } from "./InfoBotCommands";
-import { eventIs, findEvent } from "../utils/events/truffle";
-import { Currencies } from "../utils";
 
 export const CollateralPool = artifacts.require("CollateralPool");
 
