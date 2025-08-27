@@ -22,6 +22,7 @@ import {
     BaseWalletConfig,
     ITransactionMonitor,
     IWalletKeys,
+    WalletNotifier,
     SignedObject,
     TransactionInfo,
     UTXOFeeParams,
@@ -70,6 +71,7 @@ export abstract class UTXOWalletImplementation extends UTXOAccountGeneration imp
     executionBlockOffset: number;
     feeService: BlockchainFeeService;
     enoughConfirmations: number;
+    notifier?: WalletNotifier;
 
     monitoringId: string;
     createConfig: BaseWalletConfig;
@@ -106,6 +108,10 @@ export abstract class UTXOWalletImplementation extends UTXOAccountGeneration imp
 
     getBlockChainAPI(): UTXOBlockchainAPI {
         return this.blockchainAPI;
+    }
+
+    setNotifier(notifier: WalletNotifier): void {
+        this.notifier = notifier;
     }
 
     async getAccountBalance(account: string): Promise<BN> {

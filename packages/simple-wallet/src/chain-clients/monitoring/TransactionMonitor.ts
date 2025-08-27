@@ -3,7 +3,7 @@ import { EntityManager } from "@mikro-orm/core";
 import { fetchMonitoringState, fetchTransactionEntities } from "../../db/dbutils";
 import { TransactionEntity, TransactionStatus } from "../../entity/transaction";
 import { BlockchainFeeService } from "../../fee-service/fee-service";
-import { ITransactionMonitor } from "../../interfaces/IWalletTransaction";
+import { ITransactionMonitor, WalletNotifier } from "../../interfaces/IWalletTransaction";
 import { ChainType, MONITOR_EXPIRATION_INTERVAL, MONITOR_LOOP_SLEEP, MONITOR_PING_INTERVAL, RESTART_IN_DUE_NO_RESPONSE } from "../../utils/constants";
 import { logger } from "../../utils/logger";
 import { createMonitoringId, sleepMs } from "../../utils/utils";
@@ -16,6 +16,7 @@ export interface IMonitoredWallet {
     checkSubmittedTransaction(txEnt: TransactionEntity): Promise<void>;
     checkNetworkStatus(): Promise<boolean>;
     resubmitSubmissionFailedTransactions?(txEnt: TransactionEntity): Promise<void>;
+    setNotifier(notifier: WalletNotifier): void;
 }
 
 export interface CreateWalletOverrides {
@@ -38,6 +39,7 @@ export class TransactionMonitor implements ITransactionMonitor {
     private readonly feeService: BlockchainFeeService | undefined;
     private readonly monitoringLock: MonitoringLock;
     private initializing: boolean = false;
+    private notifier?: WalletNotifier;
 
     constructor(chainType: ChainType, rootEm: EntityManager, createWallet: CreateWalletMethod, feeService?: BlockchainFeeService) {
         this.chainType = chainType;
@@ -54,6 +56,10 @@ export class TransactionMonitor implements ITransactionMonitor {
 
     isMonitoring(): boolean {
         return this.monitoring || this.runningThreads.size > 0;
+    }
+
+    setNotifier(notifier: WalletNotifier): void {
+        this.notifier = notifier;
     }
 
     async startMonitoring(): Promise<void> {
@@ -90,6 +96,9 @@ export class TransactionMonitor implements ITransactionMonitor {
                     await sleepMs(500);    // wait for setupHistory to be complete (or fail)
                 }
                 const wallet = this.createWallet({ monitoringId: this.monitoringId, walletEm: threadEm, feeService: feeService });
+                if (this.notifier) {
+                    wallet.setNotifier(this.notifier);
+                }
                 await this.monitoringMainLoop(threadEm, wallet);
             });
         } finally {

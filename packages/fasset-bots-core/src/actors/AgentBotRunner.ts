@@ -1,5 +1,5 @@
-import { NotifierTransport } from "@flarenetwork/fasset-bots-common";
-import { ITransactionMonitor } from "@flarenetwork/simple-wallet";
+import { BotType, NotifierTransport } from "@flarenetwork/fasset-bots-common";
+import { ITransactionMonitor, WalletNotifier } from "@flarenetwork/simple-wallet";
 import { CreateRequestContext } from "@mikro-orm/core";
 import BN from "bn.js";
 import { AgentBotConfig, AgentBotSettings, Secrets } from "../config";
@@ -263,6 +263,7 @@ export class AgentBotRunner {
     }
 
     async addSimpleWalletToLoop(agentBot: AgentBot) {
+        this.agentAddressFromUnderlying.set(agentBot.agent.underlyingAddress, agentBot.agent.vaultAddress);
         const chainId = agentBot.context.chainInfo.chainId;
         if (this.walletMonitors.has(chainId)) {
             return;
@@ -270,8 +271,23 @@ export class AgentBotRunner {
         logger.info(`Wallet monitoring starting for ${chainId}...`);
         const monitor = await agentBot.context.wallet.createMonitor();
         this.walletMonitors.set(chainId, monitor);
+        monitor.setNotifier(this.createWalletNotifier());
         await monitor.startMonitoring();
         logger.info(`Wallet monitoring started for ${monitor.getId()}.`);
+    }
+
+    agentAddressFromUnderlying = new Map<string, string>();
+
+    createWalletNotifier(): WalletNotifier {
+        return {
+            send: async (source, level, title, message) => {
+                const agentAddress = source && this.agentAddressFromUnderlying.get(source);         // try to find agent with given underlying address
+                const address = agentAddress ?? this.secrets.required("owner.management.address");  // if there is no such agent, use owner management address
+                for (const transport of this.notifierTransports) {
+                    await transport.send(BotType.AGENT, address, level, title, message);
+                }
+            }
+        };
     }
 
     async ensureWalletMonitoringRunning() {
