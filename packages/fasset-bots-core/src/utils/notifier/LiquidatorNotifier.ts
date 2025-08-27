@@ -1,4 +1,4 @@
-import { BaseNotifier, BotType, NotifierTransport } from "./BaseNotifier";
+import { BaseNotifier, NotifierTransport, BotType } from "@flarenetwork/fasset-bots-common";
 
 enum LiquidatorNotificationKey {
     AGENT_LIQUIDATED = "AGENT LIQUIDATED",

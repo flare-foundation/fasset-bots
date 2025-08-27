@@ -8,7 +8,7 @@ import { TrackedState } from "../state/TrackedState";
 import { BN_ZERO } from "../utils";
 import { ScopedRunner } from "../utils/events/ScopedRunner";
 import { logger } from "../utils/logger";
-import { NotifierTransport } from "../utils/notifier/BaseNotifier";
+import { NotifierTransport } from "@flarenetwork/fasset-bots-common";
 import { LiquidatorNotifier } from "../utils/notifier/LiquidatorNotifier";
 import { latestBlockTimestampBN } from "../utils/web3helpers";
 import { DefaultLiquidationStrategy, LiquidationStrategy } from "./plugins/LiquidationStrategy";

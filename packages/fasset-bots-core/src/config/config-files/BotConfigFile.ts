@@ -1,10 +1,21 @@
 import { AgentSettingsConfig } from "./AgentSettingsConfig";
 import type { LiquidatorBotStrategyDefinition, ChallengerBotStrategyDefinition } from "./BotStrategyConfig";
-import { ApiNotifierConfig } from "../../utils/notifier/ApiNotifierConfig";
 
 export type DatabaseType = "mysql" | "sqlite" | "postgresql";
 
 export type SchemaUpdate = "none" | "safe" | "full" | "recreate";
+
+export enum NotificationLevel {
+    INFO = "info",
+    DANGER = "danger",
+    CRITICAL = "critical"
+}
+
+export interface ApiNotifierConfig {
+    apiUrl: string;
+    apiKey?: string;
+    level?: NotificationLevel;
+}
 
 export interface OrmConfigOptions {
     type: DatabaseType;

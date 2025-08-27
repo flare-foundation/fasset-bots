@@ -21,7 +21,7 @@ import { InitialAgentData } from "../../src/state/TrackedAgentState";
 import { TrackedState } from "../../src/state/TrackedState";
 import { ScopedRunner } from "../../src/utils/events/ScopedRunner";
 import { BNish, ZERO_ADDRESS, checkedCast, requireNotNull, toBN, toBNExp } from "../../src/utils/helpers";
-import { NotifierTransport } from "../../src/utils/notifier/BaseNotifier";
+import { NotifierTransport } from "@flarenetwork/fasset-bots-common";
 import { artifacts } from "../../src/utils/web3";
 import { web3DeepNormalize } from "../../src/utils/web3normalize";
 import { testAgentBotSettings, testChainInfo, TestChainType } from "../../test/test-utils/TestChainInfo";

@@ -1,6 +1,5 @@
+import { ApiNotifierTransport, NotificationLevel } from "@flarenetwork/fasset-bots-common";
 import MockAdapter from "axios-mock-adapter";
-import { ApiNotifierTransport } from "../utils/notifier/NotifierTransports";
-import { NotificationLevel } from "../utils/notifier/BaseNotifier";
 
 export class MockNotifierTransport extends ApiNotifierTransport {
     mock: MockAdapter | undefined;

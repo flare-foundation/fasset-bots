@@ -1,3 +1,5 @@
+import { NotifierTransport } from "@flarenetwork/fasset-bots-common";
+import { ITransactionMonitor } from "@flarenetwork/simple-wallet";
 import { CreateRequestContext } from "@mikro-orm/core";
 import BN from "bn.js";
 import { AgentBotConfig, AgentBotSettings, Secrets } from "../config";
@@ -5,14 +7,12 @@ import { createAgentBotContext } from "../config/create-asset-context";
 import { ORM } from "../config/orm";
 import { AgentEntity } from "../entities/agent";
 import { IAssetAgentContext } from "../fasset-bots/IAssetBotContext";
+import { ChainId } from "../underlying-chain/ChainId";
 import { EVMNativeTokenBalance, sendWeb3Transaction, SimpleThrottler, squashSpace } from "../utils";
 import { firstValue, getOrCreate, requireNotNull, sleep } from "../utils/helpers";
 import { logger } from "../utils/logger";
 import { AgentNotifier } from "../utils/notifier/AgentNotifier";
-import { NotifierTransport } from "../utils/notifier/BaseNotifier";
 import { AgentBot, AgentBotLocks, AgentBotTransientStorage, ITimeKeeper } from "./AgentBot";
-import { ITransactionMonitor } from "@flarenetwork/simple-wallet";
-import { ChainId } from "../underlying-chain/ChainId";
 
 export const FUND_MIN_INTERVAL_MS = 60 * 3 * 1000; // 3 minutes
 

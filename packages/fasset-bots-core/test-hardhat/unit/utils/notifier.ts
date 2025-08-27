@@ -1,14 +1,14 @@
+import { BotType, ConsoleNotifierTransport, NotificationLevel, NotifierThrottlingConfigs, ThrottlingNotifierTransport } from "@flarenetwork/fasset-bots-common";
 import { expect, spy, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import spies from "chai-spies";
 import { MockNotifierTransport } from "../../../src/mock/MockNotifierTransport";
-import { FormattedString, HOURS, toBN } from "../../../src/utils";
-import { AgentNotificationKey, AgentNotifier, agentNotifierThrottlingTimes } from "../../../src/utils/notifier/AgentNotifier";
-import { BotType, NotificationLevel } from "../../../src/utils/notifier/BaseNotifier";
+import { FormattedString, HOURS } from "../../../src/utils";
+import { AgentNotificationKey, AgentNotifier } from "../../../src/utils/notifier/AgentNotifier";
 import { ChallengerNotifier } from "../../../src/utils/notifier/ChallengerNotifier";
 import { LiquidatorNotifier } from "../../../src/utils/notifier/LiquidatorNotifier";
-import { ConsoleNotifierTransport, NotifierThrottlingConfigs, ThrottlingNotifierTransport } from "../../../src/utils/notifier/NotifierTransports";
 import { FaultyNotifierTransport } from "../../test-utils/FaultyNotifierTransport";
+
 use(chaiAsPromised);
 use(spies);
 

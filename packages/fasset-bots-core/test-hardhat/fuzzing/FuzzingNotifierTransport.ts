@@ -1,4 +1,4 @@
-import { BotType, NotificationLevel, NotifierTransport } from "../../src/utils/notifier/BaseNotifier";
+import { NotifierTransport, BotType, NotificationLevel } from "@flarenetwork/fasset-bots-common";
 import { EventFormatter } from "../test-utils/EventFormatter";
 
 export class FuzzingNotifierTransport implements NotifierTransport {

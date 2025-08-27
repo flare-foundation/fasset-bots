@@ -1,36 +1,32 @@
 import "dotenv/config";
 
+import { ApiNotifierConfig, ApiNotifierTransport, ConsoleNotifierTransport, LoggerNotifierTransport, NotifierTransport, ThrottlingNotifierTransport } from "@flarenetwork/fasset-bots-common";
 import { StuckTransaction } from "@flarenetwork/simple-wallet";
 import { EntityManager } from "@mikro-orm/core";
 import BN from "bn.js";
 import { Secrets } from ".";
 import { IIAssetManagerInstance } from "../../typechain-truffle";
+import { AgentBotDbUpgrades } from "../actors/AgentBotDbUpgrades";
 import { AssetManagerSettings } from "../fasset/AssetManagerTypes";
 import { ChainInfo, NativeChainInfo } from "../fasset/ChainInfo";
 import { overrideAndCreateOrm } from "../mikro-orm.config";
 import { BlockchainIndexerHelper } from "../underlying-chain/BlockchainIndexerHelper";
 import { BlockchainWalletHelper } from "../underlying-chain/BlockchainWalletHelper";
 import { ChainId } from "../underlying-chain/ChainId";
-import { VerificationPrivateApiClient } from "../underlying-chain/VerificationPrivateApiClient";
 import { FlareDataConnectorClientHelper } from "../underlying-chain/FlareDataConnectorClientHelper";
+import { VerificationPrivateApiClient } from "../underlying-chain/VerificationPrivateApiClient";
 import { DBWalletKeys } from "../underlying-chain/WalletKeys";
-import {
-    IBlockChainWallet,
-} from "../underlying-chain/interfaces/IBlockChainWallet";
+import { IBlockChainWallet } from "../underlying-chain/interfaces/IBlockChainWallet";
 import { IFlareDataConnectorClient } from "../underlying-chain/interfaces/IFlareDataConnectorClient";
 import { IVerificationApiClient } from "../underlying-chain/interfaces/IVerificationApiClient";
 import { Currency, RequireFields, assertCmd, assertNotNull, assertNotNullCmd, requireNotNull, toBNExp } from "../utils";
 import { agentNotifierThrottlingTimes } from "../utils/notifier/AgentNotifier";
-import { NotifierTransport } from "../utils/notifier/BaseNotifier";
-import { ApiNotifierTransport, ConsoleNotifierTransport, LoggerNotifierTransport, ThrottlingNotifierTransport } from "../utils/notifier/NotifierTransports";
 import { AssetContractRetriever } from "./AssetContractRetriever";
 import { AgentBotFassetSettingsJson, AgentBotSettingsJson, AgentSettingsConfigDefaults, BotConfigFile, BotFAssetInfo, BotNativeChainInfo, OrmConfigOptions } from "./config-files/BotConfigFile";
-import { ApiNotifierConfig } from "../utils/notifier/ApiNotifierConfig";
-import { LiquidatorBotStrategyDefinition, ChallengerBotStrategyDefinition } from "./config-files/BotStrategyConfig";
+import { ChallengerBotStrategyDefinition, LiquidatorBotStrategyDefinition } from "./config-files/BotStrategyConfig";
 import { DatabaseAccount } from "./config-files/SecretsFile";
 import { createWalletClient, requireSupportedChainId } from "./create-wallet-client";
 import { EM, ORM } from "./orm";
-import { AgentBotDbUpgrades } from "../actors/AgentBotDbUpgrades";
 
 export interface BotConfig<T extends BotFAssetConfig = BotFAssetConfig> {
     secrets: Secrets;

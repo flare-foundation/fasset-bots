@@ -1,4 +1,4 @@
-import { ConsoleNotifierTransport, LoggerNotifierTransport } from "../../src/utils/notifier/NotifierTransports";
+import { ConsoleNotifierTransport, LoggerNotifierTransport } from "@flarenetwork/fasset-bots-common";
 
 export const testNotifierTransports = [
     new ConsoleNotifierTransport(),

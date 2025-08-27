@@ -13,7 +13,7 @@ import { CollateralClass, CollateralType } from "../../src/fasset/AssetManagerTy
 import { MockChain, MockChainWallet } from "../../src/mock/MockChain";
 import { isPoolCollateral } from "../../src/state/CollateralIndexedList";
 import { expectErrors, sleep, sumBN, systemTimestamp, toBIPS, toBN } from "../../src/utils/helpers";
-import { NotifierTransport } from "../../src/utils/notifier/BaseNotifier";
+import { NotifierTransport } from "@flarenetwork/fasset-bots-common";
 import { web3 } from "../../src/utils/web3";
 import { latestBlockTimestamp } from "../../src/utils/web3helpers";
 import { TestChainInfo, TestChainType, testAgentBotSettings, testChainInfo } from "../../test/test-utils/TestChainInfo";

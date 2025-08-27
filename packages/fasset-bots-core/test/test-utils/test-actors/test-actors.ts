@@ -13,7 +13,7 @@ import { TrackedState } from "../../../src/state/TrackedState";
 import { ChainId } from "../../../src/underlying-chain/ChainId";
 import { ScopedRunner } from "../../../src/utils/events/ScopedRunner";
 import { fail } from "../../../src/utils/helpers";
-import { NotifierTransport } from "../../../src/utils/notifier/BaseNotifier";
+import { NotifierTransport } from "@flarenetwork/fasset-bots-common";
 import { ChallengerNotifier } from "../../../src/utils/notifier/ChallengerNotifier";
 import { LiquidatorNotifier } from "../../../src/utils/notifier/LiquidatorNotifier";
 import { DEFAULT_POOL_TOKEN_SUFFIX } from "../../../test-hardhat/test-utils/helpers";

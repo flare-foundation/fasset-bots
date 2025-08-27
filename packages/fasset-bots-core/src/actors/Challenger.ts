@@ -17,7 +17,7 @@ import { eventIs } from "../utils/events/truffle";
 import { formatArgs } from "../utils/formatting";
 import { compareHexValues, getOrCreate, sleep, sumBN, toBN } from "../utils/helpers";
 import { logger } from "../utils/logger";
-import { NotifierTransport } from "../utils/notifier/BaseNotifier";
+import { NotifierTransport } from "@flarenetwork/fasset-bots-common";
 import { ChallengerNotifier } from "../utils/notifier/ChallengerNotifier";
 import { web3DeepNormalize } from "../utils/web3normalize";
 import { ChallengeStrategy, DefaultChallengeStrategy } from "./plugins/ChallengeStrategy";

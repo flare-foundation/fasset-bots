@@ -1,7 +1,6 @@
+import { BaseNotifier, BotType, NotifierThrottlingConfigs, NotifierTransport } from "@flarenetwork/fasset-bots-common";
 import { FormattedString, squashSpace } from "../formatting";
 import { BNish, HOURS } from "../helpers";
-import { BaseNotifier, BotType, NotifierTransport } from "./BaseNotifier";
-import { NotifierThrottlingConfigs } from "./NotifierTransports";
 
 export enum AgentNotificationKey {
     // agent status and settings,

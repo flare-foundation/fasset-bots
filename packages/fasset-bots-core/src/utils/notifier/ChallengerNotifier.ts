@@ -1,4 +1,4 @@
-import { BaseNotifier, BotType, NotifierTransport } from "./BaseNotifier";
+import { BaseNotifier, NotifierTransport, BotType } from "@flarenetwork/fasset-bots-common";
 
 enum ChallengerNotificationKey {
     ILLEGAL_TRANSACTION_CHALLENGE = "ILLEGAL TRANSACTION CHALLENGE",

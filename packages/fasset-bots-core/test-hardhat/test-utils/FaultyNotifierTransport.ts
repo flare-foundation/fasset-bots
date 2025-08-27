@@ -1,6 +1,5 @@
+import { ApiNotifierTransport, BotType, NotificationLevel } from "@flarenetwork/fasset-bots-common";
 import MockAdapter from "axios-mock-adapter";
-import { ApiNotifierTransport } from "../../src/utils/notifier/NotifierTransports";
-import { BotType, NotificationLevel } from "../../src/utils/notifier/BaseNotifier";
 import { sleep } from "../../src/utils";
 
 // to use in tests

@@ -20,7 +20,7 @@ import { formatArgs, formatTimestamp, squashSpace } from "../utils/formatting";
 import { BN_ZERO, BNish, DAYS, MINUTES, TRANSACTION_FEE_CV_MAX_IN_DROPS, TRANSACTION_FEE_FACTOR_CV_REDEMPTION, ZERO_ADDRESS, assertNotNull, getOrCreate, maxBN, minBN, requireNotNull, sleepUntil, toBN } from "../utils/helpers";
 import { logger } from "../utils/logger";
 import { AgentNotifier } from "../utils/notifier/AgentNotifier";
-import { NotifierTransport } from "../utils/notifier/BaseNotifier";
+import { NotifierTransport } from "@flarenetwork/fasset-bots-common";
 import { artifacts, web3 } from "../utils/web3";
 import { latestBlockTimestampBN } from "../utils/web3helpers";
 import { AgentBotClaims } from "./AgentBotClaims";

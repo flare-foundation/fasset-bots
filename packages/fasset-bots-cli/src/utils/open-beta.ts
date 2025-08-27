@@ -1,4 +1,4 @@
-import { ApiNotifierTransport } from "@flarenetwork/fasset-bots-core";
+import { ApiNotifierTransport } from "@flarenetwork/fasset-bots-common";
 import { Secrets } from "@flarenetwork/fasset-bots-core/config";
 
 export interface AgentRegistrationSubmission {
