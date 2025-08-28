@@ -1,6 +1,6 @@
-import {Command} from "commander";
+import { Command } from "commander";
 import fs from "fs";
-import {AccountSecrets, decryptTestSecrets, isJSON, promptPassword, Wallet} from "./common_utils";
+import { AccountSecrets, decryptTestSecrets, isJSON, promptPassword, Wallet } from "./common_utils";
 import * as dotenv from 'dotenv';
 import {
     BtcAccountGeneration,

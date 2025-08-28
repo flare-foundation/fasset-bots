@@ -13,28 +13,27 @@ export class XRPBlockchainAPI {
     }
 
     async getTransaction(transactionHash: string): Promise<AxiosResponse<TxResponse>> {
-        return tryWithClients(this.clients,(client: AxiosInstance) => client.post("", {
+        return tryWithClients(this.clients, (client: AxiosInstance) => client.post("", {
             method: "tx",
             params: [{ transaction: transactionHash }],
         }), "getTransaction");
     }
 
     async submitTransaction(params: SubmitTransactionRequest): Promise<AxiosResponse<SubmitResponse>> {
-        return tryWithClients(this.clients,(client: AxiosInstance) => client.post("", {
+        return tryWithClients(this.clients, (client: AxiosInstance) => client.post("", {
             method: "submit",
             params: [params],
         }), "submitTransaction");
     }
 
     async getAccountInfo(params: AccountInfoRequest): Promise<AxiosResponse<AccountInfoResponse>> {
-        return tryWithClients(this.clients,(client: AxiosInstance) => client.post("", {
-                method: "account_info", params: [params],
-            },
-        ), "getAccountInfo");
+        return tryWithClients(this.clients, (client: AxiosInstance) => client.post("", {
+            method: "account_info", params: [params],
+        }), "getAccountInfo");
     }
 
     async getServerInfo(): Promise<AxiosResponse<ServerInfoResponse>> {
-        return tryWithClients(this.clients,(client: AxiosInstance) => client.post("", {
+        return tryWithClients(this.clients, (client: AxiosInstance) => client.post("", {
             method: "server_info",
             params: [],
         }), "getServerInfo");

@@ -51,7 +51,8 @@ export class DefaultLiquidationStrategy extends LiquidationStrategy<DefaultLiqui
     protected async liquidate(agent: TrackedAgentState, amountUBA: BN): Promise<void> {
         const before = await this.context.assetManager.getAgentInfo(agent.vaultAddress);
         await this.context.assetManager.liquidate(agent.vaultAddress, amountUBA, {
-            from: this.address, maxPriorityFeePerGas: this.config?.maxPriorityFeePerGas });
+            from: this.address, maxPriorityFeePerGas: this.config?.maxPriorityFeePerGas
+        });
         const after = await this.context.assetManager.getAgentInfo(agent.vaultAddress);
         const diff = toBN(before.mintedUBA).sub(toBN(after.mintedUBA));
         const cur = await Currencies.fasset(this.context);
@@ -97,6 +98,6 @@ export class DexLiquidationStrategy extends LiquidationStrategy<DexLiquidationSt
                 minPriceMul: oraclePrices[2],
                 minPriceDiv: oraclePrices[3]
             }
-         }, { from: this.address });
+        }, { from: this.address });
     }
 }

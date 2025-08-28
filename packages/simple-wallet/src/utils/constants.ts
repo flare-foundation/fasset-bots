@@ -21,15 +21,15 @@ export const MAX_NUM_OF_INPUT_UTXOS = 333;
 // chain specs
 
 export enum ChainType {
-   // This values are hardcoded versions of `encodeAttestationName("BTC")`, etc.
-   // This is to avoid adding dependency to state-connector-protocol just to calculate these values.
-   BTC = "BTC",//"0x4254430000000000000000000000000000000000000000000000000000000000",
-   DOGE = "DOGE",//"0x444f474500000000000000000000000000000000000000000000000000000000",
-   XRP = "XRP",//"0x5852500000000000000000000000000000000000000000000000000000000000",
-   testBTC = "testBTC",//"0x7465737442544300000000000000000000000000000000000000000000000000",
-   testDOGE = "testDOGE",//"0x74657374444f4745000000000000000000000000000000000000000000000000",
-   testXRP = "testXRP"//"0x7465737458525000000000000000000000000000000000000000000000000000",
-   // ... make sure IDs are the same as in Flare attestation providers
+    // This values are hardcoded versions of `encodeAttestationName("BTC")`, etc.
+    // This is to avoid adding dependency to state-connector-protocol just to calculate these values.
+    BTC = "BTC",//"0x4254430000000000000000000000000000000000000000000000000000000000",
+    DOGE = "DOGE",//"0x444f474500000000000000000000000000000000000000000000000000000000",
+    XRP = "XRP",//"0x5852500000000000000000000000000000000000000000000000000000000000",
+    testBTC = "testBTC",//"0x7465737442544300000000000000000000000000000000000000000000000000",
+    testDOGE = "testDOGE",//"0x74657374444f4745000000000000000000000000000000000000000000000000",
+    testXRP = "testXRP"//"0x7465737458525000000000000000000000000000000000000000000000000000",
+    // ... make sure IDs are the same as in Flare attestation providers
 }
 
 // From
@@ -37,43 +37,43 @@ export enum ChainType {
 // https://github.com/cryptocoinjs/coininfo
 
 export const BTC_MAINNET = {
-   messagePrefix: "\x18Bitcoin Signed Message:\n",
-   bech32: "bc",
-   bip32: { private: 0x0488ade4, public: 0x0488b21e },
-   pubKeyHash: 0x00,
-   scriptHash: 0x05,
-   wif: 0x80,
-   bip32Path: "m/44'/0'/0'",
+    messagePrefix: "\x18Bitcoin Signed Message:\n",
+    bech32: "bc",
+    bip32: { private: 0x0488ade4, public: 0x0488b21e },
+    pubKeyHash: 0x00,
+    scriptHash: 0x05,
+    wif: 0x80,
+    bip32Path: "m/44'/0'/0'",
 };
 
 export const BTC_TESTNET = {
-   messagePrefix: "\x18Bitcoin Signed Message:\n",
-   bech32: "tb",
-   bip32: { private: 0x04358394, public: 0x043587cf },
-   pubKeyHash: 0x6f,
-   scriptHash: 0xc4,
-   wif: 0xef,
-   bip32Path: "m/44'/1'/0'",
+    messagePrefix: "\x18Bitcoin Signed Message:\n",
+    bech32: "tb",
+    bip32: { private: 0x04358394, public: 0x043587cf },
+    pubKeyHash: 0x6f,
+    scriptHash: 0xc4,
+    wif: 0xef,
+    bip32Path: "m/44'/1'/0'",
 };
 
 export const DOGE_MAINNET = {
-   messagePrefix: undefined,
-   bech32: undefined,
-   bip32: { private: 0x02fac398, public: 0x02facafd },
-   pubKeyHash: 0x1e,
-   scriptHash: 0x16,
-   wif: 0x1e + 128,
-   bip32Path: "m/44'/3'/0'",
+    messagePrefix: undefined,
+    bech32: undefined,
+    bip32: { private: 0x02fac398, public: 0x02facafd },
+    pubKeyHash: 0x1e,
+    scriptHash: 0x16,
+    wif: 0x1e + 128,
+    bip32Path: "m/44'/3'/0'",
 };
 
 export const DOGE_TESTNET = {
-   messagePrefix: undefined,
-   bech32: undefined,
-   bip32: { private: 0x0432a243, public: 0x0432a9a8 },
-   pubKeyHash: 0x71,
-   scriptHash: 0xc4,
-   wif: 0x71 + 128,
-   bip32Path: "m/44'/1'/0'",
+    messagePrefix: undefined,
+    bech32: undefined,
+    bip32: { private: 0x0432a243, public: 0x0432a9a8 },
+    pubKeyHash: 0x71,
+    scriptHash: 0xc4,
+    wif: 0x71 + 128,
+    bip32Path: "m/44'/1'/0'",
 };
 
 ///////////////////////////////////////////////////////////////////////////

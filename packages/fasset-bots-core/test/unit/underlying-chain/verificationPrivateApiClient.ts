@@ -27,7 +27,7 @@ describe("VerificationPrivateApiClient tests on XRP", () => {
 describe("VerificationPrivateApiClient tests on BTC", () => {
     let verifier!: VerificationPrivateApiClient;
 
-    before(async() => {
+    before(async () => {
         const secrets = await Secrets.load(TEST_SECRETS);
         const apiKeys = indexerApiKey(secrets, INDEXER_URL_BTC);
         verifier = new VerificationPrivateApiClient(INDEXER_URL_BTC, apiKeys);

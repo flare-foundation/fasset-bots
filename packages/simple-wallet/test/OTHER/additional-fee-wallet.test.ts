@@ -33,7 +33,7 @@ describe("Unit test for paying fees from additional wallet", () => {
 
     before(async () => {
         addConsoleTransportForTests(logger);
-        testOrm = await initializeTestMikroORM({...config, dbName: "unit-test-db"});
+        testOrm = await initializeTestMikroORM({ ...config, dbName: "unit-test-db" });
         const unprotectedDBWalletKeys = new UnprotectedDBWalletKeys(testOrm.em);
         BTCMccConnectionTest = {
             ...BTCMccConnectionTestInitial,
@@ -283,7 +283,7 @@ describe("Unit test for paying fees from additional wallet", () => {
         });
 
         const feeInSatoshi = toBN(1400);
-        const [tr,] = await wClient.transactionService.prepareRBFTransaction(2, fundedAddress, targetAddress, getMinimumAllowedUTXOValue(wClient.chainType), feePerKB,txEnt, feeInSatoshi);
+        const [tr,] = await wClient.transactionService.prepareRBFTransaction(2, fundedAddress, targetAddress, getMinimumAllowedUTXOValue(wClient.chainType), feePerKB, txEnt, feeInSatoshi);
         const vSize = tr._estimateSize();
         const relayFeePerB = getRelayFeePerKB(wClient.chainType).muln(wClient.transactionFeeService.feeIncrease).divn(1000);
         expect(toBN(tr.getFee()).sub(toBN(vSize).mul(relayFeePerB)).toNumber()).to.be.gte(feeInSatoshi.toNumber());

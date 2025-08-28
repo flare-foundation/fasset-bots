@@ -128,7 +128,7 @@ function createMethodCalls(instance: MiniTruffleContractInstance, method: AbiIte
     return sendFn;
 }
 
-function validateMethodResultEncoding(outputs: AbiOutput[], encResult: string, decodedOutputs: Record<string,any>) {
+function validateMethodResultEncoding(outputs: AbiOutput[], encResult: string, decodedOutputs: Record<string, any>) {
     const outputList: any[] = [];
     for (let i = 0; i < decodedOutputs.__length__; i++) {
         outputList.push(decodedOutputs[i]);

@@ -4,7 +4,7 @@ import BN from "bn.js";
 import { transactional } from "../db/dbutils";
 import { HistoryItem } from "../entity/historyItem";
 import { logger } from "../utils/logger";
-import { requireDefined } from "../utils/utils";
+import { requireNotNull } from "../utils/utils";
 
 export const MAX_DB_HISTORY_BLOCKS = 1000;
 export const DB_PRUNE_TIME = 3600 * 1000; // 1 hour
@@ -125,7 +125,7 @@ export class BlockValueHistory {
         });
         for (const entity of entities) {
             if (!this.data.has(entity.blockHeight)) {
-                this.data.set(entity.blockHeight, requireDefined(entity[this.dbKey]));
+                this.data.set(entity.blockHeight, requireNotNull(entity[this.dbKey]));
             }
         }
     }

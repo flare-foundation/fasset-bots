@@ -1,5 +1,5 @@
 import { EntityManager, FilterQuery } from "@mikro-orm/core";
-import {decryptText, EncryptionMethod, encryptText, IWalletKeys, WalletAddressEntity} from "../../src";
+import { decryptText, EncryptionMethod, encryptText, IWalletKeys, WalletAddressEntity } from "../../src";
 
 export class DBWalletKeys implements IWalletKeys {
     private privateKeyCache = new Map<string, string>();

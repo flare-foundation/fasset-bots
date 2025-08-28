@@ -7,7 +7,7 @@ describe("command-line-errors unit tests", () => {
 
     it("Wrap command-lin-error", async () => {
         expect(CommandLineError.wrap(plaintext)).to.eq(plaintext);
-        expect(CommandLineError.wrap({message: plaintext}).message).to.eq(plaintext);
+        expect(CommandLineError.wrap({ message: plaintext }).message).to.eq(plaintext);
     });
 
     it("Replace command-lin-error", async () => {

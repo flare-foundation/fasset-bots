@@ -54,7 +54,7 @@ describe("Challenger tests", () => {
 
     async function initialize() {
         orm = await createTestOrm();
-        context = await createTestAssetContext(governance, testChainInfo.xrp,  { coreVaultUnderlyingAddress });
+        context = await createTestAssetContext(governance, testChainInfo.xrp, { coreVaultUnderlyingAddress });
         state = new TrackedState(context);
         await state.initialize();
         chain = context.blockchainIndexer.chain;
@@ -772,7 +772,7 @@ describe("Challenger tests", () => {
         await proveAndUpdateUnderlyingBlock(context.attestationProvider, context.assetManager, ownerAddress);
         const allowed = await context.assetManager.maximumTransferToCoreVault(agentVault);
         const toTransfer = allowed[0];
-        const res = await context.assetManager.transferToCoreVault(agentVault, toTransfer,  { from: agentBot.agent.owner.workAddress });
+        const res = await context.assetManager.transferToCoreVault(agentVault, toTransfer, { from: agentBot.agent.owner.workAddress });
         const event = requiredEventArgs(res, "TransferToCoreVaultStarted");
         const paymentReference = PaymentReference.redemption(event.transferRedemptionRequestId);
         // now the agent should be in redeeming state

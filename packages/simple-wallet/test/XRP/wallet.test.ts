@@ -337,7 +337,7 @@ describe("Xrp wallet tests", () => {
         ).to.eventually.be.rejectedWith(`Cannot receive requests. ${wallet.address} is deleting`);
 
         await setWalletStatusInDB(wClient.rootEm, wallet.address, false);
-        await wClient.rootEm.nativeDelete(WalletAddressEntity, {address: wallet.address});
+        await wClient.rootEm.nativeDelete(WalletAddressEntity, { address: wallet.address });
     });
 
     it("Account that has missing private key should not enable creating transaction", async () => {
@@ -349,7 +349,7 @@ describe("Xrp wallet tests", () => {
         await expect(
             wClient.createDeleteAccountTransaction(wallet.address, targetAddress, amountToSendDropsFirst),
         ).to.eventually.be.rejectedWith(`Cannot prepare transaction ${wallet.address}. Missing private key.`);
-        await wClient.rootEm.nativeDelete(WalletAddressEntity, {address: wallet.address});
+        await wClient.rootEm.nativeDelete(WalletAddressEntity, { address: wallet.address });
     });
 
     it("Account balance should change after transaction", async () => {
@@ -446,7 +446,7 @@ describe("Xrp wallet tests", () => {
         const txEnt0 = await createInitialTransactionEntity(wClient.rootEm, wClient.chainType, account.address, targetAddress, amountToSendDropsFirst);
         const id0 = txEnt0.id;
         await updateTransactionEntity(wClient.rootEm, id0, (txEntToUpdate) => {
-            txEntToUpdate.raw = JSON.stringify({raw: 0});
+            txEntToUpdate.raw = JSON.stringify({ raw: 0 });
         })
         const txEntBefore0 = await fetchTransactionEntityById(wClient.rootEm, id0);
         await wClient.resubmitSubmissionFailedTransactions(txEntBefore0);
@@ -456,7 +456,7 @@ describe("Xrp wallet tests", () => {
         const txEnt2 = await createInitialTransactionEntity(wClient.rootEm, wClient.chainType, account.address, targetAddress, amountToSendDropsFirst);
         const id1 = txEnt2.id;
         await updateTransactionEntity(wClient.rootEm, id1, (txEntToUpdate) => {
-            txEntToUpdate.raw = JSON.stringify({raw: 0});
+            txEntToUpdate.raw = JSON.stringify({ raw: 0 });
         })
         const txEntBefore1 = await fetchTransactionEntityById(wClient.rootEm, id1);
         await wClient.resubmitPendingTransaction(txEntBefore1);
@@ -466,7 +466,7 @@ describe("Xrp wallet tests", () => {
         const txEnt3 = await createInitialTransactionEntity(wClient.rootEm, wClient.chainType, account.address, targetAddress, amountToSendDropsFirst);
         const id2 = txEnt3.id;
         await updateTransactionEntity(wClient.rootEm, id2, (txEntToUpdate) => {
-            txEntToUpdate.raw = JSON.stringify({raw: 0});
+            txEntToUpdate.raw = JSON.stringify({ raw: 0 });
         })
         const txEntBefore2 = await fetchTransactionEntityById(wClient.rootEm, id2);
         await wClient.submitPreparedTransactions(txEntBefore2);

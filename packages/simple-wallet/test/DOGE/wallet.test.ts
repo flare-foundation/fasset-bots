@@ -555,9 +555,9 @@ describe("Dogecoin wallet tests", () => {
     it("UTXOs should be sorted by value in descendant order", async () => {
         const utxos = await wClient.transactionUTXOService.sortedMempoolUTXOs(fundedAddress);
         for (let i = 0; i < utxos.length - 1; i++) {
-            if (utxos[i].value.lt(utxos[i+1].value)) {
+            if (utxos[i].value.lt(utxos[i + 1].value)) {
                 throw Error("Not descendant order of utxos")
             }
         }
-      });
+    });
 });

@@ -1,12 +1,12 @@
 import { Collection, Entity, Index, ManyToOne, OneToMany, OneToOne, PrimaryKey, Property } from "@mikro-orm/core";
 import BN from "bn.js";
-import {ChainType} from "../utils/constants";
+import { ChainType } from "../utils/constants";
 import { BNType, TextType } from "../utils/orm-types";
-import {TransactionInputEntity} from "./transactionInput";
+import { TransactionInputEntity } from "./transactionInput";
 
 @Entity({ tableName: "transaction" })
-@Index({properties: ["transactionHash"]})
-@Index({properties: ["chainType", "status"]})
+@Index({ properties: ["transactionHash"] })
+@Index({ properties: ["chainType", "status"] })
 export class TransactionEntity {
     @PrimaryKey({ autoincrement: true })
     id!: number;
@@ -50,16 +50,16 @@ export class TransactionEntity {
     @Property({ type: BNType, nullable: true })
     reachedStatusPendingInTimestamp?: BN; // server time - needed to track when tx appears in mempool
 
-    @Property({ nullable: true  })
+    @Property({ nullable: true })
     executeUntilBlock?: number;
 
-    @Property({ type: BNType, nullable: true  })
+    @Property({ type: BNType, nullable: true })
     executeUntilTimestamp?: BN;
 
-    @Property({ nullable: true  })
+    @Property({ nullable: true })
     reference?: string;
 
-    @Property({ type: BNType, nullable: true  })
+    @Property({ type: BNType, nullable: true })
     amount?: BN;
 
     @Property({ type: TextType, nullable: true })
@@ -86,7 +86,7 @@ export class TransactionEntity {
     @Property({ onUpdate: () => new Date(), defaultRaw: "CURRENT_TIMESTAMP" })
     updatedAt: Date = new Date();
 
-    @OneToMany(() => TransactionInputEntity, input => input.transaction, {orphanRemoval: true})
+    @OneToMany(() => TransactionInputEntity, input => input.transaction, { orphanRemoval: true })
     inputs = new Collection<TransactionInputEntity>(this);
 
     @ManyToOne(() => TransactionEntity, { nullable: true })

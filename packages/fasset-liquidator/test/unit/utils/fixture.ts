@@ -12,7 +12,7 @@ export class FixtureUtils {
         private assetConfig: AssetConfig,
         private ecosystemConfig: EcosystemConfig,
         private pathConfig: [string[], string[]]
-    ) { }
+    ) {}
 
     arbitrageProfit(amountVault: bigint): bigint {
         const [paths1, paths2] = this.pathConfig

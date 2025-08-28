@@ -57,8 +57,8 @@ describe("AgentBot cli commands unit tests", () => {
 
     async function triggerInstructionsAndPayFromCV(bot: AgentBot) {
         const triggerAccount = accounts[201];
-        await bot.context.coreVaultManager!.addTriggeringAccounts([triggerAccount], { from: governance});
-        const instruction = await bot.context.coreVaultManager!.triggerInstructions({ from: triggerAccount});
+        await bot.context.coreVaultManager!.addTriggeringAccounts([triggerAccount], { from: governance });
+        const instruction = await bot.context.coreVaultManager!.triggerInstructions({ from: triggerAccount });
         const paymentReqs = eventArgs(instruction, "PaymentInstructions");
         const txHash = await context.wallet.addTransaction(coreVaultUnderlyingAddress, paymentReqs!.destination, paymentReqs!.amount, paymentReqs!.paymentReference)
     }
@@ -282,7 +282,7 @@ describe("AgentBot cli commands unit tests", () => {
             await agentBot.runStep(orm.em);
             // check settings is updated
             orm.em.clear();
-            const setting = await orm.em.findOneOrFail(AgentUpdateSetting, { name: settingsName }  as FilterQuery<AgentUpdateSetting> );
+            const setting = await orm.em.findOneOrFail(AgentUpdateSetting, { name: settingsName } as FilterQuery<AgentUpdateSetting>);
             console.log(`Agent step ${i}, state = ${setting.state}`);
             if (setting.state === AgentUpdateSettingState.DONE) break;
             assert.isBelow(i, 50);  // prevent infinite loops
@@ -649,7 +649,7 @@ describe("AgentBot cli commands unit tests", () => {
         const amountUBA = lotsToMint.mul(lotSize).muln(2).add(toBN(20e6));
         await agentBot.underlyingManagement.underlyingTopUp(orm.em, amountUBA);
         chain.mine(chain.finalizationBlocks + 1);
-        const topUpPayment0 = await orm.em.findOneOrFail(AgentUnderlyingPayment, { type: AgentUnderlyingPaymentType.TOP_UP }  as FilterQuery<AgentUnderlyingPayment>, { orderBy: { id: ('DESC') } });
+        const topUpPayment0 = await orm.em.findOneOrFail(AgentUnderlyingPayment, { type: AgentUnderlyingPaymentType.TOP_UP } as FilterQuery<AgentUnderlyingPayment>, { orderBy: { id: ('DESC') } });
         expect(topUpPayment0.state).to.equal(AgentUnderlyingPaymentState.PAID);
         // run agent's steps until underlying payment process is finished
         for (let i = 0; ; i++) {
@@ -659,7 +659,7 @@ describe("AgentBot cli commands unit tests", () => {
             await agentBot.runStep(orm.em);
             // check if underlying payment is done
             orm.em.clear();
-            const underlyingPayment = await orm.em.findOneOrFail(AgentUnderlyingPayment, { txHash: topUpPayment0.txHash }  as FilterQuery<AgentUnderlyingPayment> );
+            const underlyingPayment = await orm.em.findOneOrFail(AgentUnderlyingPayment, { txHash: topUpPayment0.txHash } as FilterQuery<AgentUnderlyingPayment>);
             console.log(`Agent step ${i}, state = ${underlyingPayment.state}`);
             if (underlyingPayment.state === AgentUnderlyingPaymentState.DONE) break;
             assert.isBelow(i, 50);  // prevent infinite loops
@@ -753,7 +753,7 @@ describe("AgentBot cli commands unit tests", () => {
             await bot.runStep(orm.em);
             // check if redemption exist
             orm.em.clear();
-            const redemption = await orm.em.findOne(AgentRedemption, { requestId: transferRedemptionId }  as FilterQuery<AgentRedemption> );
+            const redemption = await orm.em.findOne(AgentRedemption, { requestId: transferRedemptionId } as FilterQuery<AgentRedemption>);
             if (redemption) {
                 console.log(`Agent step ${i}, state = ${redemption.state}`);
                 if (redemption.state === AgentRedemptionState.DONE) break;
@@ -833,7 +833,7 @@ describe("AgentBot cli commands unit tests", () => {
             await bot.runStep(orm.em);
             // check if redemption exist
             orm.em.clear();
-            const redemption = await orm.em.findOne(AgentRedemption, { requestId: transferRedemptionId }  as FilterQuery<AgentRedemption> );
+            const redemption = await orm.em.findOne(AgentRedemption, { requestId: transferRedemptionId } as FilterQuery<AgentRedemption>);
             if (redemption) {
                 console.log(`Agent step ${i}, state = ${redemption.state}`);
                 if (redemption.state === AgentRedemptionState.DONE) break;
@@ -851,7 +851,7 @@ describe("AgentBot cli commands unit tests", () => {
             await bot.runStep(orm.em);
             // check if redemption exist
             orm.em.clear();
-            const returnFromCoreVault = await orm.em.findOne(ReturnFromCoreVault, { requestId: resReturn.requestId }  as FilterQuery<ReturnFromCoreVault> );
+            const returnFromCoreVault = await orm.em.findOne(ReturnFromCoreVault, { requestId: resReturn.requestId } as FilterQuery<ReturnFromCoreVault>);
             if (returnFromCoreVault) {
                 console.log(`Agent step ${i}, state = ${returnFromCoreVault.state}`);
                 if (returnFromCoreVault.state === ReturnFromCoreVaultState.STARTED) break;
@@ -868,7 +868,7 @@ describe("AgentBot cli commands unit tests", () => {
             await bot.runStep(orm.em);
             // check if redemption exist
             orm.em.clear();
-            const returnFromCoreVault = await orm.em.findOne(ReturnFromCoreVault, { requestId: resReturn.requestId }  as FilterQuery<ReturnFromCoreVault> );
+            const returnFromCoreVault = await orm.em.findOne(ReturnFromCoreVault, { requestId: resReturn.requestId } as FilterQuery<ReturnFromCoreVault>);
             if (returnFromCoreVault) {
                 console.log(`Agent step ${i}, state = ${returnFromCoreVault.state}`);
                 if (returnFromCoreVault.state === ReturnFromCoreVaultState.DONE && returnFromCoreVault.cancelled === true) break;
@@ -912,7 +912,7 @@ describe("AgentBot cli commands unit tests", () => {
             await bot.runStep(orm.em);
             // check if redemption exist
             orm.em.clear();
-            const redemption = await orm.em.findOne(AgentRedemption, { requestId: transferRedemptionId }  as FilterQuery<AgentRedemption> );
+            const redemption = await orm.em.findOne(AgentRedemption, { requestId: transferRedemptionId } as FilterQuery<AgentRedemption>);
             if (redemption) {
                 console.log(`Agent step ${i}, state = ${redemption.state}`);
                 if (redemption.state === AgentRedemptionState.DONE) break;
@@ -930,7 +930,7 @@ describe("AgentBot cli commands unit tests", () => {
             await bot.runStep(orm.em);
             // check if redemption exist
             orm.em.clear();
-            const returnFromCoreVault = await orm.em.findOne(ReturnFromCoreVault, { requestId: resReturn.requestId }  as FilterQuery<ReturnFromCoreVault> );
+            const returnFromCoreVault = await orm.em.findOne(ReturnFromCoreVault, { requestId: resReturn.requestId } as FilterQuery<ReturnFromCoreVault>);
             if (returnFromCoreVault) {
                 console.log(`Agent step ${i}, state = ${returnFromCoreVault.state}`);
                 if (returnFromCoreVault.state === ReturnFromCoreVaultState.STARTED) break;
@@ -946,7 +946,7 @@ describe("AgentBot cli commands unit tests", () => {
             await bot.runStep(orm.em);
             // check if redemption exist
             orm.em.clear();
-            const returnFromCoreVault = await orm.em.findOne(ReturnFromCoreVault, { requestId: resReturn.requestId }  as FilterQuery<ReturnFromCoreVault> );
+            const returnFromCoreVault = await orm.em.findOne(ReturnFromCoreVault, { requestId: resReturn.requestId } as FilterQuery<ReturnFromCoreVault>);
             if (returnFromCoreVault) {
                 console.log(`Agent step ${i}, state = ${returnFromCoreVault.state}`);
                 if (returnFromCoreVault.state === ReturnFromCoreVaultState.DONE) break;
@@ -1029,7 +1029,7 @@ describe("AgentBot cli commands unit tests", () => {
             await bot.runStep(orm.em);
             // check if redemption exist
             orm.em.clear();
-            const [returnFromCoreVault] = await orm.em.find(ReturnFromCoreVault, { });
+            const [returnFromCoreVault] = await orm.em.find(ReturnFromCoreVault, {});
             if (returnFromCoreVault) {
                 console.log(`Agent step ${i}, state = ${returnFromCoreVault.state}`);
                 if (returnFromCoreVault.state === ReturnFromCoreVaultState.DONE) break;

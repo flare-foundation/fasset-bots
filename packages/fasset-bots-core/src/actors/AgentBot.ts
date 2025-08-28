@@ -443,7 +443,7 @@ export class AgentBot {
         } else if (eventIs(event, this.context.assetManager, "AgentPing")) {
             await this.handleAgentPing(event.args);
         } // core vault events
-          else if (eventIs(event, this.context.assetManager, "ReturnFromCoreVaultRequested")) {
+        else if (eventIs(event, this.context.assetManager, "ReturnFromCoreVaultRequested")) {
             await this.returnFromCoreVaultBot.returnFromCoreVaultStarted(em, event.args);
         } else if (eventIs(event, this.context.assetManager, "ReturnFromCoreVaultCancelled")) {
             await this.returnFromCoreVaultBot.returnFromCoreVaultCancelled(em, event.args);
@@ -641,7 +641,7 @@ export class AgentBot {
     }
 
     async getTransferToCoreVaultMaxFee(destinationAddress: string, amount: BN): Promise<BN> {
-        const currentFee = await this.context.wallet.getTransactionFee({source: this.agent.underlyingAddress, destination: destinationAddress, isPayment: true, amount: amount});
+        const currentFee = await this.context.wallet.getTransactionFee({ source: this.agent.underlyingAddress, destination: destinationAddress, isPayment: true, amount: amount });
         const redemptionFee = currentFee.muln(TRANSACTION_FEE_FACTOR_CV_REDEMPTION);
         const safeToUseFreeUnderlying = await this.getSafeToWithdrawUnderlying();
         const canUseToPayFee = minBN(toBN(TRANSACTION_FEE_CV_MAX_IN_DROPS), safeToUseFreeUnderlying.divRound(toBN(2)))
@@ -671,7 +671,7 @@ export class AgentBot {
             if (totalLots === 0) return;
 
             // transfer to CV - mintedLots must be large enough
-            if (mintedLots / totalLots > this.agentBotSettings.transferToCVRatio ) {
+            if (mintedLots / totalLots > this.agentBotSettings.transferToCVRatio) {
                 const openTransfers = await this.redemption.openTransferToCoreVaultIds(rootEm);
                 if (openTransfers.length == 0) {
                     const target = this.agentBotSettings.targetTransferToCVRatio;
@@ -705,7 +705,7 @@ export class AgentBot {
                     }
                 }
             }
-        } catch(error) {
+        } catch (error) {
             console.error(`Error while handling transfer or return from CV needed for agent ${this.agent.vaultAddress}: ${error}`);
             logger.error(`Agent ${this.agent.vaultAddress} run into error while handling transfer or return from CV needed:`, error);
         }
@@ -757,7 +757,7 @@ export class AgentBot {
             throw new CommandLineError(squashSpace`Cannot transfer funds. Not enough free underlying to pay for underlying transaction fee.`);
         }
         // request transfer
-        const res = await this.context.assetManager.transferToCoreVault(agentVault, amount,  { from: this.agent.owner.workAddress });
+        const res = await this.context.assetManager.transferToCoreVault(agentVault, amount, { from: this.agent.owner.workAddress });
         const event = requiredEventArgs(res, "TransferToCoreVaultStarted");
         logger.info(`Agent ${agentVault} successfully initiated transfer of underlying to core vault.`);
         await this.notifier.sendTransferToCVStarted(event.transferRedemptionRequestId);
@@ -767,7 +767,7 @@ export class AgentBot {
     async returnFromCoreVault(lots: string | BN): Promise<EventArgs<ReturnFromCoreVaultRequested>> {
         const agentVault = this.agent.vaultAddress;
         logger.info(`Agent ${agentVault} is trying to request return of underlying from core vault.`);
-        const res = await this.context.assetManager.requestReturnFromCoreVault(agentVault, lots,  { from: this.agent.owner.workAddress });
+        const res = await this.context.assetManager.requestReturnFromCoreVault(agentVault, lots, { from: this.agent.owner.workAddress });
         const event = requiredEventArgs(res, "ReturnFromCoreVaultRequested");
         logger.info(`Agent ${agentVault} successfully initiated return of underlying from core vault with id ${event.requestId.toString()}.`);
         await this.notifier.sendReturnFromCVTrigger(event.requestId.toString());

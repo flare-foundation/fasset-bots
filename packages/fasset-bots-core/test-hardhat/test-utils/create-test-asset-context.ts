@@ -19,7 +19,7 @@ import { BNish, DAYS, HOURS, MAX_BIPS, MINUTES, Modify, requireNotNull, toBIPS, 
 import { artifacts } from "../../src/utils/web3";
 import { web3DeepNormalize } from "../../src/utils/web3normalize";
 import { testChainInfo, TestChainInfo, testNativeChainInfo } from "../../test/test-utils/TestChainInfo";
-import {  AddressUpdaterMockInstance, FakeERC20Instance, FtsoV2PriceStoreMockInstance, IIAssetManagerControllerInstance, IIAssetManagerInstance, IWNatInstance, WNatMockInstance } from "../../typechain-truffle";
+import { AddressUpdaterMockInstance, FakeERC20Instance, FtsoV2PriceStoreMockInstance, IIAssetManagerControllerInstance, IIAssetManagerInstance, IWNatInstance, WNatMockInstance } from "../../typechain-truffle";
 import { FaultyWallet } from "./FaultyWallet";
 import { AssetManagerInitSettings, newAssetManager, newAssetManagerController, waitForTimelock } from "./new-asset-manager";
 import { AllEvents } from "../../typechain-truffle/IIAssetManager";

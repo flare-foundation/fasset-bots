@@ -99,4 +99,4 @@ export class Liquidator extends ActorBase {
         // not in liquidation
         return false;
     }
- }
+}

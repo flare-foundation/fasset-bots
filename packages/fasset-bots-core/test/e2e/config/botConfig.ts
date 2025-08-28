@@ -64,8 +64,8 @@ describe("Bot config tests", () => {
         expect(xrp.chainType).to.eq(ChainId.XRP.chainName);
         const invalidSourceId = ChainId.ALGO;
         await expect(createWalletClient(secrets, invalidSourceId, [""], orm.em))
-        .to.eventually.be.rejectedWith(`SourceId ${invalidSourceId} not supported.`)
-        .and.be.an.instanceOf(Error);
+            .to.eventually.be.rejectedWith(`SourceId ${invalidSourceId} not supported.`)
+            .and.be.an.instanceOf(Error);
     });
 
     it("Should create block chain indexer", async () => {
@@ -92,8 +92,8 @@ describe("Bot config tests", () => {
         expect(xrp.walletClient.chainType).to.eq(ChainId.testXRP.chainName);
         const invalidSourceId = ChainId.ALGO;
         await expect(createBlockchainWalletHelper(secrets, invalidSourceId, botConfig.orm.em, [""]))
-        .to.eventually.be.rejectedWith(`SourceId ${invalidSourceId.chainName} not supported.`)
-        .and.be.an.instanceOf(Error);
+            .to.eventually.be.rejectedWith(`SourceId ${invalidSourceId.chainName} not supported.`)
+            .and.be.an.instanceOf(Error);
     });
 
     it("Should create flare data connector helper", async () => {

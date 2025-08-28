@@ -37,7 +37,8 @@ export class DefaultChallengeStrategy extends ChallengeStrategy<DefaultLiquidati
         // there may be some false challenges which will be rejected
         // this is perfectly safe for the system, but the errors must be caught
         await this.context.assetManager.illegalPaymentChallenge(proof, agent.vaultAddress, {
-            from: this.address, maxPriorityFeePerGas: this.config?.maxPriorityFeePerGas })
+            from: this.address, maxPriorityFeePerGas: this.config?.maxPriorityFeePerGas
+        })
             .catch((e) => scope.exitOnExpectedError(e,
                 ["ChallengeAlreadyLiquidating", "ChallengeInvalidAgentStatus", "ChallengeTransactionAlreadyConfirmed", "MatchingRedemptionActive", "MatchingAnnouncedPaymentActive"],
                 ActorBaseKind.CHALLENGER, this.address));
@@ -46,7 +47,8 @@ export class DefaultChallengeStrategy extends ChallengeStrategy<DefaultLiquidati
     public async doublePaymentChallenge(scope: EventScope, agent: TrackedAgentState, proof1: BalanceDecreasingTransaction.Proof, proof2: BalanceDecreasingTransaction.Proof) {
         // due to async nature of challenging there may be some false challenges which will be rejected
         await this.context.assetManager.doublePaymentChallenge(proof1, proof2, agent.vaultAddress, {
-            from: this.address, maxPriorityFeePerGas: this.config?.maxPriorityFeePerGas })
+            from: this.address, maxPriorityFeePerGas: this.config?.maxPriorityFeePerGas
+        })
             .catch((e) => scope.exitOnExpectedError(e, ["ChallengeAlreadyLiquidating", "ChallengeInvalidAgentStatus"],
                 ActorBaseKind.CHALLENGER, this.address));
     }
@@ -54,7 +56,8 @@ export class DefaultChallengeStrategy extends ChallengeStrategy<DefaultLiquidati
     public async freeBalanceNegativeChallenge(scope: EventScope, agent: TrackedAgentState, proofs: BalanceDecreasingTransaction.Proof[]) {
         // due to async nature of challenging there may be some false challenges which will be rejected
         await this.context.assetManager.freeBalanceNegativeChallenge(proofs, agent.vaultAddress, {
-            from: this.address, maxPriorityFeePerGas: this.config?.maxPriorityFeePerGas })
+            from: this.address, maxPriorityFeePerGas: this.config?.maxPriorityFeePerGas
+        })
             .catch((e) => scope.exitOnExpectedError(e, ["ChallengeAlreadyLiquidating", "ChallengeInvalidAgentStatus", "MultiplePaymentsChallengeEnoughBalance"],
                 ActorBaseKind.CHALLENGER, this.address));
     }
@@ -73,7 +76,8 @@ export class DexChallengeStrategy extends ChallengeStrategy<DexChallengeStrategy
         const challenger = await Challenger.at(this.config.address);
         const arbitrageConfig = await this.arbitrageConfig(challenger, agent);
         await challenger.illegalPaymentChallenge(proof, agent.vaultAddress, this.address, arbitrageConfig, {
-            from: this.address, maxPriorityFeePerGas: this.config.maxPriorityFeePerGas })
+            from: this.address, maxPriorityFeePerGas: this.config.maxPriorityFeePerGas
+        })
             .catch((e) => scope.exitOnExpectedError(e,
                 ["ChallengeAlreadyLiquidating", "ChallengeInvalidAgentStatus", "ChallengeTransactionAlreadyConfirmed", "MatchingRedemptionActive", "MatchingAnnouncedPaymentActive"],
                 ActorBaseKind.CHALLENGER, this.address));
@@ -84,7 +88,8 @@ export class DexChallengeStrategy extends ChallengeStrategy<DexChallengeStrategy
         const challenger = await Challenger.at(this.config.address);
         const arbitrageConfig = await this.arbitrageConfig(challenger, agent);
         await challenger.doublePaymentChallenge(proof1, proof2, agent.vaultAddress, this.address, arbitrageConfig, {
-            from: this.address, maxPriorityFeePerGas: this.config.maxPriorityFeePerGas })
+            from: this.address, maxPriorityFeePerGas: this.config.maxPriorityFeePerGas
+        })
             .catch((e) => scope.exitOnExpectedError(e, ["ChallengeAlreadyLiquidating", "ChallengeInvalidAgentStatus"], ActorBaseKind.CHALLENGER, this.address));
     }
 
@@ -93,7 +98,8 @@ export class DexChallengeStrategy extends ChallengeStrategy<DexChallengeStrategy
         const challenger = await Challenger.at(this.config.address);
         const arbitrageConfig = await this.arbitrageConfig(challenger, agent);
         await challenger.freeBalanceNegativeChallenge(proofs, agent.vaultAddress, this.address, arbitrageConfig, {
-            from: this.address, maxPriorityFeePerGas: this.config.maxPriorityFeePerGas })
+            from: this.address, maxPriorityFeePerGas: this.config.maxPriorityFeePerGas
+        })
             .catch((e) => scope.exitOnExpectedError(e, ["ChallengeAlreadyLiquidating", "ChallengeInvalidAgentStatus", "MultiplePaymentsChallengeEnoughBalance"],
                 ActorBaseKind.CHALLENGER, this.address));
     }
@@ -115,6 +121,6 @@ export class DexChallengeStrategy extends ChallengeStrategy<DexChallengeStrategy
                 minPriceMul: oraclePrices[2],
                 minPriceDiv: oraclePrices[3]
             }
-         }
+        }
     }
 }

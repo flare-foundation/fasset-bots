@@ -9,13 +9,13 @@ import { AuthService } from './auth.service';
 @Controller('api/auth')
 @UseInterceptors(ErrorStatusInterceptor)
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+    constructor(private readonly authService: AuthService) {}
 
-  @Post('login')
-  @HttpCode(200)
-  public async create(
-    @Body() password: PasswordDTO
-  ): Promise<ApiResponseWrapper<string>> {
-    return handleApiResponse(this.authService.login(password.password));
-  }
+    @Post('login')
+    @HttpCode(200)
+    public async create(
+        @Body() password: PasswordDTO
+    ): Promise<ApiResponseWrapper<string>> {
+        return handleApiResponse(this.authService.login(password.password));
+    }
 }

@@ -15,7 +15,7 @@ interface PreparedResponseRes<T> {
 
 // Uses prepareResponse from private API.
 export class VerificationPrivateApiClient implements IVerificationApiClient {
-    verifiers: AxiosInstance [] = [];
+    verifiers: AxiosInstance[] = [];
 
     constructor(
         public verifierUrls: string[],

@@ -37,7 +37,7 @@ export class OwnerAddressPair {
     constructor(
         public managementAddress: string,
         public workAddress: string,
-    ) { }
+    ) {}
 
     toString() {
         return `${this.managementAddress} with work address ${this.workAddress}`;
@@ -54,7 +54,7 @@ export class Agent {
         public collateralPool: CollateralPoolInstance,
         public collateralPoolToken: CollateralPoolTokenInstance,
         public underlyingAddress: string
-    ) { }
+    ) {}
 
     get assetManager(): ContractWithEvents<IIAssetManagerInstance, AllEvents> {
         return this.context.assetManager;

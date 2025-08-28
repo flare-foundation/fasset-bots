@@ -51,7 +51,7 @@ async function validateBalance(address: string, minBalance: BN) {
 
 async function activityTimestampUpdate(rootEm: EM) {
     await rootEm.transactional(async (em) => {
-        let stateEnt = await em.findOne(ActivityTimestampEntity, {id: 1});
+        let stateEnt = await em.findOne(ActivityTimestampEntity, { id: 1 });
         if (!stateEnt) {
             stateEnt = new ActivityTimestampEntity();
         } else {

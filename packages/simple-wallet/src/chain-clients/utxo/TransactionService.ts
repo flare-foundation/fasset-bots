@@ -141,11 +141,11 @@ export class TransactionService {
             logger.info(`RBF transaction ${txDbId} is using ${feePerKB.toString()} feePerKb.`);
             return this.prepareRBFTransaction(txDbId, source, destination, amountInSatoshi, feePerKB, txForReplacement, txForReplacement.fee, note);
         } else if (txForReplacement && amountInSatoshi === null) {
-            throw new MissingFieldError (
+            throw new MissingFieldError(
                 `Will not prepare rbf transaction ${txDbId}, for ${source}. Amount is not defined.`,
             );
         } else if (txForReplacement) {
-            throw new MissingFieldError (
+            throw new MissingFieldError(
                 `Will not prepare rbf transaction ${txDbId}, for ${source}. Missing fields in original tx ${txForReplacement.id}.`,
             );
         }
@@ -153,7 +153,7 @@ export class TransactionService {
         if (freeUnderlying && amountInSatoshi) {
             return this.prepareFreeUnderlyingPaymentTransaction(txDbId, source, destination, amountInSatoshi, feePerKBFromFeeService, feeInSatoshi, note);
         } else if (freeUnderlying && amountInSatoshi === null) {
-            throw new MissingFieldError (
+            throw new MissingFieldError(
                 `Will not prepare transaction ${txDbId}, for ${source}. Amount is not defined.`,
             );
         }
@@ -177,7 +177,7 @@ export class TransactionService {
         note?: string
     ): Promise<[Transaction, MempoolUTXO[]]> {
         const isPayment = amountInSatoshi != null;
-        logger.info(`Preparing ${isPayment ? "payment": "delete"} transaction ${txDbId}`);
+        logger.info(`Preparing ${isPayment ? "payment" : "delete"} transaction ${txDbId}`);
 
         if (amountInSatoshi == null) {
             let utxos = await this.utxoService.sortedMempoolUTXOs(source); // fetch all utxos
@@ -434,14 +434,14 @@ export class TransactionService {
             const feeToUse = toBN(tr.getFee());
             const RBFRestrictionsMet = this.checkRBFRestrictionsMet(txDbId, txForReplacement, amountToSendLast, feeToUse);
             if (!RBFRestrictionsMet) {
-                throw new RBFRestrictionsNotMetError (
+                throw new RBFRestrictionsNotMetError(
                     `Cannot prepare rbf transaction ${txDbId}, for ${source}. RBF restrictions are not met.`,
                 );
             }
             // TODO what if not enough utxos to cover - add confirmed ones
             return [tr, rbfUTXOs];
         } else {
-            throw new MissingFieldError (
+            throw new MissingFieldError(
                 `Will not prepare rbf transaction ${txDbId}, for ${source}. Filed raw is not defined.`,
             );
         }
@@ -464,14 +464,14 @@ export class TransactionService {
         }
     }
 
-    private checkRBFRestrictionsMet(txDbId: number, originalTx: TransactionEntity, amountToSend:BN, feeToUse: BN): boolean {
+    private checkRBFRestrictionsMet(txDbId: number, originalTx: TransactionEntity, amountToSend: BN, feeToUse: BN): boolean {
         if (originalTx.isFreeUnderlyingTransaction && originalTx.amount) {
-            if(!originalTx.amount.gte(amountToSend.add(feeToUse))) {
+            if (!originalTx.amount.gte(amountToSend.add(feeToUse))) {
                 logger.warn(`RBF restrictions for transaction ${txDbId} were not met. RBF free underlying transaction has ${originalTx.amount.toString()} lower than ${amountToSend.toString()} and ${feeToUse.toString()}`);
                 return false;
             }
         } else if (!originalTx.isFreeUnderlyingTransaction && originalTx.amount && originalTx.maxFee) {
-            if(!originalTx.amount.add(originalTx.maxFee).gte(amountToSend.add(feeToUse))) { // in case of redemption this should not happen as rbf amount is way lower than original one
+            if (!originalTx.amount.add(originalTx.maxFee).gte(amountToSend.add(feeToUse))) { // in case of redemption this should not happen as rbf amount is way lower than original one
                 logger.warn(`RBF restrictions for transaction ${txDbId} were not met. RBF transaction has ${originalTx.amount.toString()} and ${originalTx.maxFee.toString()} lower than ${amountToSend.toString()} and ${feeToUse.toString()}`);
                 return false;
             }

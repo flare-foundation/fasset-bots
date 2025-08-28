@@ -346,11 +346,11 @@ export abstract class UTXOWalletImplementation extends UTXOAccountGeneration imp
                 } else if (error instanceof MissingFieldError) {
                     await failTransaction(this.rootEm, txEnt.id, error.message);
                 } else if (error instanceof RBFRestrictionsNotMetError && txEnt.rbfReplacementFor?.id) {
-                        await failTransaction(this.rootEm, txEnt.id, error.message); // fail rbf
-                        await updateTransactionEntity(this.rootEm, txEnt.rbfReplacementFor.id, (txEnt) => { // original to submitted
-                            txEnt.status = TransactionStatus.TX_SUBMITTED;
-                        });
-                        logger.info(`Transaction ${txEnt.rbfReplacementFor.id} changed status to submitted due RBFRestrictionsNotMetError.`);
+                    await failTransaction(this.rootEm, txEnt.id, error.message); // fail rbf
+                    await updateTransactionEntity(this.rootEm, txEnt.rbfReplacementFor.id, (txEnt) => { // original to submitted
+                        txEnt.status = TransactionStatus.TX_SUBMITTED;
+                    });
+                    logger.info(`Transaction ${txEnt.rbfReplacementFor.id} changed status to submitted due RBFRestrictionsNotMetError.`);
                 } else if (axios.isAxiosError(error)) {
                     const axiosError = error as AxiosError<AxiosTransactionSubmissionError>;
                     logger.error(`prepareAndSubmitCreatedTransaction (axios) for transaction ${txEnt.id} failed with: ${JSON.stringify(axiosError.response?.data)}`);
@@ -544,7 +544,7 @@ export abstract class UTXOWalletImplementation extends UTXOAccountGeneration imp
 
     async signAndSubmitProcess(txId: number, transaction: bitcore.Transaction, privateKey: string, privateKeyForFee?: string): Promise<void> {
         logger.info(`Submitting transaction ${txId}.`);
-        let signed: SignedObject = {txBlob: "", txHash: ""};
+        let signed: SignedObject = { txBlob: "", txHash: "" };
         try {
             signed = this.signTransaction(transaction, privateKey, privateKeyForFee);
             logger.info(`Transaction ${txId} is signed.`);
@@ -654,7 +654,7 @@ export abstract class UTXOWalletImplementation extends UTXOAccountGeneration imp
         const signedTx = privateKeyForFee ? transaction.sign(privateKey).sign(privateKeyForFee) : transaction.sign(privateKey);
         const signedAndSerialized = signedTx.toString();
         const txId = transaction.id;
-        return {txBlob: signedAndSerialized, txHash: txId};
+        return { txBlob: signedAndSerialized, txHash: txId };
     }
 
     /**

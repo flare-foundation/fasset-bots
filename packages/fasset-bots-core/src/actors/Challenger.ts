@@ -191,9 +191,9 @@ export class Challenger extends ActorBase {
             amount: toBN(args.valueUBA),
             receivedAt: await latestBlockTimestamp(),
             paymentAddress: args.paymentAddress,
-            startBlock:toBN(args.firstUnderlyingBlock),
-            endBlock:toBN(args.lastUnderlyingBlock),
-            endTimestamp:toBN(args.lastUnderlyingTimestamp),
+            startBlock: toBN(args.firstUnderlyingBlock),
+            endBlock: toBN(args.lastUnderlyingBlock),
+            endTimestamp: toBN(args.lastUnderlyingTimestamp),
             rejected: false,
         });
     }
@@ -450,7 +450,7 @@ export class Challenger extends ActorBase {
      * @param reference
      * @param activeRedemption
      */
-    async waitForNonPaymentProof(scope: EventScope,  reference: string, redemption: ActiveRedemption) {
+    async waitForNonPaymentProof(scope: EventScope, reference: string, redemption: ActiveRedemption) {
         return await this.context.attestationProvider.proveReferencedPaymentNonexistence(redemption.paymentAddress, reference, redemption.amount, redemption.startBlock.toNumber(), redemption.endBlock.toNumber(), redemption.endTimestamp.toNumber())
             .catch((e) => scope.exitOnExpectedError(e, [AttestationHelperError], ActorBaseKind.CHALLENGER, this.address));
     }
@@ -503,7 +503,7 @@ export class Challenger extends ActorBase {
                                 .finally(() => {
                                     this.confirmingReference.delete(reference);
                                 })
-                            );
+                        );
                     }
                     continue;
                 }
@@ -513,7 +513,7 @@ export class Challenger extends ActorBase {
                         .finally(() => {
                             this.confirmingReference.delete(reference);
                         })
-                    );
+                );
             }
         }
         for (const withdrawalData of this.activeWithdrawals) {
@@ -535,23 +535,23 @@ export class Challenger extends ActorBase {
                         .finally(() => {
                             this.confirmingReference.delete(reference);
                         })
-                    );
+                );
             }
         }
     }
 
     async confirmRedemptionPayment(scope: EventScope, transactionHash: string, paymentAddress: string, reference: string, vaultAddress: string) {
-            logger.info(`Challenger ${this.address} is trying to confirm redemption ${transactionHash} for agent ${vaultAddress}.`);
-            try {
-                const proof = await this.waitForPaymentProof(scope, transactionHash, null, paymentAddress);
-                const requestId = PaymentReference.decodeId(reference);
-                await this.context.assetManager.confirmRedemptionPayment(web3DeepNormalize(proof), requestId, { from: this.address });
-                logger.info(`Challenger ${this.address} successfully confirmed redemption payment ${transactionHash} for agent ${vaultAddress}.`);
-                await this.notifier.sendUnderlyingPaymentConfirmed(vaultAddress, transactionHash);
-                await this.handleRedemptionFinished({requestId: requestId, agentVault: vaultAddress, transactionHash})
-            } catch(error) {
-                logger.error(`Challenger ${this.address} CANNOT confirmed redemption payment ${transactionHash} for agent ${vaultAddress} with error ${error}.`);
-            }
+        logger.info(`Challenger ${this.address} is trying to confirm redemption ${transactionHash} for agent ${vaultAddress}.`);
+        try {
+            const proof = await this.waitForPaymentProof(scope, transactionHash, null, paymentAddress);
+            const requestId = PaymentReference.decodeId(reference);
+            await this.context.assetManager.confirmRedemptionPayment(web3DeepNormalize(proof), requestId, { from: this.address });
+            logger.info(`Challenger ${this.address} successfully confirmed redemption payment ${transactionHash} for agent ${vaultAddress}.`);
+            await this.notifier.sendUnderlyingPaymentConfirmed(vaultAddress, transactionHash);
+            await this.handleRedemptionFinished({ requestId: requestId, agentVault: vaultAddress, transactionHash })
+        } catch (error) {
+            logger.error(`Challenger ${this.address} CANNOT confirmed redemption payment ${transactionHash} for agent ${vaultAddress} with error ${error}.`);
+        }
     }
 
     async confirmWithdrawal(scope: EventScope, transactionHash: string, agentAddress: string, reference: string) {
@@ -562,8 +562,8 @@ export class Challenger extends ActorBase {
             logger.info(`Challenger ${this.address} successfully confirmed withdrawal payment ${transactionHash} for agent ${agentAddress}.`);
             await this.notifier.sendUnderlyingPaymentConfirmed(agentAddress, transactionHash);
             const announcementId = PaymentReference.decodeId(reference);
-            await this.handleAnnouncementFinished({announcementId: announcementId, agentVault: agentAddress, transactionHash})
-        } catch(error) {
+            await this.handleAnnouncementFinished({ announcementId: announcementId, agentVault: agentAddress, transactionHash })
+        } catch (error) {
             logger.error(`Challenger ${this.address} CANNOT confirmed withdrawal payment ${transactionHash} for agent ${agentAddress} with error ${error}.`);
         }
     }
@@ -577,7 +577,7 @@ export class Challenger extends ActorBase {
             logger.info(`Challenger ${this.address} successfully defaulted transfer to core vault with ${reference} for agent ${vaultAddress}.`);
             await this.notifier.sendTransferToCoreVaultDefaulted(vaultAddress, reference);
             await this.handleTransferToCoreVaultRedemptionFinished(reference);
-        } catch(error) {
+        } catch (error) {
             logger.error(`Challenger ${this.address} CANNOT default transfer to core vault with reference ${reference} for agent ${vaultAddress} with error ${error}.`);
         }
     }

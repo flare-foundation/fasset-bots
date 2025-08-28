@@ -16,7 +16,7 @@ const activityUpdateInterval = 120000; // 2min
 async function activityTimestampUpdate(notifier: LiquidatorNotifier) {
     try {
         await notifier.sendActivityReport()
-    } catch(error) {
+    } catch (error) {
         logger.error("Error sending timestamp:", error);
         console.error(`Error sending timestamp: ${error}`);
     }

@@ -127,8 +127,7 @@ export class BlockchainWalletHelper implements IBlockChainWallet {
             let info = await this.checkTransactionStatus(id);
             reportStatusChanges(info);
             logger.info(`Transactions txDbId ${id} info: ${formatArgs(info)}`);
-            while (!this.requestStopVal && (info.status !== TransactionStatus.TX_SUCCESS && info.status !== TransactionStatus.TX_FAILED))
-            {
+            while (!this.requestStopVal && (info.status !== TransactionStatus.TX_SUCCESS && info.status !== TransactionStatus.TX_FAILED)) {
                 await sleep(5000); //sleep for 5 seconds
                 if (info.status === TransactionStatus.TX_REPLACED && info.replacedByDdId) {
                     const replacedId = info.replacedByDdId;

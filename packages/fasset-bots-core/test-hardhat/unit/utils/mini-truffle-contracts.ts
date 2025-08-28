@@ -88,7 +88,7 @@ describe("mini truffle and artifacts tests", () => {
             const price = 42;
             const age = 1;
             const decimals = 5;
-            await priceStore.updateSettings([feedId], [symbol],[decimals], 100, { from: initialGovernance });
+            await priceStore.updateSettings([feedId], [symbol], [decimals], 100, { from: initialGovernance });
             // test .sendTransaction
             const transaction = await priceStore.setCurrentPrice.sendTransaction(symbol, price, age);
             expect(transaction).to.not.be.null;
@@ -125,7 +125,7 @@ describe("mini truffle and artifacts tests", () => {
             const price = 42;
             const age = 1;
             const decimals = 5;
-            await priceStore.updateSettings([feedId], [symbol],[decimals], 100, { from: initialGovernance });
+            await priceStore.updateSettings([feedId], [symbol], [decimals], 100, { from: initialGovernance });
             // test .sendTransaction
             const transaction = await priceStore.setCurrentPrice.sendTransaction(symbol, price, age);
             expect(transaction).to.not.be.null;
@@ -162,7 +162,7 @@ describe("mini truffle and artifacts tests", () => {
             const price = 42;
             const age = 1;
             const decimals = 5;
-            await priceStore.updateSettings([feedId], [symbol],[decimals], 100, { from: initialGovernance });
+            await priceStore.updateSettings([feedId], [symbol], [decimals], 100, { from: initialGovernance });
             // test .sendTransaction
             const transaction = await priceStore.methods.setCurrentPrice.sendTransaction(symbol, price, age);
             expect(transaction).to.not.be.null;

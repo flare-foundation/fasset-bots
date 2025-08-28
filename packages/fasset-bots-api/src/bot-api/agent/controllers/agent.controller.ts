@@ -276,7 +276,7 @@ export class AgentController {
                         announcedUnderlyingWithdrawalId: { type: 'string', example: '0' },
                         buyFAssetByAgentFactorBIPS: { type: 'string', example: '9900' },
                         poolExitCollateralRatioBIPS: { type: 'string', example: '26000' },
-                        poolSuffix: { type: 'string', example: 'POOLSUFFIXNAME'}
+                        poolSuffix: { type: 'string', example: 'POOLSUFFIXNAME' }
                     }
                 }
             }
@@ -351,7 +351,7 @@ export class AgentController {
         name: 'types',
         required: false,
         type: String,
-      })
+    })
     public async getNotifications(
         @Query('limit') limit: number = 10,
         @Query('offset') offset: number = 0,
@@ -503,22 +503,22 @@ export class AgentController {
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     @Get("ownerUnderlyingBalance/:fAssetSymbol")
-        public async ownerUnderlyingBalance(@Param("fAssetSymbol") fAssetSymbol: string): Promise<ApiResponseWrapper<AllBalances>> {
-            return handleApiResponse(this.agentService.getOwnerUnderlyingBalance(fAssetSymbol));
+    public async ownerUnderlyingBalance(@Param("fAssetSymbol") fAssetSymbol: string): Promise<ApiResponseWrapper<AllBalances>> {
+        return handleApiResponse(this.agentService.getOwnerUnderlyingBalance(fAssetSymbol));
     }
 
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     @Get("ownerFassetBalance/:fAssetSymbol")
-        public async ownerFassetBalance(@Param("fAssetSymbol") fAssetSymbol: string): Promise<ApiResponseWrapper<AllBalances>> {
-            return handleApiResponse(this.agentService.getOwnerFassetBalance(fAssetSymbol));
+    public async ownerFassetBalance(@Param("fAssetSymbol") fAssetSymbol: string): Promise<ApiResponseWrapper<AllBalances>> {
+        return handleApiResponse(this.agentService.getOwnerFassetBalance(fAssetSymbol));
     }
 
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     @Get("getRedemptionQueueData")
-        public async redemptionQueueData(): Promise<ApiResponseWrapper<RedemptionQueueData>> {
-            return handleApiResponse(this.agentService.getRedemptionQueueData());
+    public async redemptionQueueData(): Promise<ApiResponseWrapper<RedemptionQueueData>> {
+        return handleApiResponse(this.agentService.getRedemptionQueueData());
     }
 
     @UseGuards(JwtAuthGuard)

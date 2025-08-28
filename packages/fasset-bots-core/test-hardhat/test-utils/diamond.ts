@@ -12,7 +12,7 @@ export class DiamondSelectors {
     constructor(
         public contract: Truffle.ContractInstance,
         public selectors: string[],
-    ) { }
+    ) {}
 
     static fromABI(contract: Truffle.ContractInstance) {
         const functions = contract.abi.filter(abi => abi.type === 'function');

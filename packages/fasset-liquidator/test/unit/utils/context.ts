@@ -11,7 +11,7 @@ export class ContextUtils {
     constructor(
         private assetConfig: AssetConfig,
         private context: TestContext
-    ) { }
+    ) {}
 
     async configureEcosystem(config: EcosystemConfig): Promise<void> {
         const { contracts, signers } = this.context

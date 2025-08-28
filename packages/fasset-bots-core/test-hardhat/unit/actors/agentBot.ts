@@ -129,7 +129,7 @@ describe("Agent bot unit tests", () => {
         chain.mine(chain.finalizationBlocks + 1);
         expect(spyBalance0).to.have.been.called.once;
         expect(spyBalance1).to.have.been.called.once;
-        const topUpPayment0 = await orm.em.findOneOrFail(AgentUnderlyingPayment, { type: AgentUnderlyingPaymentType.TOP_UP }  as FilterQuery<AgentUnderlyingPayment>, { orderBy: { id: ('DESC') } });
+        const topUpPayment0 = await orm.em.findOneOrFail(AgentUnderlyingPayment, { type: AgentUnderlyingPaymentType.TOP_UP } as FilterQuery<AgentUnderlyingPayment>, { orderBy: { id: ('DESC') } });
         expect(topUpPayment0.state).to.equal(AgentUnderlyingPaymentState.PAID);
         // run agent's steps until underlying payment process is finished
         for (let i = 0; ; i++) {
@@ -139,7 +139,7 @@ describe("Agent bot unit tests", () => {
             await agentBot.runStep(orm.em);
             // check if underlying payment is done
             orm.em.clear();
-            const underlyingPayment = await orm.em.findOneOrFail(AgentUnderlyingPayment, { txHash: topUpPayment0.txHash }  as FilterQuery<AgentUnderlyingPayment> );
+            const underlyingPayment = await orm.em.findOneOrFail(AgentUnderlyingPayment, { txHash: topUpPayment0.txHash } as FilterQuery<AgentUnderlyingPayment>);
             console.log(`Agent step ${i}, state = ${underlyingPayment.state}`);
             if (underlyingPayment.state === AgentUnderlyingPaymentState.DONE) break;
             assert.isBelow(i, 50);  // prevent infinite loops
@@ -604,7 +604,7 @@ describe("Agent bot unit tests", () => {
             await agentBot.runStep(orm.em);
             // check if underlying payment is done
             orm.em.clear();
-            const underlyingPayment = await orm.em.findOneOrFail(AgentUnderlyingPayment, { txDbId: txDbId }  as FilterQuery<AgentUnderlyingPayment> );
+            const underlyingPayment = await orm.em.findOneOrFail(AgentUnderlyingPayment, { txDbId: txDbId } as FilterQuery<AgentUnderlyingPayment>);
             console.log(`Agent step ${i}, state = ${underlyingPayment.state}`);
             if (underlyingPayment.state === AgentUnderlyingPaymentState.DONE) break;
             assert.isBelow(i, 50);  // prevent infinite loops
@@ -712,7 +712,7 @@ describe("Agent bot unit tests", () => {
             lastUnderlyingTimestamp: toBN(0),
             paymentReference: "0x46425052664100010000000000000000000000000000000000000000000000e8",
             txHash: transactionHash1,
-            redeemerAddress:"0xb4B20F08a1F41dE1f31Bc288C1D998fAd2Bd9F59",
+            redeemerAddress: "0xb4B20F08a1F41dE1f31Bc288C1D998fAd2Bd9F59",
             createdAt: new Date(),
             updatedAt: new Date()
         };
@@ -773,10 +773,10 @@ describe("Agent bot unit tests", () => {
         // mock functions - there is something to claim
         const stateOfRewardsVault = web3.eth.abi.encodeParameter(
             "tuple(uint24,bytes20,uint120,uint8,bool)[][]",
-            [[[1,accounts[2],123456,2,true], [1,accounts[3],654321,2,true]],[[2,accounts[1],123456,2,false], [2,accounts[3],654321,2,true]]]);
+            [[[1, accounts[2], 123456, 2, true], [1, accounts[3], 654321, 2, true]], [[2, accounts[1], 123456, 2, false], [2, accounts[3], 654321, 2, true]]]);
         const stateOfRewardsPool = web3.eth.abi.encodeParameter(
             "tuple(uint24,bytes20,uint120,uint8,bool)[][]",
-            [[[3,accounts[2],123456,2,true], [3,accounts[3],654321,2,true]],[[4,accounts[1],123456,2,true], [4,accounts[3],654321,2,true]]]);
+            [[[3, accounts[2], 123456, 2, true], [3, accounts[3], 654321, 2, true]], [[4, accounts[1], 123456, 2, true], [4, accounts[3], 654321, 2, true]]]);
         await mockContractRewardManager.givenCalldataReturn(getStateOfRewardsVault, stateOfRewardsVault);
         await mockContractRewardManager.givenCalldataReturn(getStateOfRewardsPool, stateOfRewardsPool);
         const getClaimableMonths = web3.eth.abi.encodeFunctionCall({ type: "function", name: "getClaimableMonths", inputs: [] }, []);
@@ -811,7 +811,7 @@ describe("Agent bot unit tests", () => {
         // mock functions - there is nothing to claim
         const stateOfRewardsVault2 = web3.eth.abi.encodeParameter(
             "tuple(uint24,bytes20,uint120,uint8,bool)[][]",
-            [[[2,accounts[1],123456,2,false], [2,accounts[3],654321,2,true]]]);
+            [[[2, accounts[1], 123456, 2, false], [2, accounts[3], 654321, 2, true]]]);
         const stateOfRewardsPool2 = web3.eth.abi.encodeParameter(
             "tuple(uint24,bytes20,uint120,uint8,bool)[][]",
             []);
@@ -826,13 +826,16 @@ describe("Agent bot unit tests", () => {
         await agentBot.claims.checkForClaims();
         expect(spyError).to.be.called.exactly(0);
         const claimRewardManager = web3.eth.abi.encodeFunctionSignature(
-            { type: "function", name: "claim", inputs: [{ name: "_rewardOwner", type: "address" }, { name: "_recipient", type: "address" }, { name: "_rewardEpochId", type: "uint24" }, { name: "_wrap", type: "bool" },
-                { components: [
-                    { name: "merkleProof", type: "bytes32[]" },
-                    { components: [ { name: "rewardEpochId", type: "uint24" }, { name: "beneficiary", type: "bytes20" }, { name: "amount", type: "uint120" },  { name: "claimType", type: "uint8" } ], name: "body", type: "tuple" } ],
+            {
+                type: "function", name: "claim", inputs: [{ name: "_rewardOwner", type: "address" }, { name: "_recipient", type: "address" }, { name: "_rewardEpochId", type: "uint24" }, { name: "_wrap", type: "bool" },
+                {
+                    components: [
+                        { name: "merkleProof", type: "bytes32[]" },
+                        { components: [{ name: "rewardEpochId", type: "uint24" }, { name: "beneficiary", type: "bytes20" }, { name: "amount", type: "uint120" }, { name: "claimType", type: "uint8" }], name: "body", type: "tuple" }],
                     name: "_proofs", type: "tuple[]"
                 }
-            ] }
+                ]
+            }
         );
         const claimDistributionToDelegators = web3.eth.abi.encodeFunctionSignature(
             { type: "function", name: "claim", inputs: [{ name: "_rewardOwner", type: "address" }, { name: "_recipient", type: "address" }, { name: "_month", type: "uint256" }, { name: "_wrap", type: "bool" }] }

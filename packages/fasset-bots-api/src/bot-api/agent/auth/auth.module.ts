@@ -10,7 +10,7 @@ import { HeaderApiKeyStrategy } from "./apiAuth.service";
 @Module({
     imports: [PassportModule],
     providers: [JwtStrategy, JwtAuthGuard, JwtService, AuthService, HeaderApiKeyStrategy],
-    controllers:[AuthController],
+    controllers: [AuthController],
     exports: [JwtAuthGuard]
 })
 export class AuthModule {}

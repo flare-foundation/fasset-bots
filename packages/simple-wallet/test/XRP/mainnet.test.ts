@@ -53,7 +53,7 @@ describe.skip("XRP mainnet wallet tests", () => {
 
         removeConsoleLogging = addConsoleTransportForTests(logger);
 
-        testOrm = await initializeMainnetMikroORM({...config, dbName: "simple-wallet-mainnet-test-db"});
+        testOrm = await initializeMainnetMikroORM({ ...config, dbName: "simple-wallet-mainnet-test-db" });
         const dbWalletKeys = new DBWalletKeys(testOrm.em, password);
         conn = {
             ...XRPConnectionInitial,

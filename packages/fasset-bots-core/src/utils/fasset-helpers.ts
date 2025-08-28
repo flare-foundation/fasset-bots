@@ -63,7 +63,7 @@ export function requiredAddressBalance(amount: BNish, minimumBalance: BN, transa
 export async function checkUnderlyingFunds(context: IAssetAgentContext, sourceAddress: string, amount: BNish, destinationAddress: string, feeSourceAddress?: string): Promise<void> {
     const balanceReader = await TokenBalances.fassetUnderlyingToken(context);
     const senderBalance = await balanceReader.balance(sourceAddress);
-    const transactionFee = await context.wallet.getTransactionFee({source: sourceAddress, destination: destinationAddress, amount: toBN(amount), isPayment: true, feeSource: feeSourceAddress});
+    const transactionFee = await context.wallet.getTransactionFee({ source: sourceAddress, destination: destinationAddress, amount: toBN(amount), isPayment: true, feeSource: feeSourceAddress });
     const minAccountBalance = context.chainInfo.minimumAccountBalance;
 
     if (feeSourceAddress) {
@@ -138,6 +138,6 @@ export function confirmationAllowedAt(announcedAt: BN): BN | null {
  * @returns maximal amount to transfer and minimum amount to be left on underlying
  */
 export async function getMaximumTransferToCoreVault(context: IAssetAgentContext, agentVault: string): Promise<MaximumTransferToCoreVaultResult> {
-     const allowed = await context.assetManager.maximumTransferToCoreVault(agentVault);
+    const allowed = await context.assetManager.maximumTransferToCoreVault(agentVault);
     return { maximumTransferUBA: allowed[0], minimumLeftAmountUBA: allowed[1] };
 }

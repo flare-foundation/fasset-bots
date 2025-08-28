@@ -1,13 +1,13 @@
 import config, { initializeTestMikroORM, ORM } from "../test-orm/mikro-orm.config";
-import {ChainType} from "../../src/utils/constants";
-import {EntityManager} from "@mikro-orm/core";
-import {TransactionUTXOService} from "../../src/chain-clients/utxo/TransactionUTXOService";
-import {createTransactionEntity} from "../test-util/entity_utils";
-import {TransactionEntity, TransactionStatus} from "../../src";
-import {TransactionInputEntity} from "../../src/entity/transactionInput";
-import {expect} from "chai";
-import {MockBlockchainAPI} from "../test-util/common_utils";
-import {IUtxoWalletServices} from "../../src/chain-clients/utxo/IUtxoWalletServices";
+import { ChainType } from "../../src/utils/constants";
+import { EntityManager } from "@mikro-orm/core";
+import { TransactionUTXOService } from "../../src/chain-clients/utxo/TransactionUTXOService";
+import { createTransactionEntity } from "../test-util/entity_utils";
+import { TransactionEntity, TransactionStatus } from "../../src";
+import { TransactionInputEntity } from "../../src/entity/transactionInput";
+import { expect } from "chai";
+import { MockBlockchainAPI } from "../test-util/common_utils";
+import { IUtxoWalletServices } from "../../src/chain-clients/utxo/IUtxoWalletServices";
 
 describe("getNumberOfMempoolAncestors", () => {
     let testOrm: ORM;
@@ -21,7 +21,7 @@ describe("getNumberOfMempoolAncestors", () => {
     }
 
     before(async () => {
-        testOrm = await initializeTestMikroORM({...config, dbName: "get-transaction-descendants-test-db"});
+        testOrm = await initializeTestMikroORM({ ...config, dbName: "get-transaction-descendants-test-db" });
         em = testOrm.em;
         services.rootEm = em;
         services.blockchainAPI = new MockBlockchainAPI();
@@ -139,17 +139,17 @@ describe("getNumberOfMempoolAncestors", () => {
 
         await em.persistAndFlush([tx1, tx2, tx3, tx4, tx5, tx6, tx7, tx8, tx9]);
 
-        await checkNumberOfAncestors(tx1.transactionHash!,0);
-        await checkNumberOfAncestors(tx2.transactionHash!,0);
-        await checkNumberOfAncestors(tx3.transactionHash!,0);
-        await checkNumberOfAncestors(tx4.transactionHash!,0);
+        await checkNumberOfAncestors(tx1.transactionHash!, 0);
+        await checkNumberOfAncestors(tx2.transactionHash!, 0);
+        await checkNumberOfAncestors(tx3.transactionHash!, 0);
+        await checkNumberOfAncestors(tx4.transactionHash!, 0);
 
-        await checkNumberOfAncestors(tx5.transactionHash!,0);
-        await checkNumberOfAncestors(tx6.transactionHash!,0);
-        await checkNumberOfAncestors(tx7.transactionHash!,1);
-        await checkNumberOfAncestors(tx8.transactionHash!,1);
+        await checkNumberOfAncestors(tx5.transactionHash!, 0);
+        await checkNumberOfAncestors(tx6.transactionHash!, 0);
+        await checkNumberOfAncestors(tx7.transactionHash!, 1);
+        await checkNumberOfAncestors(tx8.transactionHash!, 1);
 
-        await checkNumberOfAncestors(tx9.transactionHash!,4);
+        await checkNumberOfAncestors(tx9.transactionHash!, 4);
 
     });
 });

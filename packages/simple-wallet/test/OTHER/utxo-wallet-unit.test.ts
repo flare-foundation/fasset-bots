@@ -46,7 +46,7 @@ describe("UTXOWalletImplementation unit tests", () => {
 
     before(async () => {
         removeConsoleLogging = addConsoleTransportForTests(logger);
-        testOrm = await initializeTestMikroORM({...config, dbName: "unit-test-db", debug: true});
+        testOrm = await initializeTestMikroORM({ ...config, dbName: "unit-test-db", debug: true });
         const em = testOrm.em;
         const unprotectedDBWalletKeys = new UnprotectedDBWalletKeys(em);
         BTCMccConnectionTest = {
@@ -82,11 +82,11 @@ describe("UTXOWalletImplementation unit tests", () => {
         sinon.stub(TransactionUTXOService.prototype, "getNumberOfMempoolAncestors").resolves(0);
         sinon.stub(TransactionFeeService.prototype, "getFeePerKB").resolves(new BN(1000));
         sinon.stub(BtcWalletImplementation.prototype, "signAndSubmitProcess").callsFake(async (txId: number, transaction: bitcore.Transaction, privateKey: string, privateKeyForFee?: string) => {
-                await updateTransactionEntity(wClient.rootEm, txId, (txEntToUpdate) => {
-                    txEntToUpdate.status = TransactionStatus.TX_SUCCESS;
-                });
-                console.info("SignAndSubmit stub");
-            }
+            await updateTransactionEntity(wClient.rootEm, txId, (txEntToUpdate) => {
+                txEntToUpdate.status = TransactionStatus.TX_SUCCESS;
+            });
+            console.info("SignAndSubmit stub");
+        }
         );
         sinon.stub(TransactionUTXOService.prototype, "sortedMempoolUTXOs").resolves([
             createUTXO("ef99f95e95b18adfc44aae79722946e583677eb631a89a1b62fe0e275801a10c", 0, amountToSendSatoshi, "00143cbd2641a036e99579b5386b13a8c303f3b1cf0e"),

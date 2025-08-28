@@ -150,7 +150,7 @@ export async function getTransactionInfoById(rootEm: EntityManager, dbId: number
 }
 
 export async function findTransactionsWithStatuses(rootEm: EntityManager, chainType: ChainType, statuses: TransactionStatus[], source: string): Promise<TransactionEntity[]> {
-    return await rootEm.find(TransactionEntity, { status: {$in: statuses}, chainType, source });
+    return await rootEm.find(TransactionEntity, { status: { $in: statuses }, chainType, source });
 }
 
 //others
@@ -176,7 +176,7 @@ export async function handleNoTimeToSubmitLeft(
     );
 }
 
-export async function failDueToNoTimeToSubmit(rootEm: EntityManager, medianTime: BN | null, currentBlockNumber: number, txEnt: TransactionEntity, fnText: string){
+export async function failDueToNoTimeToSubmit(rootEm: EntityManager, medianTime: BN | null, currentBlockNumber: number, txEnt: TransactionEntity, fnText: string) {
     await failTransaction(
         rootEm,
         txEnt.id,

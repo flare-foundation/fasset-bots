@@ -114,7 +114,7 @@ export class TransactionUTXOService {
         if (onlyConfirmed) {
             validChoices = [...onlyConfirmed];
         }
-         // confirmed and mempool utxos
+        // confirmed and mempool utxos
         const confirmedAndMempool = await this.gatherUTXOS(validUTXOs, txData);
         if (confirmedAndMempool) {
             validChoices = [...confirmedAndMempool];
@@ -174,12 +174,12 @@ export class TransactionUTXOService {
                 }
             }
             if (utxo.value.gte(amountBestUtxoWithoutChange) && utxo.value.lt(amountToSendWithChange) && (bestUtxoWithoutChange.length === 0 || bestUtxoWithoutChange[0].value.lt(utxo.value))) { // find smallest where amountToSent >= utxo.value && amountToSent < amountToSendWithChange
-                    bestUtxoWithoutChange = [utxo];
-                    const toAdd = await this.checkIfItCoversFee(txData, bestUtxoWithoutChange, utxo.value);
-                    if (toAdd) {
-                        amountBestUtxoWithoutChange = amountBestUtxoWithoutChange.add(toAdd);
-                        bestUtxoWithoutChange = [];
-                    }
+                bestUtxoWithoutChange = [utxo];
+                const toAdd = await this.checkIfItCoversFee(txData, bestUtxoWithoutChange, utxo.value);
+                if (toAdd) {
+                    amountBestUtxoWithoutChange = amountBestUtxoWithoutChange.add(toAdd);
+                    bestUtxoWithoutChange = [];
+                }
             }
             if (utxo.value.lte(amountToCover)) { // using utxo <= amount
                 if (totalSmallWithChange.lt(amountSmallUtxosWithChange)) { // with lot change
@@ -292,7 +292,7 @@ export class TransactionUTXOService {
         let txEnt = await this.rootEm.findOne(TransactionEntity, {
             transactionHash: txHash,
             chainType: this.chainType
-        }, {populate: ["inputs"]});
+        }, { populate: ["inputs"] });
         if (!txEnt) {
             logger.info(`Transaction with hash ${txHash} not in db, fetching it from API`);
             const tr = await this.blockchainAPI.getTransaction(txHash);
@@ -326,7 +326,7 @@ export class TransactionUTXOService {
             txEnt = await this.rootEm.findOne(TransactionEntity, {
                 transactionHash: txHash,
                 chainType: this.chainType
-            }, {populate: ["inputs"]});
+            }, { populate: ["inputs"] });
         }
 
         return txEnt;

@@ -10,7 +10,7 @@ export class AuthService {
         const validPassword = cachedSecrets.required("apiKey.agent_bot");
 
         if (password !== validPassword) {
-          throw new UnauthorizedException('Invalid password');
+            throw new UnauthorizedException('Invalid password');
         }
         const payload = { user: 'admin' };
         const token = this.jwtService.sign(payload, { secret: validPassword });

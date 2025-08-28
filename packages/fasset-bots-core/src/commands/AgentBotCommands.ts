@@ -587,8 +587,8 @@ export class AgentBotCommands {
                     underlyingAddress,
                     encryptedPrivateKey: account.encryptedPrivateKey
                 })
+            }
         }
-    }
         return ret
     }
 

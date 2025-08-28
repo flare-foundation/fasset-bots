@@ -58,7 +58,7 @@ export class AgentBotReturnFromCoreVault {
             await this.notifier.sendReturnFromCVPerformed(args.requestId.toString());
             logger.info(squashSpace`Agent ${this.agent.vaultAddress} confirmed return from core vault ${args.requestId.toString()}.`);
         }
-   }
+    }
 
     async returnFromCoreVaultCancelled(rootEm: EM, args: EventArgs<ReturnFromCoreVaultCancelled>) {
         const returnFromCoreVault = await this.findReturnFromCoreVault(rootEm, args.requestId);
@@ -215,7 +215,7 @@ export class AgentBotReturnFromCoreVault {
             .getResultList();
     }
 
-    async findReturnFromCoreVault(em: EM, requestId: BN): Promise<ReturnFromCoreVault | null>{
+    async findReturnFromCoreVault(em: EM, requestId: BN): Promise<ReturnFromCoreVault | null> {
         return await em.findOne(ReturnFromCoreVault, { requestId }, { refresh: true });
     }
 }

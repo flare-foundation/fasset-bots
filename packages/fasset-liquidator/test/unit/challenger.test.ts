@@ -34,16 +34,16 @@ const challenges = [
                 dexPair2: { minPriceMul: 0, minPriceDiv: 1, path: [] }
             }
         ),
-(challenger: Challenger, agent: AgentMock) =>
-    challenger.doublePaymentChallenge(
-        balanceDecreasingTxProof, balanceDecreasingTxProof,
-        agent, challenger,
-        {
-            flashLender: ZeroAddress, maxFlashFeeBips: 0, dex: ZeroAddress,
-            dexPair1: { minPriceMul: 0, minPriceDiv: 1, path: [] },
-            dexPair2: { minPriceMul: 0, minPriceDiv: 1, path: [] }
-        }
-    ),
+    (challenger: Challenger, agent: AgentMock) =>
+        challenger.doublePaymentChallenge(
+            balanceDecreasingTxProof, balanceDecreasingTxProof,
+            agent, challenger,
+            {
+                flashLender: ZeroAddress, maxFlashFeeBips: 0, dex: ZeroAddress,
+                dexPair1: { minPriceMul: 0, minPriceDiv: 1, path: [] },
+                dexPair2: { minPriceMul: 0, minPriceDiv: 1, path: [] }
+            }
+        ),
     (challenger: Challenger, agent: AgentMock) =>
         challenger.freeBalanceNegativeChallenge(
             [balanceDecreasingTxProof],

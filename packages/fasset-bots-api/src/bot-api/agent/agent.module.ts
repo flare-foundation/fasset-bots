@@ -19,5 +19,5 @@ import { RequestLoggerMiddleware } from "./interceptors/request.logger";
 export class AgentModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
         consumer.apply(RequestLoggerMiddleware).forRoutes('*');
-      }
+    }
 }

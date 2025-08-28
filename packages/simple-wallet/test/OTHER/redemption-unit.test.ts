@@ -77,7 +77,7 @@ describe("UTXO selection algorithm test", () => {
         ];
 
         sinon.stub(TransactionUTXOService.prototype, "sortedMempoolUTXOs").resolves(utxos);
-        const [tr, ] = await wClient.transactionService.preparePaymentTransaction(0, fundedAddress, targetAddress, amount, undefined, undefined, undefined, undefined, undefined, undefined, redemptionFee);
+        const [tr,] = await wClient.transactionService.preparePaymentTransaction(0, fundedAddress, targetAddress, amount, undefined, undefined, undefined, undefined, undefined, undefined, redemptionFee);
         expect(tr.outputs.filter(output => !toBN(output.satoshis).gte(getMinimumUsefulUTXOValue(wClient.chainType))).length).to.be.eq(0);
 
         formatTr(tr);
@@ -143,7 +143,7 @@ describe("UTXO selection algorithm test", () => {
         ];
 
         sinon.stub(TransactionUTXOService.prototype, "sortedMempoolUTXOs").resolves(utxos);
-        const [tr, ] = await wClient.transactionService.preparePaymentTransaction(0, fundedAddress, targetAddress, amount, undefined, undefined, undefined, undefined, undefined, undefined, redemptionFee);
+        const [tr,] = await wClient.transactionService.preparePaymentTransaction(0, fundedAddress, targetAddress, amount, undefined, undefined, undefined, undefined, undefined, undefined, redemptionFee);
         expect(tr.outputs.filter(output => !toBN(output.satoshis).gte(getMinimumUsefulUTXOValue(wClient.chainType))).length).to.be.eq(0);
         expect(tr.inputs.length).to.be.lte(2);
 

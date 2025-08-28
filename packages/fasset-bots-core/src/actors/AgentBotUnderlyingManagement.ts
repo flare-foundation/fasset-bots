@@ -253,14 +253,14 @@ export class AgentBotUnderlyingManagement {
             }
         } catch (error) {
             if (errorIncluded(error, ["NoActiveAnnouncement"])) {
-                const underlyingPayment = await rootEm.findOneOrFail(AgentUnderlyingPayment, {id }, { refresh: true });
+                const underlyingPayment = await rootEm.findOneOrFail(AgentUnderlyingPayment, { id }, { refresh: true });
                 await this.updateUnderlyingPayment(rootEm, underlyingPayment, {
                     state: AgentUnderlyingPaymentState.DONE,
                 });
                 logger.warn(`Agent ${this.agent.vaultAddress} closed underlying payment ${id} because it was already confirmed`);
                 console.log(`Agent ${this.agent.vaultAddress} closed underlying payment ${id} because it was already confirmed`);
             } else if (errorIncluded(error, ["PaymentFailed"])) {
-                const underlyingPayment = await rootEm.findOneOrFail(AgentUnderlyingPayment, {id }, { refresh: true });
+                const underlyingPayment = await rootEm.findOneOrFail(AgentUnderlyingPayment, { id }, { refresh: true });
                 await this.updateUnderlyingPayment(rootEm, underlyingPayment, {
                     state: AgentUnderlyingPaymentState.DONE,
                 });
@@ -268,7 +268,7 @@ export class AgentBotUnderlyingManagement {
                 console.log(`Agent ${this.agent.vaultAddress} closed underlying payment ${id} because payment failed`);
             } else {
                 console.error(`Error handling next underlying payment step for underlying payment ${id} agent ${this.agent.vaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agent.vaultAddress} run into error while handling next underlying payment step for underlying payment ${id}:`, error);
+                logger.error(`Agent ${this.agent.vaultAddress} run into error while handling next underlying payment step for underlying payment ${id}:`, error);
             }
         }
     }
@@ -390,7 +390,7 @@ export class AgentBotUnderlyingManagement {
                     const latestTimestamp = await latestBlockTimestampBN();
                     if (allowedAt && allowedAt.lt(latestTimestamp)) {
                         await this.context.assetManager.confirmUnderlyingWithdrawal(web3DeepNormalize(proof), this.agent.vaultAddress,
-                        { from: this.agent.owner.workAddress });
+                            { from: this.agent.owner.workAddress });
                         await this.sendUnderlyingPaymentConfirmed(rootEm, underlyingPayment, proof);
                     } else {
                         logger.info(`Agent ${this.agent.vaultAddress} cannot yet confirm ${underlyingPayment.type} payment ${underlyingPayment.txHash} with id ${underlyingPayment.id}`)
@@ -422,7 +422,7 @@ export class AgentBotUnderlyingManagement {
         });
     }
 
-    async sendUnderlyingPaymentConfirmed(rootEm: EM, underlyingPayment:  Readonly<AgentUnderlyingPayment>, proof: Payment.Proof): Promise<void> {
+    async sendUnderlyingPaymentConfirmed(rootEm: EM, underlyingPayment: Readonly<AgentUnderlyingPayment>, proof: Payment.Proof): Promise<void> {
         underlyingPayment = await this.updateUnderlyingPayment(rootEm, underlyingPayment, {
             state: AgentUnderlyingPaymentState.DONE,
         });
@@ -433,20 +433,20 @@ export class AgentBotUnderlyingManagement {
         console.log(`Agent ${this.agent.vaultAddress} free underlying is ${agentInfo.freeUnderlyingBalanceUBA.toString()}`)
     }
 
-    async getLatestOpenUnderlyingWithdrawal(rootEm: EM, vaultAddress: string): Promise<AgentUnderlyingPayment | null>{
+    async getLatestOpenUnderlyingWithdrawal(rootEm: EM, vaultAddress: string): Promise<AgentUnderlyingPayment | null> {
         const latestUnderlyingWithdrawal = await rootEm.findOne(AgentUnderlyingPayment,
             {
-              state: { $ne: AgentUnderlyingPaymentState.DONE },
-              type: AgentUnderlyingPaymentType.WITHDRAWAL,
-              agentAddress: vaultAddress
+                state: { $ne: AgentUnderlyingPaymentState.DONE },
+                type: AgentUnderlyingPaymentType.WITHDRAWAL,
+                agentAddress: vaultAddress
             },
             { orderBy: { createdAt: 'DESC' } }
-          );
+        );
 
         return latestUnderlyingWithdrawal;
     }
 
-    async cancelTopUpPayment(rootEm: EM, underlyingPayment: AgentUnderlyingPayment): Promise<void>{
+    async cancelTopUpPayment(rootEm: EM, underlyingPayment: AgentUnderlyingPayment): Promise<void> {
         await this.updateUnderlyingPayment(rootEm, underlyingPayment, {
             state: AgentUnderlyingPaymentState.DONE,
             cancelled: true

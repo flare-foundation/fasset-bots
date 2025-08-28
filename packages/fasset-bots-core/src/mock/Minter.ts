@@ -58,7 +58,7 @@ export class Minter {
         // check funds before reserveCollateral
         await checkEvmNativeFunds(this.context, this.address, totalNatFee);
         const lotSizeUBA = toBN(settings.lotSizeAMG).mul(toBN(settings.assetMintingGranularityUBA));
-        const lotAmount =  toBN(lots).mul(lotSizeUBA);
+        const lotAmount = toBN(lots).mul(lotSizeUBA);
         const mintPayment = lotAmount.add(lotAmount.mul(toBN(agentInfo.feeBIPS)).divn(MAX_BIPS));
         if (checkUnderlyingAddressFunds) {
             await checkUnderlyingFunds(this.context, this.underlyingAddress, mintPayment, agentInfo.underlyingAddressString);

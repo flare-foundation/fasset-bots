@@ -14,10 +14,10 @@ export class TransactionInputEntity {
     @Property()
     vout!: number;
 
-    @Property({type: BNType})
+    @Property({ type: BNType })
     amount!: BN;
 
-    @Property({type: TextType})
+    @Property({ type: TextType })
     script!: string;
 
     @ManyToOne(() => TransactionEntity)

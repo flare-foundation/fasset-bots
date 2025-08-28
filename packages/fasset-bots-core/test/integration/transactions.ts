@@ -46,7 +46,7 @@ describe("XRP transaction integration tests", () => {
         const balanceBefore = await walletHelper.getBalance(targetAddressXRP);
         const options = { maxFee: 12 }; // maxFee in Drops
         const dbId = await walletHelper.addTransaction(fundedAddressXRP, targetAddressXRP, amountToSendDrops, null, options);
-        while(1) {
+        while (1) {
             const info = await walletHelper.walletClient.getTransactionInfo(dbId);
             if (info.status == TransactionStatus.TX_SUCCESS) break;
             if (info.status == TransactionStatus.TX_FAILED) throw new Error("Test failed");
@@ -66,7 +66,7 @@ describe("XRP transaction integration tests", () => {
         const dbId = await walletHelper.addTransaction(fundedAddressXRP, targetAddressXRP, amountToSendDrops, note, undefined);
         const startTime = Date.now();
         const maxDuration = 1.5 * 60 * 1000;
-        while(1) {
+        while (1) {
             const elapsedTime = Date.now() - startTime;
             const info = await walletHelper.walletClient.getTransactionInfo(dbId);
             if (info.status == TransactionStatus.TX_SUCCESS) break;

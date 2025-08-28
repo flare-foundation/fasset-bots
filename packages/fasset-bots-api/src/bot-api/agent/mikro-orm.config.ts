@@ -1,4 +1,4 @@
-import { SqliteDriver , Options, MikroORM} from '@mikro-orm/sqlite';
+import { SqliteDriver, Options, MikroORM } from '@mikro-orm/sqlite';
 import { Alert } from '../common/entities/AlertDB';
 
 const config: Options = {

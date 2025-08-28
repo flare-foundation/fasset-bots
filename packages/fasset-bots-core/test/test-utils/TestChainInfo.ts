@@ -58,7 +58,8 @@ export const testChainInfo: Record<TestChainType, TestChainInfo> = {
         blockTime: 600,
         finalizationBlocks: 6,
         underlyingBlocksForPayment: 8,
-        lotSize: 2,    },
+        lotSize: 2,
+    },
     doge: {
         chainId: ChainId.testBTC,
         name: "DOGECoin",

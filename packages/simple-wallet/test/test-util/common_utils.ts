@@ -49,7 +49,7 @@ export async function loop(sleepIntervalMs: number, timeLimit: number, tx: Trans
         if (shouldStop) break;
         if (Date.now() - startTime > timeLimit) {
             throw tx ?
-                new Error(`Time limit exceeded for ${ tx instanceof TransactionEntity ? tx.id : tx.dbId} with ${tx.transactionHash}`) :
+                new Error(`Time limit exceeded for ${tx instanceof TransactionEntity ? tx.id : tx.dbId} with ${tx.transactionHash}`) :
                 new Error(`Time limit exceeded`);
         }
 
@@ -67,10 +67,10 @@ export async function loop(sleepIntervalMs: number, timeLimit: number, tx: Trans
  */
 export async function waitForTxToFinishWithStatus(sleepInterval: number, timeLimit: number, rootEm: EntityManager, status: TransactionStatus | TransactionStatus[], txId: number): Promise<TransactionEntity> {
     let tx = await fetchTransactionEntityById(rootEm, txId);
-    await loop(sleepInterval * 1000, timeLimit * 1000, tx,async () => {
+    await loop(sleepInterval * 1000, timeLimit * 1000, tx, async () => {
         try {
             tx = await fetchTransactionEntityById(rootEm, txId);
-            return checkStatus(tx, Array.isArray(status) ? status :[status]);
+            return checkStatus(tx, Array.isArray(status) ? status : [status]);
         } catch (error) {
             if (isORMError(error)) {
                 logger.error("Test util error: ", error);
@@ -139,7 +139,7 @@ export function resetMonitoringOnForceExit<T extends ITransactionMonitor>(wClien
 
 export class MockBlockchainAPI extends UTXOBlockchainAPI {
     constructor() {
-        super({urls: ["a"]} as BaseWalletConfig, ChainType.testBTC);
+        super({ urls: ["a"] } as BaseWalletConfig, ChainType.testBTC);
     }
     clients: AxiosInstance[] = [];
 
@@ -356,7 +356,7 @@ export function getAddressScript(chainType: ChainType, address: string) {
             xprivkey: 0x04358394,
             networkMagic: 0xfcc1b7dc,
             port: 44556,
-          });
+        });
         const addressAddress = bitcore.Address(address, dogeTestnet);
         const pubkeyHash = addressAddress.hashBuffer.toString('hex');
         const scriptPubKey = `76a914${pubkeyHash}88ac`;

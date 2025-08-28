@@ -166,8 +166,8 @@ export class AgentBotOwnerValidation {
 
     async createWalletTokenBalance(fassetSymbol: string) {
         const fassetInfo = this.configFile.fAssets[fassetSymbol];
-        if (!fassetInfo.walletUrls|| fassetInfo.walletUrls?.length == 0) {
-            throw new Error (`Missing wallet url for ${fassetSymbol}`)
+        if (!fassetInfo.walletUrls || fassetInfo.walletUrls?.length == 0) {
+            throw new Error(`Missing wallet url for ${fassetSymbol}`)
         }
         const walletClient = await createWalletClient(this.secrets, ChainId.from(fassetInfo.chainId), fassetInfo.walletUrls, this.orm.em, fassetInfo.stuckTransactionOptions);
         const wallet = new BlockchainWalletHelper(walletClient, new MemoryWalletKeys());

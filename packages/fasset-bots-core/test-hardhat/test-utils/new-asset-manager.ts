@@ -78,8 +78,8 @@ export async function newAssetManager(
     await deployAndInitFacet(governanceAddress, assetManager, artifacts.require("CoreVaultClientFacet"), ["ICoreVaultClient"]);
     await deployAndInitFacet(governanceAddress, assetManager, artifacts.require("CoreVaultClientSettingsFacet"), ["ICoreVaultClientSettings"],
         "initCoreVaultFacet", [ZERO_ADDRESS, assetManagerSettings.coreVaultNativeAddress,
-            assetManagerSettings.coreVaultTransferTimeExtensionSeconds, assetManagerSettings.coreVaultRedemptionFeeBIPS,
-            assetManagerSettings.coreVaultMinimumAmountLeftBIPS, assetManagerSettings.coreVaultMinimumRedeemLots]);
+        assetManagerSettings.coreVaultTransferTimeExtensionSeconds, assetManagerSettings.coreVaultRedemptionFeeBIPS,
+        assetManagerSettings.coreVaultMinimumAmountLeftBIPS, assetManagerSettings.coreVaultMinimumRedeemLots]);
     // verify interface implementation
     await checkAllMethodsImplemented(assetManager, interfaceSelectors);
     // add to controller
@@ -104,8 +104,7 @@ export async function newAssetManagerDiamond(diamondCuts: DiamondCut[], assetMan
 }
 
 async function deployAndInitFacet<T extends Truffle.ContractInstance>(governanceAddress: string, assetManager: IIAssetManagerInstance,
-    facetContract: Truffle.Contract<T>, interfaces: string[], initMethod?: keyof T, initArgs?: any[])
-{
+    facetContract: Truffle.Contract<T>, interfaces: string[], initMethod?: keyof T, initArgs?: any[]) {
     const interfaceAbis: AbiItem[] = interfaces.flatMap(it => contractMetadata(artifacts.require(it as any)).abi);
     const interfaceSelectors = getInterfaceSelectorMap(interfaceAbis);
     const facetCut = await deployFacet(facetContract, interfaceSelectors);

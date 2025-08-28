@@ -48,7 +48,7 @@ export class AgentService {
             if (f === "FSimCoinX") {
                 continue;
             }
-            if (f.includes("XRP")){
+            if (f.includes("XRP")) {
                 this.fxrpSymbol = f;
             }
             const underlyingAddress = cachedSecrets.optional(`owner.${config.fAssets[f].tokenSymbol}.address`);
@@ -255,7 +255,7 @@ export class AgentService {
                 }
                 continue;
             }*/
-            if(parseInt(currentSettings[setting.name], 10) != parseInt(setting.value, 10)){
+            if (parseInt(currentSettings[setting.name], 10) != parseInt(setting.value, 10)) {
                 await cli.updateAgentSetting(agentVaultAddress, setting.name, setting.value);
             }
         }
@@ -283,14 +283,14 @@ export class AgentService {
         const collateralTypes = await cli.context.assetManager.getCollateralTypes();
         const collaterals = [];
         for (const collateralType of collateralTypes) {
-            if (Number(collateralType.validUntil) != 0){
+            if (Number(collateralType.validUntil) != 0) {
                 continue;
-              }
+            }
             const symbol = collateralType.tokenFtsoSymbol;
             const token = await IERC20.at(collateralType.token);
             const balance = await token.balanceOf(cli.owner.workAddress);
             const decimals = (await token.decimals()).toNumber();
-            const collateral = { symbol, balance: formatFixed(toBN(balance), decimals, { decimals: 3, groupDigits: true, groupSeparator: ","  }) } as any;
+            const collateral = { symbol, balance: formatFixed(toBN(balance), decimals, { decimals: 3, groupDigits: true, groupSeparator: "," }) } as any;
             if (symbol === "CFLR" || symbol === "C2FLR" || symbol === "SGB" || symbol == "FLR") {
                 const nonWrappedBalance = await web3.eth.getBalance(cli.owner.workAddress);
                 collateral.wrapped = collateral.balance;
@@ -331,17 +331,17 @@ export class AgentService {
     getUpdateSettingValidAtTimestamp(agent: AgentEntity, settingName: AgentSettingName): string {
         const found = agent.updateSettings.getItems().find(setting =>
             setting.name == settingName && setting.state === AgentUpdateSettingState.WAITING);
-            if (found) {
-                return found.validAt.toString();
-            } else {
-                return BN_ZERO.toString();
-            }
+        if (found) {
+            return found.validAt.toString();
+        } else {
+            return BN_ZERO.toString();
+        }
     }
 
     async getAgentVaultInfo(fAssetSymbol: string, agentVaultAddress: string): Promise<ExtendedAgentVaultInfo> {
         const cli = await AgentBotCommands.create(this.secrets, FASSET_BOT_CONFIG, fAssetSymbol);
         const info = await cli.context.assetManager.getAgentInfo(agentVaultAddress);
-        const collateralToken = await cli.context.assetManager.getCollateralType(2,info.vaultCollateralToken);
+        const collateralToken = await cli.context.assetManager.getCollateralType(2, info.vaultCollateralToken);
         const agentVaultInfo: any = {};
         const pool = await CollateralPool.at(info.collateralPool);
         const poolToken = await IERC20Metadata.at(await pool.poolToken());
@@ -357,11 +357,11 @@ export class AgentService {
         const redFeeBIPS = toBN(info.redemptionPoolFeeShareBIPS).toString();
         agentVaultInfo.redemptionPoolFeeShareBIPS = redFeeBIPS;
         const del = await cli.context.wNat.delegatesOf(info.collateralPool);
-        const delegates: Delegation [] = [];
+        const delegates: Delegation[] = [];
         let delegationPercentage = 0;
-        for (let i=0; i < del[0].length; i++) {
-            delegates.push({address: del[0][i], delegation: (Number(del[1][i])/100).toString()});
-            delegationPercentage = delegationPercentage + (Number(del[1][i])/100);
+        for (let i = 0; i < del[0].length; i++) {
+            delegates.push({ address: del[0][i], delegation: (Number(del[1][i]) / 100).toString() });
+            delegationPercentage = delegationPercentage + (Number(del[1][i]) / 100);
         }
         agentVaultInfo.delegates = delegates;
         return agentVaultInfo;
@@ -380,13 +380,13 @@ export class AgentService {
             await this.deleteExpiredAlerts();
             return;
         }*/
-        if(notification.title == "CHALLENGER IS ONLINE") {
+        if (notification.title == "CHALLENGER IS ONLINE") {
             this.challengerActivity = Date.now();
         }
-        if(notification.title == "LIQUIDATOR IS ONLINE") {
+        if (notification.title == "LIQUIDATOR IS ONLINE") {
             this.liquidatorActivity = Date.now();
         }
-        const alert = new Alert(notification.bot_type,notification.address, notification.level, notification.title, notification.description, Date.now()+ (4 * 24 * 60 * 60 * 1000), Date.now());
+        const alert = new Alert(notification.bot_type, notification.address, notification.level, notification.title, notification.description, Date.now() + (4 * 24 * 60 * 60 * 1000), Date.now());
         await this.deleteExpiredAlerts();
         await this.em.persistAndFlush(alert);
     }
@@ -397,7 +397,7 @@ export class AgentService {
             this.em.remove(expiredAlert);
         }
         await this.em.flush();
-      }
+    }
 
     async getAlerts(limit: number, offset: number, types: string[] | null): Promise<Alerts> {
         //const alertRepository = this.em.getRepository(Alert);
@@ -406,7 +406,7 @@ export class AgentService {
             limit,
             offset,
             orderBy: { id: 'DESC' },
-          });
+        });
         return { alerts: alerts, count: total };
     }
 
@@ -426,7 +426,7 @@ export class AgentService {
                 continue;
             }
             const underlyingAddress = this.secrets.optional(`owner.${cli.context.chainInfo.symbol}.address`);
-            addresses.push({ asset: cli.context.chainInfo.symbol, address: underlyingAddress as string})
+            addresses.push({ asset: cli.context.chainInfo.symbol, address: underlyingAddress as string })
         }
         return addresses;
     }
@@ -456,11 +456,11 @@ export class AgentService {
         try {
             await fs.promises.access(FASSET_BOT_SECRETS, fs.constants.F_OK);
             return true;
-          } catch (err: any) {
+        } catch (err: any) {
             if (err.code === 'ENOENT') {
-              return false;
+                return false;
             } else {
-              throw err;
+                throw err;
             }
         }
     }
@@ -490,7 +490,7 @@ export class AgentService {
             }
             const collateralTypes = await cli.context.assetManager.getCollateralTypes();
             for (const collateralType of collateralTypes) {
-                if (Number(collateralType.validUntil) != 0){
+                if (Number(collateralType.validUntil) != 0) {
                     continue;
                 }
                 const b = balances.find((c) => c.symbol === collateralType.tokenFtsoSymbol);
@@ -501,7 +501,7 @@ export class AgentService {
                 const token = await IERC20.at(collateralType.token);
                 const balance = await token.balanceOf(cli.owner.workAddress);
                 const decimals = (await token.decimals()).toNumber();
-                const collateral = { symbol, balance: formatFixed(toBN(balance), decimals, { decimals: 3, groupDigits: true, groupSeparator: ","  }) } as any;
+                const collateral = { symbol, balance: formatFixed(toBN(balance), decimals, { decimals: 3, groupDigits: true, groupSeparator: "," }) } as any;
                 if (symbol === "CFLR" || symbol === "C2FLR" || symbol === "SGB" || symbol == "FLR") {
                     const nonWrappedBalance = await web3.eth.getBalance(cli.owner.workAddress);
                     collateral.wrapped = collateral.balance;
@@ -512,11 +512,11 @@ export class AgentService {
             const underlyingAddress = this.secrets.optional(`owner.${cli.context.chainInfo.symbol}.address`);
             if (underlyingAddress) {
                 const underlyingBalance = await cli.context.wallet.getBalance(underlyingAddress);
-                const collateral = { symbol: cli.context.chainInfo.symbol , balance: formatFixed(toBN(underlyingBalance), cli.context.chainInfo.decimals, { decimals: cli.context.chainInfo.symbol.includes("XRP") ? 3 : 6, groupDigits: true, groupSeparator: ","  }) } as any;
+                const collateral = { symbol: cli.context.chainInfo.symbol, balance: formatFixed(toBN(underlyingBalance), cli.context.chainInfo.decimals, { decimals: cli.context.chainInfo.symbol.includes("XRP") ? 3 : 6, groupDigits: true, groupSeparator: "," }) } as any;
                 balances.push(collateral);
             }
             const fassetBalance = await cli.context.fAsset.balanceOf(cli.owner.workAddress);
-            const collateral = { symbol: cli.context.fAssetSymbol, balance: formatFixed(toBN(fassetBalance), cli.context.chainInfo.decimals, { decimals: cli.context.chainInfo.symbol.includes("XRP") ? 3 : 6, groupDigits: true, groupSeparator: ","  }) }
+            const collateral = { symbol: cli.context.fAssetSymbol, balance: formatFixed(toBN(fassetBalance), cli.context.chainInfo.decimals, { decimals: cli.context.chainInfo.symbol.includes("XRP") ? 3 : 6, groupDigits: true, groupSeparator: "," }) }
             balances.push(collateral);
         }
         return balances;
@@ -543,7 +543,7 @@ export class AgentService {
     async generateAPIKey(): Promise<APIKey> {
         const apiKey = generateRandomHexString(32);
         const hash = createSha256Hash(apiKey);
-        return {key: apiKey, hash: hash};
+        return { key: apiKey, hash: hash };
     }
 
     async getVaultCollateralTokens(): Promise<VaultCollaterals[]> {
@@ -556,14 +556,14 @@ export class AgentService {
             const collateralTypes = await cli.context.assetManager.getCollateralTypes();
             const collateralTokens: CollateralTemplate[] = [];
             for (const collateralType of collateralTypes) {
-                if (Number(collateralType.validUntil) != 0){
+                if (Number(collateralType.validUntil) != 0) {
                     continue;
-                  }
+                }
                 const symbol = collateralType.tokenFtsoSymbol;
                 const collateralClass = collateralType.collateralClass;
                 if (collateralClass == toBN(2)) {
                     const template = JSON.stringify(cli.agentBotSettings.defaultAgentSettings);
-                    collateralTokens.push({symbol: symbol, template: template});
+                    collateralTokens.push({ symbol: symbol, template: template });
                 }
             }
             const collateral: VaultCollaterals = { fassetSymbol: fasset, collaterals: collateralTokens };
@@ -575,7 +575,7 @@ export class AgentService {
 
     async getAgentVaultInfoFull(agentVaultAddress: string, cli: AgentBotCommands): Promise<ExtendedAgentVaultInfo> {
         const info = await cli.context.assetManager.getAgentInfo(agentVaultAddress);
-        const collateralToken = await cli.context.assetManager.getCollateralType(2,info.vaultCollateralToken);
+        const collateralToken = await cli.context.assetManager.getCollateralType(2, info.vaultCollateralToken);
         const agentVaultInfo: any = {};
         const pool = await CollateralPool.at(info.collateralPool);
         const poolToken = await IERC20Metadata.at(await pool.poolToken());
@@ -607,7 +607,7 @@ export class AgentService {
             const collateralTypes = await cli.context.assetManager.getCollateralTypes();
             // Get agent vaults for fasset from database
             const agentVaults = await cli.getActiveAgentsForFAsset();
-            if (agentVaults.length == 0){
+            if (agentVaults.length == 0) {
                 continue;
             }
             const settings = await cli.context.assetManager.getSettings();
@@ -616,15 +616,15 @@ export class AgentService {
             const priceUSD = cflrPrice.price.mul(toBNExp(1, 18));
             const prices = [{ symbol: cli.context.nativeChainInfo.tokenSymbol, price: priceUSD, decimals: Number(cflrPrice.decimals) }];
 
-            const lotSize =  toBN(settings.lotSizeAMG).mul(toBN(settings.assetMintingGranularityUBA));
+            const lotSize = toBN(settings.lotSizeAMG).mul(toBN(settings.assetMintingGranularityUBA));
             // For each vault calculate needed info
             for (const vault of agentVaults) {
                 await vault.updateSettings.init()
                 let updating = false;
                 if (toBN(this.getUpdateSettingValidAtTimestamp(vault, AgentSettingName.FEE)).gt(BN_ZERO) || toBN(this.getUpdateSettingValidAtTimestamp(vault, AgentSettingName.POOL_FEE_SHARE)).gt(BN_ZERO) ||
-                toBN(this.getUpdateSettingValidAtTimestamp(vault, AgentSettingName.MINTING_VAULT_CR)).gt(BN_ZERO) || toBN(this.getUpdateSettingValidAtTimestamp(vault, AgentSettingName.MINTING_POOL_CR)).gt(BN_ZERO) ||
-                toBN(this.getUpdateSettingValidAtTimestamp(vault, AgentSettingName.BUY_FASSET_FACTOR)).gt(BN_ZERO) || toBN(this.getUpdateSettingValidAtTimestamp(vault, AgentSettingName.POOL_EXIT_CR)).gt(BN_ZERO) ||
-                toBN(this.getUpdateSettingValidAtTimestamp(vault, AgentSettingName.REDEMPTION_POOL_FEE_SHARE)).gt(BN_ZERO)) {
+                    toBN(this.getUpdateSettingValidAtTimestamp(vault, AgentSettingName.MINTING_VAULT_CR)).gt(BN_ZERO) || toBN(this.getUpdateSettingValidAtTimestamp(vault, AgentSettingName.MINTING_POOL_CR)).gt(BN_ZERO) ||
+                    toBN(this.getUpdateSettingValidAtTimestamp(vault, AgentSettingName.BUY_FASSET_FACTOR)).gt(BN_ZERO) || toBN(this.getUpdateSettingValidAtTimestamp(vault, AgentSettingName.POOL_EXIT_CR)).gt(BN_ZERO) ||
+                    toBN(this.getUpdateSettingValidAtTimestamp(vault, AgentSettingName.REDEMPTION_POOL_FEE_SHARE)).gt(BN_ZERO)) {
                     updating = true;
                 }
                 const info = await this.getAgentVaultInfoFull(vault.vaultAddress, cli);
@@ -652,7 +652,7 @@ export class AgentService {
                         break;
                     }
                 }
-                const collateral : any = collateralTypes.find(item => item.tokenFtsoSymbol === info.vaultCollateralToken);
+                const collateral: any = collateralTypes.find(item => item.tokenFtsoSymbol === info.vaultCollateralToken);
                 const collateralToken = await IERC20.at(collateral.token);
 
                 //Calculate usd values
@@ -678,13 +678,14 @@ export class AgentService {
                 const lotsPoolBacked = toBN(info.totalPoolCollateralNATWei).div(air.poolCollateral.mintingCollateralRequired(air.lotSizeUBA()));
                 const lotsVaultBacked = toBN(info.totalVaultCollateralWei).div(air.vaultCollateral.mintingCollateralRequired(air.lotSizeUBA()));
                 const del = await cli.context.wNat.delegatesOf(vault.collateralPoolAddress);
-                const delegates: Delegation [] = [];
+                const delegates: Delegation[] = [];
                 let delegationPercentage = 0;
-                for (let i=0; i < del[0].length; i++) {
-                    delegates.push({address: del[0][i], delegation: (Number(del[1][i])/100).toString()});
-                    delegationPercentage = delegationPercentage + (Number(del[1][i])/100);
+                for (let i = 0; i < del[0].length; i++) {
+                    delegates.push({ address: del[0][i], delegation: (Number(del[1][i]) / 100).toString() });
+                    delegationPercentage = delegationPercentage + (Number(del[1][i]) / 100);
                 }
-                const vaultInfo: VaultInfo = { address: vault.vaultAddress, updating: updating, status: info.publiclyAvailable as unknown as boolean, mintedlots: mintedLots.toString(),
+                const vaultInfo: VaultInfo = {
+                    address: vault.vaultAddress, updating: updating, status: info.publiclyAvailable as unknown as boolean, mintedlots: mintedLots.toString(),
                     freeLots: info.freeCollateralLots, vaultCR: vaultCR.toString(), poolCR: poolCR.toString(), mintedAmount: mintedAmount.toString(),
                     vaultAmount: formatFixed(toBN(info.totalVaultCollateralWei), Number(await collateralToken.decimals()), { decimals: 3, groupDigits: true, groupSeparator: "," }),
                     poolAmount: formatFixed(toBN(info.totalPoolCollateralNATWei), 18, { decimals: 3, groupDigits: true, groupSeparator: "," }),
@@ -738,15 +739,15 @@ export class AgentService {
         const poolCollateral = await cli.mintingPoolCollateral(agentBot.agent, amountUBA, Number(multiplier));
         const vaultCollateralType = await agentBot.agent.getVaultCollateral();
         const ownerVaultBalance = await this.getVaultBalance(cli, agentVaultAddress);
-        const ownerPoolBalance  = await this.getPoolBalance(cli);
+        const ownerPoolBalance = await this.getPoolBalance(cli);
         /*let message = "To deposit " + lots.toString() + " lots you need " + formatFixed(vaultCollateral, Number(vaultCollateralType.decimals), { decimals: 3, groupDigits: true, groupSeparator: "," });
         message+= " "+ vaultCollateralType.tokenFtsoSymbol + " (work address has " + ownerVaultBalance + ") and " + formatFixed(poolCollateral, 18, { decimals: 3, groupDigits: true, groupSeparator: "," }) + " " + cli.context.nativeChainInfo.tokenSymbol;
         message+= " (work address has "+ ownerPoolBalance + " " + cli.context.nativeChainInfo.tokenSymbol + ").";*/
         const amountVaultNeeded = formatFixed(vaultCollateral, Number(vaultCollateralType.decimals), { decimals: 3, groupDigits: true, groupSeparator: "," });
         const amountPoolNeeded = formatFixed(poolCollateral, 18, { decimals: 3, groupDigits: true, groupSeparator: "," });
-        const col: Collaterals [] = [];
-        col.push({symbol: vaultCollateralType.tokenFtsoSymbol, amount: amountVaultNeeded, ownerBalance: ownerVaultBalance});
-        col.push({symbol: cli.context.nativeChainInfo.tokenSymbol, amount: amountPoolNeeded, ownerBalance: ownerPoolBalance})
+        const col: Collaterals[] = [];
+        col.push({ symbol: vaultCollateralType.tokenFtsoSymbol, amount: amountVaultNeeded, ownerBalance: ownerVaultBalance });
+        col.push({ symbol: cli.context.nativeChainInfo.tokenSymbol, amount: amountPoolNeeded, ownerBalance: ownerPoolBalance })
         return col;
     }
 
@@ -791,10 +792,10 @@ export class AgentService {
         let balanceFormatted = "0";
         if (underlyingAddress) {
             const underlyingBalance = await cli.context.wallet.getBalance(underlyingAddress);
-            balanceFormatted = formatFixed(toBN(underlyingBalance), cli.context.chainInfo.decimals, { decimals: cli.context.chainInfo.symbol.includes("XRP") ? 3 : 6, groupDigits: true, groupSeparator: ","  });
+            balanceFormatted = formatFixed(toBN(underlyingBalance), cli.context.chainInfo.decimals, { decimals: cli.context.chainInfo.symbol.includes("XRP") ? 3 : 6, groupDigits: true, groupSeparator: "," });
         }
-        const toPayFormatted = formatFixed(toBN(toPayUBA), cli.context.chainInfo.decimals, { decimals: cli.context.chainInfo.symbol.includes("XRP") ? 3 : 6, groupDigits: true, groupSeparator: ","  });
-        return {amountToPay: toPayFormatted, ownerBalance: balanceFormatted, assetSymbol: cli.context.chainInfo.symbol, freeLots: agentInfo.freeCollateralLots};
+        const toPayFormatted = formatFixed(toBN(toPayUBA), cli.context.chainInfo.decimals, { decimals: cli.context.chainInfo.symbol.includes("XRP") ? 3 : 6, groupDigits: true, groupSeparator: "," });
+        return { amountToPay: toPayFormatted, ownerBalance: balanceFormatted, assetSymbol: cli.context.chainInfo.symbol, freeLots: agentInfo.freeCollateralLots };
     }
 
     async getAmountToPayUBAForSelfMintFromFreeUnderlying(fAssetSymbol: string, agentVaultAddress: string, numberOfLots: string): Promise<any> {
@@ -810,9 +811,9 @@ export class AgentService {
         const poolFeeUBA = amountUBA.mul(feeBIPS).divn(MAX_BIPS).mul(poolFeeShareBIPS).divn(MAX_BIPS);
         // amount to pay
         const toPayUBA = amountUBA.add(poolFeeUBA);
-        const balanceFormatted = formatFixed(toBN(agentInfo.freeUnderlyingBalanceUBA), cli.context.chainInfo.decimals, { decimals: cli.context.chainInfo.symbol.includes("XRP") ? 3 : 6, groupDigits: true, groupSeparator: ","  });
-        const toPayFormatted = formatFixed(toBN(toPayUBA), cli.context.chainInfo.decimals, { decimals: cli.context.chainInfo.symbol.includes("XRP") ? 3 : 6, groupDigits: true, groupSeparator: ","  });
-        return {amountToPay: toPayFormatted, agentFreeUnderlying: balanceFormatted, assetSymbol: cli.context.chainInfo.symbol, freeLots: agentInfo.freeCollateralLots};
+        const balanceFormatted = formatFixed(toBN(agentInfo.freeUnderlyingBalanceUBA), cli.context.chainInfo.decimals, { decimals: cli.context.chainInfo.symbol.includes("XRP") ? 3 : 6, groupDigits: true, groupSeparator: "," });
+        const toPayFormatted = formatFixed(toBN(toPayUBA), cli.context.chainInfo.decimals, { decimals: cli.context.chainInfo.symbol.includes("XRP") ? 3 : 6, groupDigits: true, groupSeparator: "," });
+        return { amountToPay: toPayFormatted, agentFreeUnderlying: balanceFormatted, assetSymbol: cli.context.chainInfo.symbol, freeLots: agentInfo.freeCollateralLots };
     }
 
     async getSelfMintBalances(fAssetSymbol: string, agentVaultAddress: string): Promise<any> {
@@ -825,10 +826,10 @@ export class AgentService {
         let balanceFormatted = "0";
         if (underlyingAddress) {
             const underlyingBalance = await cli.context.wallet.getBalance(underlyingAddress);
-            balanceFormatted = formatFixed(toBN(underlyingBalance), cli.context.chainInfo.decimals, { decimals: cli.context.chainInfo.symbol.includes("XRP") ? 3 : 6, groupDigits: true, groupSeparator: ","  });
+            balanceFormatted = formatFixed(toBN(underlyingBalance), cli.context.chainInfo.decimals, { decimals: cli.context.chainInfo.symbol.includes("XRP") ? 3 : 6, groupDigits: true, groupSeparator: "," });
         }
         const agentInfo = await cli.context.assetManager.getAgentInfo(agentVaultAddress);
-        return {ownerbalance: balanceFormatted, assetSymbol: cli.context.chainInfo.symbol, lotSize: lotSizeAsset, freeLots: agentInfo.freeCollateralLots};
+        return { ownerbalance: balanceFormatted, assetSymbol: cli.context.chainInfo.symbol, lotSize: lotSizeAsset, freeLots: agentInfo.freeCollateralLots };
     }
 
     async getSelfMintFromFreeUnderlyingBalances(fAssetSymbol: string, agentVaultAddress: string): Promise<any> {
@@ -838,14 +839,14 @@ export class AgentService {
         const lotSize = toBN(settings.lotSizeAMG).mul(toBN(settings.assetMintingGranularityUBA));
         const lotSizeAsset = lotSize.toNumber() / 10 ** Number(settings.assetDecimals);
         const agentInfo = await cli.context.assetManager.getAgentInfo(agentVaultAddress);
-        const agentFreeUnderlyingBalance = formatFixed(toBN(agentInfo.freeUnderlyingBalanceUBA), cli.context.chainInfo.decimals, { decimals: cli.context.chainInfo.symbol.includes("XRP") ? 3 : 6, groupDigits: true, groupSeparator: ","  });
-        return {assetSymbol: cli.context.chainInfo.symbol, lotSize: lotSizeAsset, freeUnderlyingBalance:  agentFreeUnderlyingBalance, freeLots: agentInfo.freeCollateralLots};
+        const agentFreeUnderlyingBalance = formatFixed(toBN(agentInfo.freeUnderlyingBalanceUBA), cli.context.chainInfo.decimals, { decimals: cli.context.chainInfo.symbol.includes("XRP") ? 3 : 6, groupDigits: true, groupSeparator: "," });
+        return { assetSymbol: cli.context.chainInfo.symbol, lotSize: lotSizeAsset, freeUnderlyingBalance: agentFreeUnderlyingBalance, freeLots: agentInfo.freeCollateralLots };
     }
 
     async getSafeFreeUnderlyingBalance(fAssetSymbol: string, agentVaultAddress: string): Promise<AllBalances> {
         const cli = await AgentBotCommands.create(this.secrets, FASSET_BOT_CONFIG, fAssetSymbol);
         const balance = await cli.getSafeToWithdrawUnderlying(agentVaultAddress);
-        const agentFreeUnderlyingBalance = formatFixed(toBN(balance), cli.context.chainInfo.decimals, { decimals: cli.context.chainInfo.symbol.includes("XRP") ? 3 : 6, groupDigits: true, groupSeparator: ","  });
+        const agentFreeUnderlyingBalance = formatFixed(toBN(balance), cli.context.chainInfo.decimals, { decimals: cli.context.chainInfo.symbol.includes("XRP") ? 3 : 6, groupDigits: true, groupSeparator: "," });
         return {
             balance: agentFreeUnderlyingBalance,
             symbol: cli.context.chainInfo.symbol
@@ -866,9 +867,9 @@ export class AgentService {
         let balanceFormatted = "0";
         if (underlyingAddress) {
             const underlyingBalance = await cli.context.wallet.getBalance(underlyingAddress);
-            balanceFormatted = formatFixed(toBN(underlyingBalance), cli.context.chainInfo.decimals, { decimals: cli.context.chainInfo.symbol.includes("XRP") ? 3 : 6, groupDigits: true, groupSeparator: ","  });
+            balanceFormatted = formatFixed(toBN(underlyingBalance), cli.context.chainInfo.decimals, { decimals: cli.context.chainInfo.symbol.includes("XRP") ? 3 : 6, groupDigits: true, groupSeparator: "," });
         }
-        return {balance: balanceFormatted, symbol: cli.context.chainInfo.symbol};
+        return { balance: balanceFormatted, symbol: cli.context.chainInfo.symbol };
     }
 
     async getOwnerFassetBalance(fAssetSymbol: string): Promise<AllBalances> {
@@ -878,14 +879,14 @@ export class AgentService {
         let balanceFormatted = "0";
         if (ownerAddress) {
             const fassetBalance = await cli.context.fAsset.balanceOf(ownerAddress);
-            balanceFormatted = formatFixed(toBN(fassetBalance), cli.context.chainInfo.decimals, { decimals: cli.context.chainInfo.symbol.includes("XRP") ? 3 : 6, groupDigits: true, groupSeparator: ","  });
+            balanceFormatted = formatFixed(toBN(fassetBalance), cli.context.chainInfo.decimals, { decimals: cli.context.chainInfo.symbol.includes("XRP") ? 3 : 6, groupDigits: true, groupSeparator: "," });
         }
-        return {balance: balanceFormatted, symbol: cli.context.fAssetSymbol};
+        return { balance: balanceFormatted, symbol: cli.context.fAssetSymbol };
     }
 
     async getVaultRequestableCVData(fAssetSymbol: string, agentVaultAddress: string): Promise<RequestableVaultCVData> {
-        if(!fAssetSymbol.includes("XRP")) {
-            return {requestableLotsCV: 0, requestableLotsVault: 0, lotSize: 0};
+        if (!fAssetSymbol.includes("XRP")) {
+            return { requestableLotsCV: 0, requestableLotsVault: 0, lotSize: 0 };
         }
         const cli = this.infoBotMap.get(fAssetSymbol) as AgentBotCommands;
         const info = await cli.context.assetManager.getAgentInfo(agentVaultAddress);
@@ -903,24 +904,24 @@ export class AgentService {
             }
         }
         const requestableLots = totalCoreVaultAmount.div(lotSize);
-        return {requestableLotsCV: requestableLots.toNumber(), requestableLotsVault: Number(info.freeCollateralLots), lotSize: lotSizeAsset};
+        return { requestableLotsCV: requestableLots.toNumber(), requestableLotsVault: Number(info.freeCollateralLots), lotSize: lotSizeAsset };
     }
 
     async getVaultDepositableCVData(fAssetSymbol: string, agentVaultAddress: string): Promise<DepositableVaultCVData> {
-        if(!fAssetSymbol.includes("XRP")) {
-            return {underlyingBalance: "0", transferableBalance: "0"};
+        if (!fAssetSymbol.includes("XRP")) {
+            return { underlyingBalance: "0", transferableBalance: "0" };
         }
         const cli = this.infoBotMap.get(fAssetSymbol) as AgentBotCommands;
         // amount to mint
         const info = await cli.context.assetManager.getAgentInfo(agentVaultAddress);
-        const underlyingBalance = formatFixed(toBN(info.underlyingBalanceUBA), cli.context.chainInfo.decimals, { decimals: cli.context.chainInfo.symbol.includes("XRP") ? 3 : 6, groupDigits: true, groupSeparator: ","  });
+        const underlyingBalance = formatFixed(toBN(info.underlyingBalanceUBA), cli.context.chainInfo.decimals, { decimals: cli.context.chainInfo.symbol.includes("XRP") ? 3 : 6, groupDigits: true, groupSeparator: "," });
         const depositableUBA = await cli.context.assetManager.maximumTransferToCoreVault(agentVaultAddress);
-        const maxTransfer = formatFixed(toBN(depositableUBA[0]), cli.context.chainInfo.decimals, { decimals: cli.context.chainInfo.symbol.includes("XRP") ? 3 : 6, groupDigits: true, groupSeparator: ","  });
-        return {underlyingBalance: underlyingBalance, transferableBalance: maxTransfer};
+        const maxTransfer = formatFixed(toBN(depositableUBA[0]), cli.context.chainInfo.decimals, { decimals: cli.context.chainInfo.symbol.includes("XRP") ? 3 : 6, groupDigits: true, groupSeparator: "," });
+        return { underlyingBalance: underlyingBalance, transferableBalance: maxTransfer };
     }
 
     async requestCVDeposit(fAssetSymbol: string, agentVaultAddress: string, amount: string): Promise<void> {
-        if(!fAssetSymbol.includes("XRP")) {
+        if (!fAssetSymbol.includes("XRP")) {
             return;
         }
         const cli = await AgentBotCommands.create(this.secrets, FASSET_BOT_CONFIG, fAssetSymbol);
@@ -930,7 +931,7 @@ export class AgentService {
     }
 
     async requestCVWithdrawal(fAssetSymbol: string, agentVaultAddress: string, lots: string): Promise<void> {
-        if(!fAssetSymbol.includes("XRP")) {
+        if (!fAssetSymbol.includes("XRP")) {
             return;
         }
         const cli = await AgentBotCommands.create(this.secrets, FASSET_BOT_CONFIG, fAssetSymbol);
@@ -956,11 +957,11 @@ export class AgentService {
     }
 
     async getRedemptionQueueData(): Promise<RedemptionQueueData> {
-        return {mintedLots: this.mintedLots, redemptionQueueLots: this.redemptionQueueLots};
+        return { mintedLots: this.mintedLots, redemptionQueueLots: this.redemptionQueueLots };
     }
 
     async cancelRequestFromCoreVault(fAssetSymbol: string, agentVaultAddress: string): Promise<void> {
-        if(!fAssetSymbol.includes("XRP")) {
+        if (!fAssetSymbol.includes("XRP")) {
             return;
         }
         const cli = await AgentBotCommands.create(this.secrets, FASSET_BOT_CONFIG, fAssetSymbol);
@@ -980,18 +981,18 @@ export class AgentService {
             const natBalance = await web3.eth.getBalance(challAddress);
             const fassetBalance = await natBot.context.fAsset.balanceOf(challAddress);
             const balances: AllBalances[] = [];
-            balances.push({symbol: natSymbol, balance: formatFixed(toBN(natBalance), 18, { decimals: 3, groupDigits: true, groupSeparator: "," })});
-            balances.push({symbol: natBot.context.fAssetSymbol, balance: formatFixed(toBN(fassetBalance), fDecimals.toNumber(), { decimals: 3, groupDigits: true, groupSeparator: "," })});
-            others.push({type: "Agent Challenger", address: challAddress, status: status, balances: balances});
+            balances.push({ symbol: natSymbol, balance: formatFixed(toBN(natBalance), 18, { decimals: 3, groupDigits: true, groupSeparator: "," }) });
+            balances.push({ symbol: natBot.context.fAssetSymbol, balance: formatFixed(toBN(fassetBalance), fDecimals.toNumber(), { decimals: 3, groupDigits: true, groupSeparator: "," }) });
+            others.push({ type: "Agent Challenger", address: challAddress, status: status, balances: balances });
         }
         if (liqAddress) {
             const status = this.liquidatorActivity >= (now - 180000);
             const natBalance = await web3.eth.getBalance(liqAddress);
             const fassetBalance = await natBot.context.fAsset.balanceOf(liqAddress);
             const balances: AllBalances[] = [];
-            balances.push({symbol: natSymbol, balance: formatFixed(toBN(natBalance), 18, { decimals: 3, groupDigits: true, groupSeparator: "," })});
-            balances.push({symbol: natBot.context.fAssetSymbol, balance: formatFixed(toBN(fassetBalance), fDecimals.toNumber(), { decimals: 3, groupDigits: true, groupSeparator: "," })});
-            others.push({type: "Agent Liquidator", address: liqAddress, status: status, balances: balances});
+            balances.push({ symbol: natSymbol, balance: formatFixed(toBN(natBalance), 18, { decimals: 3, groupDigits: true, groupSeparator: "," }) });
+            balances.push({ symbol: natBot.context.fAssetSymbol, balance: formatFixed(toBN(fassetBalance), fDecimals.toNumber(), { decimals: 3, groupDigits: true, groupSeparator: "," }) });
+            others.push({ type: "Agent Liquidator", address: liqAddress, status: status, balances: balances });
         }
         return others;
     }

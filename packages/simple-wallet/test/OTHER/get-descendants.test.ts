@@ -15,7 +15,7 @@ let testOrm: ORM;
 describe("getTransactionDescendants", () => {
     let em: EntityManager;
     before(async () => {
-        testOrm = await initializeTestMikroORM({...config, dbName: "unit-test-db"});
+        testOrm = await initializeTestMikroORM({ ...config, dbName: "unit-test-db" });
         em = testOrm.em;
     });
 

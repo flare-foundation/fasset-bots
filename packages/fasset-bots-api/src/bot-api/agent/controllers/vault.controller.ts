@@ -207,7 +207,7 @@ export class AgentVaultController {
         @Param("agentVaultAddress") agentVaultAddress: string,
         @Param("amount") amount: string
     ): Promise<ApiResponseWrapper<void>> {
-        return handleApiResponse(this.agentService.requestCVDeposit(fAssetSymbol, agentVaultAddress,amount));
+        return handleApiResponse(this.agentService.requestCVDeposit(fAssetSymbol, agentVaultAddress, amount));
     }
 
     @UseGuards(JwtAuthGuard)
@@ -218,7 +218,7 @@ export class AgentVaultController {
         @Param("agentVaultAddress") agentVaultAddress: string,
         @Param("lots") lots: string
     ): Promise<ApiResponseWrapper<void>> {
-        return handleApiResponse(this.agentService.requestCVWithdrawal(fAssetSymbol, agentVaultAddress,lots));
+        return handleApiResponse(this.agentService.requestCVWithdrawal(fAssetSymbol, agentVaultAddress, lots));
     }
 
     @UseGuards(JwtAuthGuard)

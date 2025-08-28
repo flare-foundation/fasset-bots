@@ -58,10 +58,12 @@ describe("Liquidator", () => {
         await waitFinalize(provider, governance, contracts.priceReader.connect(governance).setPrice("testXRP", assetPrice))
         // according to the conditions constructed above, sync up dexes as stably as possible with governance's limited funds
         console.log(chalk.cyan("syncing prices on dexes..."))
-        await dexSyncer.syncDex({ pools: [
-            { symbolA: "testUSDC", symbolB: "testXRP" },
-            { symbolA: "WNAT", symbolB: "testXRP" }
-        ]}, false)
+        await dexSyncer.syncDex({
+            pools: [
+                { symbolA: "testUSDC", symbolB: "testXRP" },
+                { symbolA: "WNAT", symbolB: "testXRP" }
+            ]
+        }, false)
         // check that collateral ratio is still as specified above
         const { mintedUBA: mintedUbaBefore, poolCollateralRatioBIPS } = await contracts.assetManager.getAgentInfo(AGENT_ADDRESS)
         assert.equal(poolCollateralRatioBIPS, BigInt(18_900))

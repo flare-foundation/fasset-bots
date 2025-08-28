@@ -170,9 +170,9 @@ export type ExtendedAgentVaultInfo = AgentVaultInfo & {
 };
 
 export const requiredKeysForSecrets = ["wallet.encryption_password",
-                                        "apiKey.indexer", "apiKey.xrp_rpc", "apiKey.native_rpc", "apiKey.agent_bot",
-                                    "owner.management.address", "owner.native.address", "owner.native.private_key",
-                                    "owner.testXRP.address", "owner.testXRP.private_key"];
+    "apiKey.indexer", "apiKey.xrp_rpc", "apiKey.native_rpc", "apiKey.agent_bot",
+    "owner.management.address", "owner.native.address", "owner.native.private_key",
+    "owner.testXRP.address", "owner.testXRP.private_key"];
 
 export interface APIKey {
     key: string;

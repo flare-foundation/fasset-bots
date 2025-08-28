@@ -345,7 +345,7 @@ describe("UserBot cli commands unit tests", () => {
             createdAt: userBot.timestampToDateString(timestamp),
         };
         userBot.writeState(mintData);
-        const newFilename =createUserTestMintOrRedeemFile(mintData);
+        const newFilename = createUserTestMintOrRedeemFile(mintData);
         const existBefore = existsSync(newFilename);
         expect(existBefore).to.be.true;
         await userBot.listMintings();
@@ -458,15 +458,15 @@ describe("UserBot cli commands unit tests", () => {
         const underlying = "userUnderlyingAddress-10";
         const userBot2 = new UserBotCommands(context, fAssetSymbol, accounts[10], underlying, userDataDir);
         await expect(userBot2.reserveCollateral(agentBot.agent.vaultAddress, 5, ZERO_ADDRESS, undefined))
-        .to.eventually.be.rejectedWith(`Not enough funds on underlying address ${underlying}`)
-        .and.be.an.instanceOf(Error);
+            .to.eventually.be.rejectedWith(`Not enough funds on underlying address ${underlying}`)
+            .and.be.an.instanceOf(Error);
     });
 
     it("Should not reserve collateral - not enough native funds", async () => {
         const fAssetSymbol = "TESTHHSYM_1";
         const userBot2 = new UserBotCommands(context, fAssetSymbol, ZERO_ADDRESS, "userUnderlyingAddress", userDataDir);
         await expect(userBot2.reserveCollateral(agentBot.agent.vaultAddress, 5, ZERO_ADDRESS, undefined))
-        .to.eventually.be.rejectedWith(`Not enough funds on evm native address ${ZERO_ADDRESS}`)
-        .and.be.an.instanceOf(Error);
+            .to.eventually.be.rejectedWith(`Not enough funds on evm native address ${ZERO_ADDRESS}`)
+            .and.be.an.instanceOf(Error);
     });
 });

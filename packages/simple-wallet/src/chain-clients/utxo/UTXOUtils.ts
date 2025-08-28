@@ -211,7 +211,7 @@ export function getMinimumAllowedUTXOValue(chainType: ChainType) {
     return getDustAmount(chainType).muln(2);
 }
 
-export function calculateFeePerKBFromTransactionEntity(rbfTxId: number, txForReplacement?: TransactionEntity) : BN {
+export function calculateFeePerKBFromTransactionEntity(rbfTxId: number, txForReplacement?: TransactionEntity): BN {
     if (txForReplacement && txForReplacement.fee && txForReplacement.size) {
         return txForReplacement.fee.muln(1000).divn(txForReplacement.size);
     } else if (txForReplacement) {

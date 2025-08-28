@@ -94,7 +94,7 @@ export function expandConfigPath(config: string, user: UserTypeForOptions) {
     return config;
 }
 
-export function getOneDefaultToAll<T>(map: Map<string,T>, val?: string): T[] {
+export function getOneDefaultToAll<T>(map: Map<string, T>, val?: string): T[] {
     if (val === undefined) {
         return Array.from(map.values());
     }
