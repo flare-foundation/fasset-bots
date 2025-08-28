@@ -3,7 +3,7 @@ import { IBlock, IBlockChain, IBlockId, ITransaction, TxInputOutput, TX_FAILED, 
 import { BNish, BN_ZERO, fail, systemTimestamp, toBN, requireNotNull } from "../utils/helpers";
 import type { IBlockChainWallet, TransactionOptionsWithFee, SpentReceivedObject } from "../underlying-chain/interfaces/IBlockChainWallet";
 import BN from "bn.js";
-import { ITransactionMonitor, TransactionInfo, TransactionStatus, UTXOBlockchainAPI, XRPBlockchainAPI } from "@flarenetwork/simple-wallet";
+import { ITransactionMonitor, TransactionInfo, TransactionStatus, UTXOBlockchainAPI, WalletNotifier, XRPBlockchainAPI } from "@flarenetwork/simple-wallet";
 
 export type MockTransactionOptions = { status?: number };
 export type MockTransactionOptionsWithFee = TransactionOptionsWithFee & { status?: number };
@@ -247,6 +247,10 @@ export class MockTransactionMonitor implements ITransactionMonitor {
 
     async runningMonitorId(): Promise<string | null> {
         return this.monitoring ? this.id : null;
+    }
+
+    setNotifier(notifier: WalletNotifier): void {
+        // do nothing
     }
 }
 
