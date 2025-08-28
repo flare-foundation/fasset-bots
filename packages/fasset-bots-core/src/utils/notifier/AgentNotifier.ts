@@ -1,6 +1,6 @@
-import { BaseNotifier, BotType, NotifierThrottlingConfigs, NotifierTransport } from "@flarenetwork/fasset-bots-common";
+import { BaseNotifier, BotType, NotificationThrottlingKey, NotifierThrottlingConfigs, NotifierTransport } from "@flarenetwork/fasset-bots-common";
 import { FormattedString, squashSpace } from "../formatting";
-import { BNish, HOURS } from "../helpers";
+import { BNish, HOURS, MINUTES } from "../helpers";
 
 export enum AgentNotificationKey {
     // agent status and settings,
@@ -82,6 +82,7 @@ export enum AgentNotificationKey {
     UNDERLYING_NO_PROOF_OBTAINED = "NO PROOF OBTAINED FOR UNDERLYING PAYMENT",
     UNDERLYING_PAYMENT_TOP_UP_FAILED = "UNDERLYING TOP UP FAILED",
     AGENT_UNDERLYING_TOPUP_START = "AGENT'S UNDERLYING TOPUP STARTED",
+    AGENT_UNDERLYING_TOPUP_FAILED = "AGENT'S UNDERLYING TOPUP FAILED",
     AGENT_UNDERLYING_TOPUP_CREATE = "PAYMENT CREATED FOR AGENT'S UNDERLYING TOPUP",
     UNDERLYING_WITHDRAWAL_ANNOUNCED = "AGENT ANNOUNCED UNDERLYING WITHDRAWAL",
     UNDERLYING_WITHDRAWAL_CREATED = "AGENT CREATED UNDERLYING WITHDRAWAL",
@@ -114,12 +115,15 @@ export enum AgentNotificationKey {
     RETURN_FROM_CV_PERFORMED = "RETURN FROM CORE VAULT PERFORMED",
     RETURN_FROM_CV_PAYMENT_PROOF = "RETURN FROM CORE VAULT PAYMENT PROOF REQUESTED",
     RETURN_FROM_CVN_NO_PROOF_OBTAINED = "NO PROOF OBTAINED FOR RETURN FROM CORE VAULT",
-
+    // unexpected errors - typically external service or network errors
+    GENERIC_INFO = "INFO",
+    UNEXPECTED_ERROR = "UNEXPECTED ERROR",
 }
 
 export const agentNotifierThrottlingTimes: NotifierThrottlingConfigs = {
-    [AgentNotificationKey.LOW_OWNERS_NATIVE_BALANCE]: { duration: 6 * HOURS, addressInKey: false },
-    [AgentNotificationKey.LOW_OWNERS_UNDERLYING_BALANCE]: { duration: 6 * HOURS, addressInKey: false },
+    [AgentNotificationKey.LOW_OWNERS_NATIVE_BALANCE]: { duration: 6 * HOURS, key: NotificationThrottlingKey.title },
+    [AgentNotificationKey.LOW_OWNERS_UNDERLYING_BALANCE]: { duration: 6 * HOURS, key: NotificationThrottlingKey.title },
+    [AgentNotificationKey.UNEXPECTED_ERROR]: { duration: 30 * MINUTES, key: NotificationThrottlingKey.titleAndMessage },
 };
 
 export class AgentNotifier extends BaseNotifier<AgentNotificationKey> {
@@ -127,6 +131,15 @@ export class AgentNotifier extends BaseNotifier<AgentNotificationKey> {
 
     constructor(address: string, transports: NotifierTransport[]) {
         super(BotType.AGENT, address, transports);
+    }
+
+    async genericInfo(message: string) {
+        await this.info(AgentNotificationKey.UNEXPECTED_ERROR, message);
+    }
+
+    async unxpectedError(message: string, error?: unknown) {
+        const fullMessage = error ? `${message}: ${error}` : message;
+        await this.danger(AgentNotificationKey.UNEXPECTED_ERROR, fullMessage);
     }
 
     async agentCreationFailed(error: string) {
@@ -598,6 +611,10 @@ export class AgentNotifier extends BaseNotifier<AgentNotificationKey> {
 
     async sendStartUnderlyingTopup(value: string) {
         await this.info(AgentNotificationKey.AGENT_UNDERLYING_TOPUP_START, `Owner started underlying topup of ${value} on vault ${this.address}.`);
+    }
+
+    async sendStartUnderlyingTopupFailed(value: string) {
+        await this.danger(AgentNotificationKey.AGENT_UNDERLYING_TOPUP_FAILED, `Owner couldn't start underlying topup of ${value} on vault ${this.address} - probably balance low.`);
     }
 
     async sendUnderlyingTopupPaymentCreated(value: string) {

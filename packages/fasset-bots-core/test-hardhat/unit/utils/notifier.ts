@@ -1,4 +1,4 @@
-import { BotType, ConsoleNotifierTransport, NotificationLevel, NotifierThrottlingConfigs, ThrottlingNotifierTransport } from "@flarenetwork/fasset-bots-common";
+import { BotType, ConsoleNotifierTransport, NotificationThrottlingKey, NotificationLevel, NotifierThrottlingConfigs, ThrottlingNotifierTransport } from "@flarenetwork/fasset-bots-common";
 import { expect, spy, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import spies from "chai-spies";
@@ -488,8 +488,8 @@ describe("Notifier tests", () => {
     });
 
     const testNotifierThrottlingTimes: NotifierThrottlingConfigs = {
-        [AgentNotificationKey.LOW_OWNERS_NATIVE_BALANCE]: { duration: 6 * HOURS, addressInKey: false },
-        [AgentNotificationKey.LOW_OWNERS_UNDERLYING_BALANCE]: { duration: 6 * HOURS, addressInKey: true },
+        [AgentNotificationKey.LOW_OWNERS_NATIVE_BALANCE]: { duration: 6 * HOURS, key: NotificationThrottlingKey.title },
+        [AgentNotificationKey.LOW_OWNERS_UNDERLYING_BALANCE]: { duration: 6 * HOURS, key: NotificationThrottlingKey.titleAndAddress },
     };
 
     it("notification should be throttled", async () => {
