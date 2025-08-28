@@ -23,17 +23,17 @@ import {
     WalletNotificationKey,
     type ITransactionMonitor,
     type IWalletKeys,
-    type WalletNotifier,
     type RippleWalletConfig,
     type SignedObject,
     type TransactionInfo,
+    type WalletNotifier,
     type WriteWalletInterface,
     type XRPFeeParams,
 } from "../../interfaces/IWalletTransaction";
 import { toBN } from "../../utils/bnutils";
 import { ChainType, DELETE_ACCOUNT_OFFSET, WAIT_TO_APPEAR_IN_XRP, XRP_MINIMAL_FEE_DROPS, XRP_PENDING_TIMEOUT } from "../../utils/constants";
 import { logger } from "../../utils/logger";
-import { bytesToHex, checkIfFeeTooHigh, checkIfShouldStillSubmit, createMonitoringId, getCurrentTimestampInSeconds, isValidHexString, prefix0x, roundUpXrpToDrops, sleepMs, stuckTransactionConstants } from "../../utils/utils";
+import { bytesToHex, checkIfFeeTooHigh, checkIfShouldStillSubmit, createMonitoringId, getCurrentTimestampInSeconds, isValidHexString, prefix0x, requireNotNull, roundUpXrpToDrops, sleepMs, stuckTransactionConstants } from "../../utils/utils";
 import { XrpAccountGeneration } from "../account-generation/XrpAccountGeneration";
 import { CreateWalletOverrides, IMonitoredWallet, TransactionMonitor } from "../monitoring/TransactionMonitor";
 
@@ -278,7 +278,7 @@ export class XrpWalletImplementation extends XrpAccountGeneration implements Wri
 
     async resubmitPendingTransaction(txEnt: TransactionEntity): Promise<void> {
         logger.info(`Pending transaction ${txEnt.id} is being resubmitted.`);
-        const transaction = JSON.parse(txEnt.raw!) as xrpl.Payment | xrpl.AccountDelete;
+        const transaction = JSON.parse(requireNotNull(txEnt.raw)) as xrpl.Payment | xrpl.AccountDelete;
         const privateKey = await this.walletKeys.getKey(txEnt.source);
         if (!privateKey) {
             await handleMissingPrivateKey(this.rootEm, txEnt.id, "resubmitPendingTransaction", this.notifier, txEnt.source);
@@ -307,7 +307,7 @@ export class XrpWalletImplementation extends XrpAccountGeneration implements Wri
             await handleMissingPrivateKey(this.rootEm, txEnt.id, "submitPreparedTransactions", this.notifier, txEnt.source);
             return;
         }
-        const transaction = JSON.parse(txEnt.raw!) as xrpl.Payment | xrpl.AccountDelete;
+        const transaction = JSON.parse(requireNotNull(txEnt.raw)) as xrpl.Payment | xrpl.AccountDelete;
         await this.signAndSubmitProcess(txEnt.id, privateKey, transaction);
     }
 
@@ -358,7 +358,7 @@ export class XrpWalletImplementation extends XrpAccountGeneration implements Wri
 
     async checkSubmittedTransaction(txEnt: TransactionEntity): Promise<void> {
         logger.info(`Submitted transaction ${txEnt.id} (${txEnt.transactionHash}) is being checked.`);
-        const txResp = await this.blockchainAPI.getTransaction(txEnt.transactionHash!);
+        const txResp = await this.blockchainAPI.getTransaction(requireNotNull(txEnt.transactionHash));
         const currentTimestamp = toBN(getCurrentTimestampInSeconds());
         if (txResp.data.result.validated) {
             await updateTransactionEntity(this.rootEm, txEnt.id, (txEntToUpdate) => {
@@ -397,7 +397,7 @@ export class XrpWalletImplementation extends XrpAccountGeneration implements Wri
         const waitUntilBlock = txEnt.submittedInBlock + WAIT_TO_APPEAR_IN_XRP;
 
         while ((await this.getLatestValidatedLedgerIndex() <= waitUntilBlock) || (getCurrentTimestampInSeconds() - startChecking < XRP_PENDING_TIMEOUT)) {
-            const txResp = await this.blockchainAPI.getTransaction(txEnt.transactionHash!);
+            const txResp = await this.blockchainAPI.getTransaction(requireNotNull(txEnt.transactionHash));
             if (txResp.data.result.validated) {
                 await updateTransactionEntity(this.rootEm, txId, (txEnt) => {
                     txEnt.status = TransactionStatus.TX_SUCCESS;
@@ -414,9 +414,9 @@ export class XrpWalletImplementation extends XrpAccountGeneration implements Wri
     async resubmitTransaction(txId: number, privateKey: string, transaction: xrpl.Payment | xrpl.AccountDelete) {
         logger.info(`Transaction ${txId} is being resubmitted.`);
         const originalTx = await fetchTransactionEntityById(this.rootEm, txId);
-        let newFee = toBN(transaction.Fee!);
+        let newFee = toBN(requireNotNull(transaction.Fee));
         if (originalTx.status === TransactionStatus.TX_SUBMISSION_FAILED) {
-            newFee = toBN(transaction.Fee!).muln(this.feeIncrease);
+            newFee = toBN(requireNotNull(transaction.Fee)).muln(this.feeIncrease);
         }
         if (checkIfFeeTooHigh(newFee, originalTx.maxFee ?? null)) {
             await failTransaction(this.rootEm, txId, `Cannot resubmit transaction ${txId}. Due to fee restriction (fee: ${newFee.toString()}, maxFee: ${originalTx.maxFee?.toString()})`, undefined, this.notifier, transaction.Account);
@@ -556,10 +556,10 @@ export class XrpWalletImplementation extends XrpAccountGeneration implements Wri
         }
 
         const currentTimestamp = toBN(getCurrentTimestampInSeconds());
-        const originalTx = JSON.parse(transaction.raw!) as xrpl.Payment | xrpl.AccountDelete;
+        const originalTx = JSON.parse(requireNotNull(transaction.raw)) as xrpl.Payment | xrpl.AccountDelete;
         if (originalTx.TransactionType == "AccountDelete") {
             /* istanbul ignore else */
-            if (originalTx.Sequence! + DELETE_ACCOUNT_OFFSET > currentLedger) {
+            if (requireNotNull(originalTx.Sequence) + DELETE_ACCOUNT_OFFSET > currentLedger) {
                 logger.warn(`AccountDelete transaction ${txDbId} does not yet satisfy requirements: sequence ${originalTx.Sequence}, currentLedger ${currentLedger}`);
                 await updateTransactionEntity(this.rootEm, txDbId, (txEnt: TransactionEntity) => {
                     txEnt.reachedStatusPreparedInTimestamp = currentTimestamp;

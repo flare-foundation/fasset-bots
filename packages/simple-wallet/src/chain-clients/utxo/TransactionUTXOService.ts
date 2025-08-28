@@ -31,7 +31,7 @@ import {
 import { UTXOBlockchainAPI } from "../../blockchain-apis/UTXOBlockchainAPI";
 import { IUtxoWalletServices } from "./IUtxoWalletServices";
 import { TransactionData, UTXO } from "../../interfaces/IWalletTransaction";
-import { unPrefix0x } from "../../utils/utils";
+import { requireNotNull, unPrefix0x } from "../../utils/utils";
 import { Transaction } from "bitcore-lib";
 import UnspentOutput = Transaction.UnspentOutput;
 
@@ -343,7 +343,7 @@ export class TransactionUTXOService {
                     const script = await this.blockchainAPI.getUTXOScript(utxo.transactionHash, utxo.position);
                     addressScriptMap.set(`${utxo.transactionHash}:${utxo.position}`, script);
                 }
-                utxo.script = addressScriptMap.get(`${utxo.transactionHash}:${utxo.position}`)!;
+                utxo.script = requireNotNull(addressScriptMap.get(`${utxo.transactionHash}:${utxo.position}`));
             }
         }
         return utxos;
@@ -368,7 +368,7 @@ export class TransactionUTXOService {
         const inputs: TransactionInputEntity[] = [];
         for (const utxo of dbUTXOs) {
             if (utxoToTxMap.has(`${utxo.transactionHash}:${utxo.position}`)) {
-                inputs.push(transformUTXOToTxInputEntity(em, utxo, utxoToTxMap.get(`${utxo.transactionHash}:${utxo.position}`)!));
+                inputs.push(transformUTXOToTxInputEntity(em, utxo, requireNotNull(utxoToTxMap.get(`${utxo.transactionHash}:${utxo.position}`))));
             }
         }
         return inputs;
@@ -452,7 +452,7 @@ export class TransactionUTXOService {
 
         const startSize = Array.from(addressScriptMap.keys()).length;
         for (const txEnt of transactions) {
-            const tr = JSON.parse(txEnt.raw!) as UTXORawTransaction;
+            const tr = JSON.parse(requireNotNull(txEnt.raw)) as UTXORawTransaction;
             for (const t of tr.inputs) {
                 addressScriptMap.delete(`${t.prevTxId}:${t.outputIndex}`);
             }

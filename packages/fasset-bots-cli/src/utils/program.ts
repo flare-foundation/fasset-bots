@@ -49,7 +49,7 @@ export function programWithCommonOptions(userType: UserTypeForOptions, fassets: 
                     return fassetKey;
                 }
             }
-        } catch (error) {
+        } catch (_error) {
             // ignore errors loading config file - will be reported later
         }
         return fasset;

@@ -4,7 +4,7 @@ import "source-map-support/register";
 import { CollateralClass, CollateralType } from "@flarenetwork/fasset-bots-core";
 import { ChainContracts, Secrets, loadConfigFile, loadContracts } from "@flarenetwork/fasset-bots-core/config";
 import { IIAssetManagerControllerInstance } from "@flarenetwork/fasset-bots-core/types";
-import { artifacts, authenticatedHttpProvider, initWeb3, requireNotNull, requireNotNullCmd, toBNExp, web3 } from "@flarenetwork/fasset-bots-core/utils";
+import { artifacts, authenticatedHttpProvider, initWeb3, logger, requireNotNull, requireNotNullCmd, toBNExp, web3 } from "@flarenetwork/fasset-bots-core/utils";
 import { readFileSync } from "fs";
 import { AgentRegistrationTransport } from "../utils/open-beta";
 import { programWithCommonOptions } from "../utils/program";
@@ -150,6 +150,7 @@ async function mintOrTransferFakeTokens(secretsFile: string, configFileName: str
         await token.mintAmount(recipientAddress, amountBN, { from: deployerAddress });
     } catch (error) {
         console.log("Cannot mint, transferring from deployer address...");
+        logger.error("Cannot mint, transferring from deployer address...", error);
         await token.transfer(recipientAddress, amountBN, { from: deployerAddress });
     }
 }

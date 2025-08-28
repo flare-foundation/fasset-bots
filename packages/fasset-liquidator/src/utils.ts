@@ -19,3 +19,9 @@ export function storeLatestDeploy(contract: string, address: string, network: st
     addresses[network][contract] = address
     writeFileSync('deploys.json', JSON.stringify(addresses, null, 2))
 }
+
+export function requireEnv(name: string) {
+    const value = process.env[name];
+    if (value != null) return value;
+    throw new Error(`Environment value ${name} not defined`);
+}

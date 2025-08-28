@@ -68,7 +68,7 @@ export class AgentService {
                 try {
                     //console.log("Updating queue");
                     await this.updateRedemptionQueue();
-                } catch (error) {
+                } catch (_error) {
                     //logger.error(`'Error running getPools:`, error);
                 } finally {
                     this.isRunning = false;

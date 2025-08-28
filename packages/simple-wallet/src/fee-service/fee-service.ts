@@ -110,7 +110,7 @@ export class BlockchainFeeService {
             logger.info(`${this.monitoringId}: Stopped monitoring fees and timestamps.`);
         } catch (error) {
             // should never happen
-            logger.error(`${this.monitoringId}: Unexpected error monitoring fees and timestamps, stopped.`);
+            logger.error(`${this.monitoringId}: Unexpected error monitoring fees and timestamps, stopped.`, error);
         } finally {
             this.running = false;
         }
