@@ -100,7 +100,7 @@ export class FilesystemAddressLocks implements AddressLocks {
             try {
                 fs.writeFileSync(lockfile, lockId, { encoding: "ascii", flag: "wx" });
                 return { address, id: lockId };
-            } catch (e) {
+            } catch (_e) {
                 // check for expired files
                 const stat = fs.statSync(lockfile, { throwIfNoEntry: false });
                 if (stat != null && systemTimestampMS() - stat.mtimeMs > this.settings.lockExpirationMS) {
@@ -112,7 +112,7 @@ export class FilesystemAddressLocks implements AddressLocks {
                         fs.rmSync(lockfile, { force: true });
                     } catch (error) {
                         /* istanbul ignore next */
-                        logger.error(`Error deleting expired lockfile ${lockfile}`, e);
+                        logger.error(`Error deleting expired lockfile ${lockfile}`, error);
                     }
                     await sleep(SLEEP_TIME_AFTER_EXPIRATION);
                 }
@@ -178,7 +178,7 @@ function assureDirectoryExists(dir: string) {
             fs.mkdirSync(dir, { recursive: true });
         } catch (e) {
             /* istanbul ignore next */
-            logger.error(`Problem creating directory "${dir}"`);
+            logger.error(`Problem creating directory "${dir}"`, e);
         }
     }
 }

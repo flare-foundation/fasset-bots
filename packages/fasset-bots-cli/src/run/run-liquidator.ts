@@ -56,6 +56,7 @@ program.action(async () => {
             runner => runner.run(ActorBaseKind.LIQUIDATOR))
         );
     } finally {
+        if (activityUpdateTimer) clearInterval(activityUpdateTimer);
         await closeBotConfig(config);
     }
     console.log("Liquidator bot stopped");

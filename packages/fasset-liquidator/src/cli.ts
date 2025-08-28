@@ -1,6 +1,6 @@
 import { Command, OptionValues } from "commander"
 import { JsonRpcProvider, Wallet } from "ethers"
-import { storeLatestDeploy } from "./utils"
+import { requireEnv, storeLatestDeploy } from "./utils"
 import { deployLiquidator, deployChallenger, deployUniswapV2, deployFlashLender, deployUniswapV2Mock } from "./deploy"
 import { DexFtsoPriceSyncerConfig, DexFtsoPriceSyncer } from "../test/integration/utils/uniswap-v2/dex-price-syncer"
 import { addLiquidity } from "../test/integration/utils/uniswap-v2/wrappers"
@@ -15,7 +15,7 @@ const program = new Command("Liquidator and dex CLI")
 // global vars set at config hook
 let addresses: NetworkAddressesJson
 let provider: JsonRpcProvider
-let signer: Signer | undefined
+let signer: Signer
 
 // global configurations
 program
@@ -28,9 +28,10 @@ program
         addresses = require("../addresses.json")[opts.network]
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         require("dotenv").config({ path: opts.envPath })
-        provider = new JsonRpcProvider(process.env.RPC_URL!)
-        signer = new Wallet(process.env.PRIVATE_KEY!, provider)
+        provider = new JsonRpcProvider(requireEnv("RPC_URL"))
+        signer = new Wallet(requireEnv("PRIVATE_KEY"), provider)
     })
+
 // commands
 program
     .command("deploy").description("deploy contract")
@@ -38,20 +39,21 @@ program
     .action(async (contract: string) => {
         let address: string
         if (contract === "liquidator") {
-            address = await deployLiquidator(addresses.flashLender, addresses.uniswapV2, signer!)
+            address = await deployLiquidator(addresses.flashLender, addresses.uniswapV2, signer)
         } else if (contract === "challenger") {
-            address = await deployChallenger(addresses.flashLender, addresses.uniswapV2, signer!)
+            address = await deployChallenger(addresses.flashLender, addresses.uniswapV2, signer)
         } else if (contract == "uniswap-v2") {
-            address = await deployUniswapV2(addresses.WNAT, signer!)
+            address = await deployUniswapV2(addresses.WNAT, signer)
         } else if (contract == "flash-lender") {
-            address = await deployFlashLender(signer!)
+            address = await deployFlashLender(signer)
         } else if (contract == "uniswap-v2-mock") {
-            address = await deployUniswapV2Mock(addresses.uniswapV2, signer!)
+            address = await deployUniswapV2Mock(addresses.uniswapV2, signer)
         } else {
             throw new Error("invalid contract")
         }
         storeLatestDeploy(contract, address, program.opts().network)
     })
+
 program
     .command("coston-beta").description("methods regarding used dex")
     .argument("action <sync-dex|remove-liquidity|wrap-wnat|unwrap-wnat|run-dex-sync-bot>", "action to perform")
@@ -61,7 +63,7 @@ program
         const opts = { ..._opts, ...program.opts() }
         const assetManager = getAssetManagerAddress(opts.network, opts.fAsset)
         const liquidityPools = getDexPools(opts.network, opts.fAsset)
-        const manipulator = await DexFtsoPriceSyncer.create(opts.network, process.env.RPC_URL!, assetManager, process.env.PRIVATE_KEY!)
+        const manipulator = await DexFtsoPriceSyncer.create(opts.network, requireEnv("RPC_URL"), assetManager, requireEnv("PRIVATE_KEY"))
         if (action === "sync-dex" || action === "run-dex-sync-bot") {
             if (Number(opts.slippage === undefined + opts.volume === undefined) == 1) {
                 throw Error("slippage and volume are not well-defined without each other")
@@ -83,6 +85,7 @@ program
             await manipulator.unwrapWNat()
         }
     })
+
 program
     .command("add-liquidity").description("add liquidity to a dex pool")
     .argument("<token>", "first token name")
@@ -94,11 +97,11 @@ program
         const contracts = await getContracts(assetManagerAddress, opts.network, provider)
         const tokenA = (token.toLowerCase() === "wnat") ? contracts.wNat : contracts.collaterals[token]
         const tokenB = contracts.fAsset
-        const balanceA = await tokenA.balanceOf(signer!.getAddress())
-        const balanceB = await tokenB.balanceOf(signer!.getAddress())
+        const balanceA = await tokenA.balanceOf(signer.getAddress())
+        const balanceB = await tokenB.balanceOf(signer.getAddress())
         const amountA = balanceA * BigInt(opts.PA) / BigInt(100)
         const amountB = balanceB * BigInt(opts.PB) / BigInt(100)
-        await addLiquidity(contracts.uniswapV2, tokenA, tokenB, amountA, amountB, signer!, provider)
+        await addLiquidity(contracts.uniswapV2, tokenA, tokenB, amountA, amountB, signer, provider)
         console.log(`Added liquidity to ${token}/${opts.fAsset} pool`)
     })
 

@@ -41,6 +41,7 @@ import { BTC_DOGE_DEC_PLACES, ChainType, MAX_UTXO_TX_SIZE_IN_B, MEMPOOL_WAITING_
 import { logger } from "../../utils/logger";
 import {
     checkIfShouldStillSubmit, createMonitoringId, getCurrentTimestampInSeconds,
+    requireNotNull,
     sleepMs,
     stuckTransactionConstants
 } from "../../utils/utils";
@@ -523,7 +524,7 @@ export abstract class UTXOWalletImplementation extends UTXOAccountGeneration imp
     async submitPreparedTransactions(txEnt: TransactionEntity): Promise<void> {
         logger.info(`Checking prepared transaction ${txEnt.id}.`);
         const core = getCore(this.chainType);
-        const transaction = new core.Transaction(JSON.parse(txEnt.raw!));
+        const transaction = new core.Transaction(JSON.parse(requireNotNull(txEnt.raw)));
 
         const privateKey = await this.walletKeys.getKey(txEnt.source);
         /* istanbul ignore next */
@@ -615,8 +616,9 @@ export abstract class UTXOWalletImplementation extends UTXOAccountGeneration imp
         if (oldTx.amount != null) {
             newValue = oldTx.isFreeUnderlyingTransaction ? oldTx.amount : getMinimumAllowedUTXOValue(this.chainType);
         }
-        const totalFee: BN = toBN(await this.transactionFeeService.calculateTotalFeeOfDescendants(this.rootEm, oldTx)).add(oldTx.fee!); // covering conflicting txs
-        logger.info(`Descendants fee ${totalFee.sub(oldTx.fee!).toNumber()}, oldTx fee ${oldTx.fee}, total fee ${totalFee}`);
+        const oldTxFee = requireNotNull(oldTx.fee);
+        const totalFee: BN = toBN(await this.transactionFeeService.calculateTotalFeeOfDescendants(this.rootEm, oldTx)).add(oldTxFee); // covering conflicting txs
+        logger.info(`Descendants fee ${totalFee.sub(oldTxFee).toNumber()}, oldTx fee ${oldTxFee}, total fee ${totalFee}`);
 
         const replacementTx = await createInitialTransactionEntity(
             this.rootEm,
@@ -712,7 +714,7 @@ export abstract class UTXOWalletImplementation extends UTXOAccountGeneration imp
         const end = start + MEMPOOL_WAITING_TIME;
         while (getCurrentTimestampInSeconds() < end) {
             try {
-                const txResp = await this.blockchainAPI.getTransaction(txEnt.transactionHash!);
+                const txResp = await this.blockchainAPI.getTransaction(requireNotNull(txEnt.transactionHash));
                 logger.info(`Transaction ${txId} received response: ${JSON.stringify(txResp)}`);
                 /* ignore else */
                 if (txResp && txResp.confirmations >= 0) {

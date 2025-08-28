@@ -15,7 +15,7 @@ export function toplevelRun(main: () => Promise<void>) {
     try {
         const niceMainPath = path.relative(process.cwd(), process.argv[1]).replace(/\\/g, "/");
         logger.info(`***** EXECUTING: ${path.basename(process.argv[0])} ${niceMainPath} ${process.argv.slice(2).join(" ")}`);
-    } catch (error) {
+    } catch (_error) {
         logger.info(`***** EXECUTING: ${process.argv.join(" ")}`);
     }
     logger.info(`***** Version: ${programVersion()}`)
