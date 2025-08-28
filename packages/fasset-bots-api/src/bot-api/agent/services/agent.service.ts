@@ -658,15 +658,12 @@ export class AgentService {
                 //Calculate usd values
                 const vaultCollateralType = await cli.context.assetManager.getCollateralType(CollateralClass.VAULT, infoVault.vaultCollateralToken)
                 const existingPrice = prices.find(p => p.symbol === vaultCollateralType.tokenFtsoSymbol);
-                let totalVaultCollateralUSD = toBN(0);
                 let totalPoolCollateralUSD = toBN(0);
                 if (existingPrice) {
-                    totalVaultCollateralUSD = toBN(info.totalVaultCollateralWei).mul(existingPrice.price).div(toBNExp(1, Number(vaultCollateralType.decimals) + existingPrice.decimals));
                     totalPoolCollateralUSD = toBN(info.totalPoolCollateralNATWei).mul(priceUSD).div(toBNExp(1, 18 + Number(cflrPrice.decimals)));
                 } else {
                     const priceVault = await priceReader.getPrice(vaultCollateralType.tokenFtsoSymbol, false, settings.maxTrustedPriceAgeSeconds);
                     const priceVaultUSD = priceVault.price.mul(toBNExp(1, 18));
-                    totalVaultCollateralUSD = toBN(info.totalVaultCollateralWei).mul(priceVaultUSD).div(toBNExp(1, Number(vaultCollateralType.decimals) + Number(priceVault.decimals)));
                     totalPoolCollateralUSD = toBN(info.totalPoolCollateralNATWei).mul(priceUSD).div(toBNExp(1, 18 + Number(cflrPrice.decimals)));
                     prices.push({ symbol: vaultCollateralType.tokenFtsoSymbol, price: priceVaultUSD, decimals: Number(priceVault.decimals) });
                 }
