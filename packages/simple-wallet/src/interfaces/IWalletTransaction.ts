@@ -16,6 +16,8 @@ export interface WalletAccountGenerationInterface {
 export enum WalletNotificationKey {
     INSUFFICIENT_FEE = "INSUFFICIENT_FEE",
     DUPLICATE_TRANSACTION = "DUPLICATE_TRANSACTION",
+    SUBMISSION_FAILED = "SUBMISSION_FAILED",
+    CANNOT_SUBMIT = "CANNOT_SUBMIT",
 }
 
 export interface WalletNotifier {

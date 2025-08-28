@@ -1,4 +1,4 @@
-import { errorMessage, updateErrorWithFullStackTrace } from "@flarenetwork/fasset-bots-common";
+import { errorMessage, NotificationLevel, updateErrorWithFullStackTrace } from "@flarenetwork/fasset-bots-common";
 import { EntityManager, FilterQuery, LockMode, RequiredEntityData, TransactionOptions } from "@mikro-orm/core";
 import BN from "bn.js";
 import { MonitoringStateEntity } from "../entity/monitoringState";
@@ -6,7 +6,7 @@ import { TransactionEntity, TransactionStatus } from "../entity/transaction";
 import { TransactionInputEntity } from "../entity/transactionInput";
 import { WalletAddressEntity } from "../entity/wallet";
 import { MempoolUTXO } from "../interfaces/IBlockchainAPI";
-import { TransactionInfo } from "../interfaces/IWalletTransaction";
+import { TransactionInfo, WalletNotificationKey, WalletNotifier } from "../interfaces/IWalletTransaction";
 import { toBN } from "../utils/bnutils";
 import { ChainType } from "../utils/constants";
 import { logger } from "../utils/logger";
@@ -154,10 +154,10 @@ export async function findTransactionsWithStatuses(rootEm: EntityManager, chainT
 }
 
 //others
-export async function handleMissingPrivateKey(rootEm: EntityManager, txId: number, failedInFunction: string): Promise<void> {
-    await failTransaction(rootEm, txId, `${failedInFunction}: Cannot prepare transaction ${txId}. Missing private key.`);
+export async function handleMissingPrivateKey(rootEm: EntityManager, txId: number, failedInFunction: string, notifier?: WalletNotifier, source?: string): Promise<void> {
+    await failTransaction(rootEm, txId, `${failedInFunction}: Cannot prepare transaction ${txId}. Missing private key.`, undefined, notifier, source);
 }
-
+// used only in xrp
 export async function handleNoTimeToSubmitLeft(
     rootEm: EntityManager,
     txId: number,
@@ -165,17 +165,22 @@ export async function handleNoTimeToSubmitLeft(
     executionBlockOffset: number,
     failedInFunction: string,
     executeUntilBlock?: number,
-    executeUntilTimestamp?: string
+    executeUntilTimestamp?: string,
+    notifier?: WalletNotifier,
+    sourceAddress?: string,
 ): Promise<void> {
     const currentTimestamp = toBN(getCurrentTimestampInSeconds());
     await failTransaction(
         rootEm,
         txId,
         `${failedInFunction}: Transaction ${txId} has no time left to be submitted: currentBlockHeight: ${currentLedger}, executeUntilBlock: ${executeUntilBlock}, offset ${executionBlockOffset}.
-              Current timestamp ${currentTimestamp.toString()} >= execute until timestamp ${executeUntilTimestamp}.`
+              Current timestamp ${currentTimestamp.toString()} >= execute until timestamp ${executeUntilTimestamp}.`,
+        undefined,
+        notifier,
+        sourceAddress
     );
 }
-
+// used only in utxo
 export async function failDueToNoTimeToSubmit(rootEm: EntityManager, medianTime: BN | null, currentBlockNumber: number, txEnt: TransactionEntity, fnText: string) {
     await failTransaction(
         rootEm,
@@ -184,7 +189,7 @@ export async function failDueToNoTimeToSubmit(rootEm: EntityManager, medianTime:
     );
 }
 
-export async function failTransaction(rootEm: EntityManager, txId: number, reason: string, error?: Error): Promise<void> {
+export async function failTransaction(rootEm: EntityManager, txId: number, reason: string, error?: Error, notifier?: WalletNotifier, sourceAddress?: string): Promise<void> {
     await updateTransactionEntity(rootEm, txId, (txEnt) => {
         txEnt.status = TransactionStatus.TX_FAILED;
         txEnt.reachedFinalStatusInTimestamp = toBN(getCurrentTimestampInSeconds());
@@ -196,6 +201,8 @@ export async function failTransaction(rootEm: EntityManager, txId: number, reaso
     } else {
         logger.error(`Transaction ${txId} failed: ${reason}`);
     }
+    await notifier?.send(sourceAddress ?? "", NotificationLevel.DANGER, WalletNotificationKey.CANNOT_SUBMIT, reason)
+
 }
 
 export async function checkIfIsDeleting(rootEm: EntityManager, address: string): Promise<boolean> {

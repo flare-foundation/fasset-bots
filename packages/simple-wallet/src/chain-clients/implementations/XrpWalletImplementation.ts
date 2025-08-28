@@ -117,6 +117,7 @@ export class XrpWalletImplementation extends XrpAccountGeneration implements Wri
         let baseFee = params.isPayment ? serverInfo.validated_ledger?.base_fee_xrp : serverInfo.validated_ledger?.reserve_inc_xrp;
         /* istanbul ignore if */
         if (!baseFee) {
+            logger.warn("Could not get base_fee_xrp from server_info");
             throw Error("Could not get base_fee_xrp from server_info");
         }
         /* istanbul ignore next */
@@ -247,7 +248,7 @@ export class XrpWalletImplementation extends XrpAccountGeneration implements Wri
             await this.getServerInfo();
             return true;
         } catch (error) /* istanbul ignore next */ {
-            logger.error(`Cannot get response from server: ${errorMessage(error)}`);
+            logger.warn(`Cannot get response from server: ${errorMessage(error)}`);
             return false;
         }
     }
@@ -262,7 +263,7 @@ export class XrpWalletImplementation extends XrpAccountGeneration implements Wri
             const transaction = JSON.parse(txEnt.raw) as xrpl.Payment | xrpl.AccountDelete;
             const privateKey = await this.walletKeys.getKey(txEnt.source);
             if (!privateKey) {
-                await handleMissingPrivateKey(this.rootEm, txEnt.id, "resubmitSubmissionFailedTransactions");
+                await handleMissingPrivateKey(this.rootEm, txEnt.id, "resubmitSubmissionFailedTransactions", this.notifier, txEnt.source);
                 return;
             }
             await this.resubmitTransaction(txEnt.id, privateKey, transaction);
@@ -280,7 +281,7 @@ export class XrpWalletImplementation extends XrpAccountGeneration implements Wri
         const transaction = JSON.parse(txEnt.raw!) as xrpl.Payment | xrpl.AccountDelete;
         const privateKey = await this.walletKeys.getKey(txEnt.source);
         if (!privateKey) {
-            await handleMissingPrivateKey(this.rootEm, txEnt.id, "resubmitPendingTransaction");
+            await handleMissingPrivateKey(this.rootEm, txEnt.id, "resubmitPendingTransaction", this.notifier, txEnt.source);
             return;
         }
 
@@ -294,7 +295,7 @@ export class XrpWalletImplementation extends XrpAccountGeneration implements Wri
         const currentLedger = await this.getLatestValidatedLedgerIndex();
         const shouldSubmit = checkIfShouldStillSubmit(this, currentLedger, txEnt.executeUntilBlock, txEnt.executeUntilTimestamp);
         if (!shouldSubmit) {
-            await handleNoTimeToSubmitLeft(this.rootEm, txEnt.id, currentLedger, this.executionBlockOffset, "prepareAndSubmitCreatedTransaction", txEnt.executeUntilBlock, txEnt.executeUntilTimestamp?.toString());
+            await handleNoTimeToSubmitLeft(this.rootEm, txEnt.id, currentLedger, this.executionBlockOffset, "prepareAndSubmitCreatedTransaction", txEnt.executeUntilBlock, txEnt.executeUntilTimestamp?.toString(), this.notifier, txEnt.source);
             return;
         } else if (!txEnt.executeUntilBlock && !txEnt.executeUntilTimestamp) {
             await updateTransactionEntity(this.rootEm, txEnt.id, (txEntToUpdate) => {
@@ -303,7 +304,7 @@ export class XrpWalletImplementation extends XrpAccountGeneration implements Wri
         }
         const privateKey = await this.walletKeys.getKey(txEnt.source);
         if (!privateKey) {
-            await handleMissingPrivateKey(this.rootEm, txEnt.id, "submitPreparedTransactions");
+            await handleMissingPrivateKey(this.rootEm, txEnt.id, "submitPreparedTransactions", this.notifier, txEnt.source);
             return;
         }
         const transaction = JSON.parse(txEnt.raw!) as xrpl.Payment | xrpl.AccountDelete;
@@ -315,7 +316,7 @@ export class XrpWalletImplementation extends XrpAccountGeneration implements Wri
         const currentTimestamp = toBN(getCurrentTimestampInSeconds());
         const shouldSubmit = checkIfShouldStillSubmit(this, currentLedger, txEnt.executeUntilBlock, txEnt.executeUntilTimestamp);
         if (!shouldSubmit) {
-            await handleNoTimeToSubmitLeft(this.rootEm, txEnt.id, currentLedger, this.executionBlockOffset, "prepareAndSubmitCreatedTransaction", txEnt.executeUntilBlock, txEnt.executeUntilTimestamp?.toString());
+            await handleNoTimeToSubmitLeft(this.rootEm, txEnt.id, currentLedger, this.executionBlockOffset, "prepareAndSubmitCreatedTransaction", txEnt.executeUntilBlock, txEnt.executeUntilTimestamp?.toString(), this.notifier, txEnt.source);
             return;
         } else if (!txEnt.executeUntilBlock && !txEnt.executeUntilTimestamp) {
             await updateTransactionEntity(this.rootEm, txEnt.id, (txEntToUpdate) => {
@@ -336,11 +337,11 @@ export class XrpWalletImplementation extends XrpAccountGeneration implements Wri
         const privateKey = await this.walletKeys.getKey(txEnt.source);
         /* istanbul ignore next */
         if (!privateKey) {
-            await handleMissingPrivateKey(this.rootEm, txEnt.id, "prepareAndSubmitCreatedTransaction");
+            await handleMissingPrivateKey(this.rootEm, txEnt.id, "prepareAndSubmitCreatedTransaction", this.notifier, txEnt.source);
             return;
         }
         if (checkIfFeeTooHigh(toBN(transaction.Fee!), txEnt.maxFee ?? null)) {
-            await failTransaction(this.rootEm, txEnt.id, `Fee restriction (fee: ${transaction.Fee}, maxFee: ${txEnt.maxFee?.toString()})`);
+            await failTransaction(this.rootEm, txEnt.id, `Fee restriction (fee: ${transaction.Fee}, maxFee: ${txEnt.maxFee?.toString()})`, undefined, this.notifier, txEnt.source);
         } else {
             // save tx in db
             await updateTransactionEntity(this.rootEm, txEnt.id, (txEntToUpdate) => {
@@ -418,7 +419,7 @@ export class XrpWalletImplementation extends XrpAccountGeneration implements Wri
             newFee = toBN(transaction.Fee!).muln(this.feeIncrease);
         }
         if (checkIfFeeTooHigh(newFee, originalTx.maxFee ?? null)) {
-            await failTransaction(this.rootEm, txId, `Cannot resubmit transaction ${txId}. Due to fee restriction (fee: ${newFee.toString()}, maxFee: ${originalTx.maxFee?.toString()})`);
+            await failTransaction(this.rootEm, txId, `Cannot resubmit transaction ${txId}. Due to fee restriction (fee: ${newFee.toString()}, maxFee: ${originalTx.maxFee?.toString()})`, undefined, this.notifier, transaction.Account);
         } else {
             const newTransaction = transaction;
             newTransaction.Fee = newFee.toString();
@@ -550,7 +551,7 @@ export class XrpWalletImplementation extends XrpAccountGeneration implements Wri
         const currentLedger = await this.getLatestValidatedLedgerIndex();
         const shouldSubmit = checkIfShouldStillSubmit(this, currentLedger, transaction.executeUntilBlock, transaction.executeUntilTimestamp);
         if (!shouldSubmit) {
-            await handleNoTimeToSubmitLeft(this.rootEm, txDbId, currentLedger, this.executionBlockOffset, "submitTransaction", transaction.executeUntilBlock, transaction.executeUntilTimestamp?.toString());
+            await handleNoTimeToSubmitLeft(this.rootEm, txDbId, currentLedger, this.executionBlockOffset, "submitTransaction", transaction.executeUntilBlock, transaction.executeUntilTimestamp?.toString(), this.notifier, transaction.source);
             return TransactionStatus.TX_FAILED;
         }
 
@@ -594,8 +595,10 @@ export class XrpWalletImplementation extends XrpAccountGeneration implements Wri
                 if (res.data.result.engine_result.includes("tefPAST_SEQ")) {
                     await this.notifier?.send(originalTx.Account, NotificationLevel.CRITICAL, WalletNotificationKey.DUPLICATE_TRANSACTION,
                         `Transaction ${txDbId} submission failed (${res.data.result.engine_result}): ${res.data.result.engine_result_message}`);
+                } else {
+                    await this.notifier?.send(originalTx.Account, NotificationLevel.DANGER, WalletNotificationKey.SUBMISSION_FAILED, `Transaction ${txDbId} submission failed (${res.data.result.engine_result}): ${res.data.result.engine_result_message}`);
                 }
-                await failTransaction(this.rootEm, txDbId, `Transaction ${txDbId} submission failed due to ${res.data.result.engine_result}, ${res.data.result.engine_result_message}`)
+                await failTransaction(this.rootEm, txDbId, `Transaction ${txDbId} submission failed due to ${res.data.result.engine_result}, ${res.data.result.engine_result_message}`); // no need to add notifier, it is already done separately
                 return TransactionStatus.TX_FAILED;
             }
         } catch (error) {
