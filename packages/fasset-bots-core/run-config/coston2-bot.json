@@ -17,8 +17,12 @@
             "tokenName": "Test XRP",
             "tokenSymbol": "testXRP",
             "tokenDecimals": 6,
-            "indexerUrls": ["https://testnet-verifier-fdc-test.aflabs.org/verifier/xrp"],
-            "walletUrls": ["https://s.altnet.rippletest.net:51234"],
+            "indexerUrls": [
+                "https://fdc-verifiers-testnet.flare.network/verifier/xrp"
+            ],
+            "walletUrls": [
+                "https://xrpl-testnet-api.flare.network"
+            ],
             "minimumAccountBalance": "1",
             "faucet": "https://faucet.tequ.dev/",
             "priceChangeEmitter": "FtsoV2PriceStore"
@@ -29,7 +33,10 @@
         "liquidationPreventionFactor": "1.1",
         "vaultCollateralReserveFactor": "0.1",
         "poolCollateralReserveFactor": "0.1",
-        "trustedPingSenders": ["0x8B7843E9768599EEF1136e59380e6F79dB6fb901","0x459BC23f08f0091A15cc3871c325463DeA609905"],
+        "trustedPingSenders": [
+            "0x8B7843E9768599EEF1136e59380e6F79dB6fb901",
+            "0x459BC23f08f0091A15cc3871c325463DeA609905"
+        ],
         "minBalanceOnServiceAccount": "2",
         "minBalanceOnWorkAccount": "200",
         "defaultAgentSettings": {

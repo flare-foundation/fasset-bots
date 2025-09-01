@@ -14,8 +14,12 @@
             "tokenName": "Test XRP",
             "tokenSymbol": "testXRP",
             "tokenDecimals": 6,
-            "indexerUrls": ["https://testnet-verifier-fdc-test.aflabs.org/verifier/xrp"],
-            "walletUrls": ["https://s.altnet.rippletest.net:51234"],
+            "indexerUrls": [
+                "https://fdc-verifiers-testnet.flare.network/verifier/xrp"
+            ],
+            "walletUrls": [
+                "https://xrpl-testnet-api.flare.network"
+            ],
             "priceChangeEmitter": "FtsoManager"
         }
     },
@@ -40,7 +44,12 @@
             "FTestXRP": {
                 "recommendedOwnerBalance": "50",
                 "minimumFreeUnderlyingBalance": "0.01",
-                "feeSafetyFactorPerKB": 0
+                "feeSafetyFactorPerKB": 0,
+                "transferToCVRatio": 0.7,
+                "returnFromCVRatio": 0.3,
+                "targetTransferToCVRatio": 0.4,
+                "targetReturnFromCVRatio": 0.6,
+                "useAutomaticCoreVaultTransferAndReturn": true
             }
         }
     },
@@ -52,7 +61,7 @@
     },
     "rpcUrl": "https://coston-api.flare.network/ext/C/rpc",
     "dataAccessLayerUrls": [
-        "https://da.cflr.testfsp.aflabs.org:4443"
+        "https://ctn-data-availability.flare.network"
     ],
     "assetManagerController": "0x572DeF121DC83332887E25e34aD51C2f5f40BC97"
 }

@@ -18,21 +18,21 @@ export const COSTON_CONFIG_LOOP_1 = "./test/test-utils/run-config-test/run-confi
 export const COSTON_CONFIG_INVALID = "./test/test-utils/run-config-test/run-config-coston-invalid.json";
 
 export const INDEXER_URL_XRP: string[] = [
-    "https://testnet-verifier-fdc-test.aflabs.org/verifier/xrp",
-    // "https://testnet-verifier-fdc-test.aflabs.org/verifier/xrp"
+    "https://fdc-verifiers-testnet.flare.network/verifier/xrp",
+    // "https://fdc-verifiers-testnet.flare.network/verifier/xrp"
 ];
 
 export const INDEXER_URL_BTC: string[] = [
-    "https://testnet-verifier-fdc-test.aflabs.org/verifier/btc"
+    "https://fdc-verifiers-testnet.flare.network/verifier/btc"
 ];
 
 export const INDEXER_URL_DOGE: string[] = [
-    "https://testnet-verifier-fdc-test.aflabs.org/verifier/doge"
+    "https://fdc-verifiers-testnet.flare.network/verifier/doge"
 ];
 
 export const DATA_ACCESS_LAYER_URLS: string[] = [
-    "https://da.cflr.testfsp.aflabs.org:4443",
-    "https://da.cflr.testfsp.aflabs.org:4443",
+    "https://ctn-data-availability.flare.network",
+    "https://ctn-data-availability.flare.network",
 ];
 
 export const FDC_VERIFICATION_ADDRESS: string = "0x6Bd0DBbDB84F667d5C450E517760375c8Ad8De71";

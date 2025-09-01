@@ -23,8 +23,8 @@ export const targetPrivateKeyXRP = "00AF22D6EB35EFFC065BC7DBA21068DB400F1EC127A3
 describe("XRP transaction integration tests", () => {
     let secrets: Secrets;
     const chainId: ChainId = ChainId.testXRP;
-    const indexerUrls: string[] = ["https://testnet-verifier-fdc-test.aflabs.org/verifier/xrp"];
-    const walletUrls: string[] = ["https://s.altnet.rippletest.net:51234"];
+    const indexerUrls: string[] = ["https://fdc-verifiers-testnet.flare.network/verifier/xrp"];
+    const walletUrls: string[] = ["https://xrpl-testnet-api.flare.network"];
     const amountToSendDrops = 1000000;
     let monitor: ITransactionMonitor;
 

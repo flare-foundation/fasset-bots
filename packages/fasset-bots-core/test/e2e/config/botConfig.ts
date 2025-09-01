@@ -12,14 +12,14 @@ import { DATA_ACCESS_LAYER_URLS, COSTON_CONTRACTS_MISSING_SC, COSTON_RPC, COSTON
 import { getNativeAccounts } from "../../test-utils/test-helpers";
 use(chaiAsPromised);
 
-const indexerTestBTCUrls = ["https://testnet-verifier-fdc-test.aflabs.org/verifier/btc/"];
-const indexerTestDOGEUrls = ["https://testnet-verifier-fdc-test.aflabs.org/verifier/doge/"];
-const indexerTestXRPUrls = ["https://testnet-verifier-fdc-test.aflabs.org/verifier/xrp"];
+const indexerTestBTCUrls = ["https://fdc-verifiers-testnet.flare.network/verifier/btc"];
+const indexerTestDOGEUrls = ["https://fdc-verifiers-testnet.flare.network/verifier/doge"];
+const indexerTestXRPUrls = ["https://fdc-verifiers-testnet.flare.network/verifier/xrp"];
 const walletTestBTCUrls = ["https://api.bitcore.io/api/BTC/testnet/"];
 const walletTestDOGEUrls = ["https://api.bitcore.io/api/DOGE/testnet/"];
 const walletBTCUrls = ["https://api.bitcore.io/api/BTC/mainnet/"];
 const walletDOGEUrls = ["https://api.bitcore.io/api/DOGE/mainnet/"];
-const walletTestXRPUrls = ["https://s.altnet.rippletest.net:51234"];
+const walletTestXRPUrls = ["https://xrpl-testnet-api.flare.network"];
 const walletXRPUrls = ["https://s1.ripple.com:51234/"];
 
 describe("Bot config tests", () => {

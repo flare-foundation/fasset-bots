@@ -155,8 +155,8 @@ Can be found [here](../packages/fasset-bots-core/run-config/coston-bot.json).
             "tokenName": "Test XRP",
             "tokenSymbol": "testXRP",
             "tokenDecimals": 6,
-            "indexerUrls": ["https://testnet-verifier-fdc-test.aflabs.org/verifier/xrp"],
-            "walletUrls": ["https://s.altnet.rippletest.net:51234"]
+            "indexerUrls": ["https://fdc-verifiers-testnet.flare.network/verifier/xrp"],
+            "walletUrls": ["https://xrpl-testnet-api.flare.network"]
         }
     },
     "ormOptions": {
@@ -166,7 +166,7 @@ Can be found [here](../packages/fasset-bots-core/run-config/coston-bot.json).
         "type": "sqlite"
     },
     "rpcUrl": "https://coston-api.flare.network/ext/C/rpc",
-    "dataAccessLayerUrls": ["https://da.cflr.testfsp.aflabs.org:4443"],
+    "dataAccessLayerUrls": ["https://ctn-data-availability.flare.network"],
     "liquidationStrategy": {
         "className": "DexLiquidationStrategy",
         "config": {

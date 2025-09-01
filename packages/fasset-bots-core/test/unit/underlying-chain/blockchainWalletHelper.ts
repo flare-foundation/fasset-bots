@@ -25,7 +25,7 @@ export const targetPrivateKeyXRP = "00AF22D6EB35EFFC065BC7DBA21068DB400F1EC127A3
 describe("testXRP wallet tests", () => {
     let secrets: Secrets;
     const chainId: ChainId = ChainId.testXRP;
-    const walletUrls: string[] = ["https://s.altnet.rippletest.net:51234"];
+    const walletUrls: string[] = ["https://xrpl-testnet-api.flare.network"];
     const amountToSendDrops = 1000000;
 
     before(async () => {

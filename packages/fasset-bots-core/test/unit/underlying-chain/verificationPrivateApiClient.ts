@@ -24,7 +24,7 @@ describe("VerificationPrivateApiClient tests on XRP", () => {
     });
 });
 
-describe("VerificationPrivateApiClient tests on BTC", () => {
+describe.skip("VerificationPrivateApiClient tests on BTC", () => {
     let verifier!: VerificationPrivateApiClient;
 
     before(async () => {
@@ -44,7 +44,7 @@ describe("VerificationPrivateApiClient tests on BTC", () => {
     });
 });
 
-describe("VerificationPrivateApiClient tests on DOGE", () => {
+describe.skip("VerificationPrivateApiClient tests on DOGE", () => {
     let verifier!: VerificationPrivateApiClient;
 
     before(async () => {

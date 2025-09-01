@@ -19,8 +19,8 @@ import { FlareDataConnectorClientHelper } from "../../../src/underlying-chain/Fl
 use(chaiAsPromised);
 
 const chainId = ChainId.testXRP;
-const indexerUrls: string[] = ["https://testnet-verifier-fdc-test.aflabs.org/verifier/xrp"];
-const walletUrls: string[] = ["https://s.altnet.rippletest.net:51234"];
+const indexerUrls: string[] = ["https://fdc-verifiers-testnet.flare.network/verifier/xrp"];
+const walletUrls: string[] = ["https://xrpl-testnet-api.flare.network"];
 const ref = "0xac11111111110001000000000000000000000000000000000000000000000001";
 const finalizationBlocks: number = 6;
 

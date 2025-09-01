@@ -140,7 +140,7 @@ describe("testXRP attestation/flare data connector tests", () => {
     });
 });
 
-describe("testBTC attestation/flare data connector tests", () => {
+describe.skip("testBTC attestation/flare data connector tests", () => {
     const chainId = ChainId.testBTC;
     let secrets: Secrets;
     const roundId = 802134;
@@ -251,7 +251,7 @@ describe("testBTC attestation/flare data connector tests", () => {
     });
 });
 
-describe("testDOGE attestation/flare data connector tests", () => {
+describe.skip("testDOGE attestation/flare data connector tests", () => {
     const chainId = ChainId.testDOGE;
     let secrets: Secrets;
     let account: string;

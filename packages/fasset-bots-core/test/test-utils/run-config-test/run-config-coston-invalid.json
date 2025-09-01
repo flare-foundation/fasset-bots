@@ -10,6 +10,6 @@
     },
     "rpcUrl": "https://coston-api.flare.network/ext/C/rpc",
     "dataAccessLayerUrls": [
-        "https://da.cflr.testfsp.aflabs.org:4443"
+        "https://ctn-data-availability.flare.network"
     ]
 }
