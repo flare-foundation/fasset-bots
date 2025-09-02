@@ -1,6 +1,7 @@
 import { FAssetInstance, IIAddressUpdaterInstance, IIAssetManagerControllerInstance, IIAssetManagerInstance, Truffle } from "../../typechain-truffle";
 import { CommandLineError, requireNotNullCmd } from "../utils/command-line-errors";
 import { ZERO_ADDRESS } from "../utils/helpers";
+import { logger } from "../utils/logger";
 import { artifacts } from "../utils/web3";
 import { ChainContracts, loadContracts } from "./contracts";
 
@@ -20,12 +21,14 @@ export class ContractRetriever {
         if (this.contracts == null || this.prioritizeAddressUpdater) {
             const address = await this.addressUpdater.getContractAddress(addressUpdaterName);
             if (address !== ZERO_ADDRESS) {
+                logger.info(`Retrieved contract ${name} at ${address} from address updater.`);
                 return address;
             }
         }
         if (this.contracts != null) {
             const address = this.contracts[name]?.address;
             if (address) {
+                logger.info(`Retrieved contract ${name} at ${address} from contracts json.`);
                 return address;
             }
         }
@@ -56,9 +59,11 @@ export class AssetContractRetriever extends ContractRetriever {
         let assetManagerController: IIAssetManagerControllerInstance;
         let addressUpdater: IIAddressUpdaterInstance;
         if (assetManagerControllerAddress) {
+            logger.info(`Loading contract addresses via asset manager controller at ${assetManagerControllerAddress} ${prioritizeAddressUpdater ? '[prioritize address updater]' : ''}`);
             assetManagerController = await IIAssetManagerController.at(assetManagerControllerAddress);
             addressUpdater = await AddressUpdater.at(await assetManagerController.getAddressUpdater());
         } else if (contracts != null) {
+            logger.info(`Loading contract addresses from contracts json file ${contractsJsonFile} ${prioritizeAddressUpdater ? '[prioritize address updater]' : ''}`);
             addressUpdater = await AddressUpdater.at(contracts.AddressUpdater.address);
             const contractRetriever = new ContractRetriever(prioritizeAddressUpdater, addressUpdater, contracts);
             assetManagerController = await contractRetriever.getContract(IIAssetManagerController, "AssetManagerController");
