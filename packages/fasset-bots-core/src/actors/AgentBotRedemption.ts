@@ -209,7 +209,7 @@ export class AgentBotRedemption {
                 break;
             default:
                 console.error(`Redemption state: ${redemption.state} not supported`);
-                logger.error(`Agent ${this.agent.vaultAddress} run into redemption state ${redemption.state} not supported for redemption ${redemption.requestId}.`);
+                logger.error(`Agent ${this.agent.vaultAddress} ran into redemption state ${redemption.state} not supported for redemption ${redemption.requestId}.`);
         }
     }
 
@@ -328,7 +328,7 @@ export class AgentBotRedemption {
                 with txDbId ${txDbId}; target underlying address ${redemption.paymentAddress}, payment reference
                 ${redemption.paymentReference}, amount ${paymentAmount}.`);
         } catch (error) {
-            logger.error(`Error trying to pay for redemption ${redemption.requestId}:`, error);
+            logger.error(`Error by agent ${this.agent.vaultAddress} trying to pay for redemption ${redemption.requestId}:`, error);
             await this.notifier.sendRedemptionPaymentFailed(redemption.requestId);
         }
     }

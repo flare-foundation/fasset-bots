@@ -309,7 +309,7 @@ program
             }
         } catch (error) {
             console.error(`Error while withdrawing pool fees for user ${bot.nativeAddress}: ${error}`);
-            logger.error(`User ${bot.nativeAddress} run into error while withdrawing pool fees:`, error);
+            logger.error(`User ${bot.nativeAddress} ran into error while withdrawing pool fees:`, error);
         }
     });
 

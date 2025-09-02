@@ -133,7 +133,7 @@ export class Challenger extends ActorBase {
             }
         } catch (error) {
             console.error(`Error handling events for challenger ${this.address}: ${error}`);
-            logger.error(`Challenger ${this.address} run into error while handling events:`, error);
+            logger.error(`Challenger ${this.address} ran into error while handling events:`, error);
         }
         // Underlying chain events
         const from = this.lastEventUnderlyingBlockHandled;

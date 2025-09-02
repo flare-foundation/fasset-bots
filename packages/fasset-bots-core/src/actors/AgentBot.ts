@@ -249,9 +249,10 @@ export class AgentBot {
             }
             logger.info(`Owner ${owner} activated underlying address ${vaultUnderlyingAddress} with transaction ${txHash}.`);
         } catch (error) {
-            logger.error(`Owner ${owner} couldn't activate underlying address ${vaultUnderlyingAddress}:`, error);
-            throw new CommandLineError(squashSpace`Could not activate or verify new agent vault's ${balanceReader.symbol}  account.
-                Note that the owner's ${balanceReader.symbol}  account ${ownerUnderlyingAddress} requires at least ${2 * Number(starterAmount) * 1e-6 + 1} ${balanceReader.symbol}  to activate the new account.`);
+            logger.error(`Owner ${owner} could not activate underlying address ${vaultUnderlyingAddress}:`, error);
+            throw new CommandLineError(squashSpace`Could not activate or verify new agent vault's ${balanceReader.symbol} account.
+                Note that the owner's ${balanceReader.symbol} account ${ownerUnderlyingAddress} requires at least
+                ${2 * Number(starterAmount) * 1e-6 + 1} ${balanceReader.symbol} to activate the new account.`);
         }
     }
 
@@ -465,16 +466,18 @@ export class AgentBot {
             const blockHeightProof = await this.getUnderlyingBlockHeightProof();
             if (blockHeightProof == null) return;
             // handle
-            logger.info(`Agent ${this.agent.vaultAddress} is handling daily tasks with block heigh exists proof in round ${blockHeightProof.data.votingRound} for block ${blockHeightProof.data.requestBody.blockNumber}.`);
+            logger.info(squashSpace`Agent ${this.agent.vaultAddress} is handling daily tasks with block heigh exists proof in round
+                ${blockHeightProof.data.votingRound} for block ${blockHeightProof.data.requestBody.blockNumber}.`);
             await this.claims.checkForClaims();
             // remember last handling time
             await this.updateAgentEntity(rootEm, async (agentEnt) => {
                 agentEnt.dailyTasksTimestamp = toBN(timestamp);
             });
-            logger.info(`Agent ${this.agent.vaultAddress} finished handling daily tasks with block heigh exists proof in round ${blockHeightProof.data.votingRound} for block ${blockHeightProof.data.requestBody.blockNumber}.`);
+            logger.info(squashSpace`Agent ${this.agent.vaultAddress} finished handling daily tasks with block heigh exists proof in round
+                ${blockHeightProof.data.votingRound} for block ${blockHeightProof.data.requestBody.blockNumber}.`);
         } catch (error) {
             console.error(`Error while handling daily tasks for agent ${this.agent.vaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agent.vaultAddress} run into error while handling daily tasks:`, error);
+            logger.error(`Agent ${this.agent.vaultAddress} ran into error while handling daily tasks:`, error);
         }
     }
 
@@ -507,7 +510,8 @@ export class AgentBot {
             await this.exitAvailable(rootEm);
         } catch (error) {
             console.error(`Error while handling wait for agent exit available for agent ${this.agent.vaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agent.vaultAddress} run into error while handling wait for agent exit available during handleTimelockedProcesses:`, error);
+            logger.error(squashSpace`Agent ${this.agent.vaultAddress} ran into error while handling wait for agent exit
+                available during handleTimelockedProcesses:`, error);
         }
     }
 
@@ -641,13 +645,16 @@ export class AgentBot {
     }
 
     async getTransferToCoreVaultMaxFee(destinationAddress: string, amount: BN): Promise<BN> {
-        const currentFee = await this.context.wallet.getTransactionFee({ source: this.agent.underlyingAddress, destination: destinationAddress, isPayment: true, amount: amount });
+        const currentFee = await this.context.wallet.getTransactionFee({
+            source: this.agent.underlyingAddress, destination: destinationAddress, isPayment: true, amount: amount
+        });
         const redemptionFee = currentFee.muln(TRANSACTION_FEE_FACTOR_CV_REDEMPTION);
         const safeToUseFreeUnderlying = await this.getSafeToWithdrawUnderlying();
         const canUseToPayFee = minBN(toBN(TRANSACTION_FEE_CV_MAX_IN_DROPS), safeToUseFreeUnderlying.divRound(toBN(2)))
         // safe check
         if (redemptionFee.gt(canUseToPayFee)) { // not enough to pay for the current fee
-            logger.warn(`getTransferToCoreVaultMaxFee: currentFee: ${currentFee.toString()}, canUseToPayFee ${canUseToPayFee.toString()}.`);
+            logger.warn(squashSpace`Agent ${this.agent.agentVault.address} can use at most ${canUseToPayFee.toString()}
+                to transfer to core vault, but the current fee is ${currentFee.toString()}`);
             return BN_ZERO
         }
         return canUseToPayFee;
@@ -707,7 +714,7 @@ export class AgentBot {
             }
         } catch (error) {
             console.error(`Error while handling transfer or return from CV needed for agent ${this.agent.vaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agent.vaultAddress} run into error while handling transfer or return from CV needed:`, error);
+            logger.error(`Agent ${this.agent.vaultAddress} ran into error while handling transfer or return from CV needed:`, error);
         }
     }
 
@@ -746,30 +753,32 @@ export class AgentBot {
         const allowedToSend = await getMaximumTransferToCoreVault(this.context, agentVault);
         const currency = await Currencies.fassetUnderlyingToken(this.context);
         if (toBN(amount).gt(allowedToSend.maximumTransferUBA)) {
-            logger.error(`Agent ${agentVault} cannot transfer funds. Requested amount ${currency.formatValue(amount)} is higher than allowed ${currency.formatValue(allowedToSend.maximumTransferUBA)}.`);
-            throw new CommandLineError(`Cannot transfer funds. Requested amount ${currency.formatValue(amount)} is higher than allowed ${currency.formatValue(allowedToSend.maximumTransferUBA)}.`);
+            const valueF = currency.formatValue(amount)
+            const maxTransferF = currency.formatValue(allowedToSend.maximumTransferUBA)
+            logger.error(`Agent ${agentVault} cannot transfer to core vault. Requested amount ${valueF} is higher than allowed ${maxTransferF}.`);
+            throw new CommandLineError(`Cannot transfer to core vault. Requested amount ${valueF} is higher than allowed ${maxTransferF}.`);
         }
         // check if enough free underlying to cover underlying fee
         const coreVaultSourceAddress = await requireNotNull(this.context.coreVaultManager).coreVaultAddress();
         const underlyingFee = await this.getTransferToCoreVaultMaxFee(coreVaultSourceAddress, toBN(amount));
         if (underlyingFee.eq(BN_ZERO)) {
-            logger.error(`Agent ${agentVault} cannot transfer funds. Current fee is too high.`);
-            throw new CommandLineError(squashSpace`Cannot transfer funds. Not enough free underlying to pay for underlying transaction fee.`);
+            logger.error(`Agent ${agentVault} cannot transfer to core vault. Current fee ${currency.formatValue(underlyingFee)} is too high.`);
+            throw new CommandLineError(squashSpace`Cannot transfer to core vault. Not enough free underlying to pay for underlying transaction fee.`);
         }
         // request transfer
         const res = await this.context.assetManager.transferToCoreVault(agentVault, amount, { from: this.agent.owner.workAddress });
         const event = requiredEventArgs(res, "TransferToCoreVaultStarted");
-        logger.info(`Agent ${agentVault} successfully initiated transfer of underlying to core vault.`);
+        logger.info(`Agent ${agentVault} successfully initiated transfer of ${currency.formatValue(event.valueUBA)} to core vault.`);
         await this.notifier.sendTransferToCVStarted(event.transferRedemptionRequestId);
         return event;
     }
 
     async returnFromCoreVault(lots: string | BN): Promise<EventArgs<ReturnFromCoreVaultRequested>> {
         const agentVault = this.agent.vaultAddress;
-        logger.info(`Agent ${agentVault} is trying to request return of underlying from core vault.`);
+        logger.info(`Agent ${agentVault} is trying to request return of ${lots.toString()} lots from core vault.`);
         const res = await this.context.assetManager.requestReturnFromCoreVault(agentVault, lots, { from: this.agent.owner.workAddress });
         const event = requiredEventArgs(res, "ReturnFromCoreVaultRequested");
-        logger.info(`Agent ${agentVault} successfully initiated return of underlying from core vault with id ${event.requestId.toString()}.`);
+        logger.info(`Agent ${agentVault} successfully initiated return of ${lots.toString()} lots from core vault with request id ${event.requestId.toString()}.`);
         await this.notifier.sendReturnFromCVTrigger(event.requestId.toString());
         return event;
     }

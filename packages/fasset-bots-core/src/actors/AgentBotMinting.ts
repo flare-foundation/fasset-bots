@@ -101,7 +101,7 @@ export class AgentBotMinting {
             logger.info(`Agent ${this.agent.vaultAddress} finished handling open mintings.`);
         } catch (error) {
             console.error(`Error while handling open mintings for agent ${this.agent.vaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agent.vaultAddress} run into error while handling open mintings:`, error);
+            logger.error(`Agent ${this.agent.vaultAddress} ran into error while handling open mintings:`, error);
         }
     }
 
@@ -143,7 +143,7 @@ export class AgentBotMinting {
                     break;  // ignore - it might have become DONE by an event handler while handling some other minting
                 default:
                     console.error(`Minting state: ${minting.state} not supported`);
-                    logger.error(`Agent ${this.agent.vaultAddress} run into minting state ${minting.state} not supported for minting ${minting.requestId}.`);
+                    logger.error(`Agent ${this.agent.vaultAddress} ran into minting state ${minting.state} not supported for minting ${minting.requestId}.`);
             }
         } catch (error) {
             if (errorIncluded(error, ["InvalidCrtId"])) {
@@ -155,7 +155,7 @@ export class AgentBotMinting {
                 console.log(`Agent ${this.agent.vaultAddress} closed minting ${id} because it was already executed`);
             } else {
                 console.error(`Error handling next minting step for minting ${id} agent ${this.agent.vaultAddress}: ${error}`);
-                logger.error(`Agent ${this.agent.vaultAddress} run into error while handling handling next minting step for minting ${id}:`, error);
+                logger.error(`Agent ${this.agent.vaultAddress} ran into error while handling handling next minting step for minting ${id}:`, error);
             }
         }
     }

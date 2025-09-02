@@ -115,7 +115,7 @@ export class TrackedState {
                     i -= 1;
                     retries += 1;
                     console.error(`Error handling events for Tracked State: ${error}`);
-                    logger.error(`Tracked State run into error while handling events:`, error);
+                    logger.error(`Tracked State ran into error while handling events:`, error);
                     await sleep(SLEEP_MS_BEFORE_RETRY);
                 }
             }

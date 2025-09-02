@@ -212,7 +212,7 @@ export class AgentBotUnderlyingManagement {
             logger.info(`Agent ${this.agent.vaultAddress} finished handling open underlying payments.`);
         } catch (error) {
             console.error(`Error while handling open underlying payments for agent ${this.agent.vaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agent.vaultAddress} run into error while handling open underlying payments:`, error);
+            logger.error(`Agent ${this.agent.vaultAddress} ran into error while handling open underlying payments:`, error);
         }
     }
 
@@ -248,7 +248,7 @@ export class AgentBotUnderlyingManagement {
                     break;
                 default:
                     console.error(`Underlying payment state: ${underlyingPayment.state} not supported`);
-                    logger.error(squashSpace`Agent ${this.agent.vaultAddress} run into underlying payment state ${underlyingPayment.state}
+                    logger.error(squashSpace`Agent ${this.agent.vaultAddress} ran into underlying payment state ${underlyingPayment.state}
                         not supported for underlying ${underlyingPayment.type} payment ${underlyingPayment.txHash}.`);
             }
         } catch (error) {
@@ -268,7 +268,7 @@ export class AgentBotUnderlyingManagement {
                 console.log(`Agent ${this.agent.vaultAddress} closed underlying payment ${id} because payment failed`);
             } else {
                 console.error(`Error handling next underlying payment step for underlying payment ${id} agent ${this.agent.vaultAddress}: ${error}`);
-                logger.error(`Agent ${this.agent.vaultAddress} run into error while handling next underlying payment step for underlying payment ${id}:`, error);
+                logger.error(`Agent ${this.agent.vaultAddress} ran into error while handling next underlying payment step for underlying payment ${id}:`, error);
             }
         }
     }

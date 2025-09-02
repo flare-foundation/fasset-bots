@@ -55,7 +55,7 @@ export class AgentBotClosing {
             }
         } catch (error) {
             console.error(`Error while handling agent close process for agent ${this.agent.vaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agent.vaultAddress} run into error while handling agent close process:`, error);
+            logger.error(`Agent ${this.agent.vaultAddress} ran into error while handling agent close process:`, error);
         }
     }
 
@@ -71,7 +71,7 @@ export class AgentBotClosing {
             }
         } catch (error) {
             console.error(`Error while starting or withdrawing vault collateral ${this.agent.vaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agent.vaultAddress} run into error while starting or withdrawing vault collateral:`, error);
+            logger.error(`Agent ${this.agent.vaultAddress} ran into error while starting or withdrawing vault collateral:`, error);
         }
     }
 
@@ -87,7 +87,7 @@ export class AgentBotClosing {
             }
         } catch (error) {
             console.error(`Error while starting or redeeming pool tokens ${this.agent.vaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agent.vaultAddress} run into error while starting or redeeming pool tokens:`, error);
+            logger.error(`Agent ${this.agent.vaultAddress} ran into error while starting or redeeming pool tokens:`, error);
         }
     }
 
@@ -105,7 +105,7 @@ export class AgentBotClosing {
             }
         } catch (error) {
             console.error(`Error while withdrawing pool fees for agent ${this.agent.vaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agent.vaultAddress} run into error while withdrawing pool fees:`, error);
+            logger.error(`Agent ${this.agent.vaultAddress} ran into error while withdrawing pool fees:`, error);
         }
     }
 
@@ -127,7 +127,7 @@ export class AgentBotClosing {
             }
         } catch (error) {
             console.error(`Error while self closing ${this.agent.vaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agent.vaultAddress} run into error self closing:`, error);
+            logger.error(`Agent ${this.agent.vaultAddress} ran into error self closing:`, error);
         }
     }
 
@@ -222,7 +222,7 @@ export class AgentBotClosing {
             }
         } catch (error) {
             console.error(`Error while handling start vault destruction for agent ${this.agent.vaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agent.vaultAddress} run into error while handling start vault destruction:`, error);
+            logger.error(`Agent ${this.agent.vaultAddress} ran into error while handling start vault destruction:`, error);
         }
     }
 
@@ -251,7 +251,7 @@ export class AgentBotClosing {
             }
         } catch (error) {
             console.error(`Error while destroying vault for agent ${this.agent.vaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agent.vaultAddress} run into error while destroying vault:`, error);
+            logger.error(`Agent ${this.agent.vaultAddress} ran into error while destroying vault:`, error);
         }
     }
 

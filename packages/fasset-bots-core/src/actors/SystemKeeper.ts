@@ -61,7 +61,7 @@ export class SystemKeeper extends ActorBase {
             }
         } catch (error) {
             console.error(`Error handling events for system keeper ${this.address}: ${error}`);
-            logger.error(`SystemKeeper ${this.address} run into error while handling events:`, error);
+            logger.error(`SystemKeeper ${this.address} ran into error while handling events:`, error);
         }
     }
 

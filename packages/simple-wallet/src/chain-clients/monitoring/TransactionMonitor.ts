@@ -198,7 +198,7 @@ export class TransactionMonitor implements ITransactionMonitor {
                 }
             } catch (error) {
                 if (error instanceof StopTransactionMonitor) break;
-                logger.error(`Monitoring ${this.monitoringId} run into error. Restarting in ${MONITOR_LOOP_SLEEP}: ${errorMessage(error)}`);
+                logger.error(`Monitoring ${this.monitoringId} ran into error. Restarting in ${MONITOR_LOOP_SLEEP}: ${errorMessage(error)}`);
             }
             if (this.monitoring) {
                 await sleepMs(MONITOR_LOOP_SLEEP);

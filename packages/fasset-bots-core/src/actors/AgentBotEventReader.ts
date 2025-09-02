@@ -152,7 +152,7 @@ export class AgentBotEventReader {
                         agentEnt.addNewEvent(new Event(agentEnt, event, false));
                     });
                     console.error(`Error handling event ${event.signature} for agent ${this.agentVaultAddress}: ${error}`);
-                    logger.error(`Agent ${this.agentVaultAddress} run into error while handling an event:`, error);
+                    logger.error(`Agent ${this.agentVaultAddress} ran into error while handling an event:`, error);
                 }
             }
             await this.bot.updateAgentEntity(rootEm, async (agentEnt) => {
@@ -161,7 +161,7 @@ export class AgentBotEventReader {
             await this.oneTimeEventHandler();// handle "one time" events
         } catch (error) {
             console.error(`Error handling events for agent ${this.agentVaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agentVaultAddress} run into error while handling events:`, error);
+            logger.error(`Agent ${this.agentVaultAddress} ran into error while handling events:`, error);
         }
     }
     /* istanbul ignore next */
@@ -192,12 +192,12 @@ export class AgentBotEventReader {
                         });
                     }
                     console.error(`Error troubleshooting handling of event with id ${event.id} for agent ${this.agentVaultAddress}: ${error}`);
-                    logger.error(`Agent ${this.agentVaultAddress} run into error while handling an event:`, error);
+                    logger.error(`Agent ${this.agentVaultAddress} ran into error while handling an event:`, error);
                 }
             }
         } catch (error) {
             console.error(`Error troubleshooting events for agent ${this.agentVaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agentVaultAddress} run into error while troubleshooting events:`, error);
+            logger.error(`Agent ${this.agentVaultAddress} ran into error while troubleshooting events:`, error);
         }
     }
     /* istanbul ignore next */
@@ -230,7 +230,7 @@ export class AgentBotEventReader {
             } catch (error) {
                 this.needsToCheckPrices = false;
                 console.error(`Error handling event 'CollateralRatiosChanged' for agent ${this.agentVaultAddress}: ${error}`);
-                logger.error(`Agent ${this.agentVaultAddress} run into error while handling an event 'CollateralRatiosChanged':`, error);
+                logger.error(`Agent ${this.agentVaultAddress} ran into error while handling an event 'CollateralRatiosChanged':`, error);
             }
             try {
                 if (this.needsToRestartDueToContractChanges) {
@@ -242,7 +242,7 @@ export class AgentBotEventReader {
                 }
             } catch (error) {
                 console.error(`Error handling event 'ContractChanged' for agent ${this.agentVaultAddress}: ${error}`);
-                logger.error(`Agent ${this.agentVaultAddress} run into error while handling an event 'ContractChanged':`, error);
+                logger.error(`Agent ${this.agentVaultAddress} ran into error while handling an event 'ContractChanged':`, error);
             }
         }
     }
@@ -267,7 +267,7 @@ export class AgentBotEventReader {
             }
         } catch (error) {
             console.error(`Error checking for new price events for agent ${this.agentVaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agentVaultAddress} run into error while checking for new price events:`, error);
+            logger.error(`Agent ${this.agentVaultAddress} ran into error while checking for new price events:`, error);
         }
     }
 

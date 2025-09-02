@@ -1,3 +1,5 @@
+import { Currencies } from "../utils";
+import { requiredEventArgs } from "../utils/events/truffle";
 import { BN_ZERO, ZERO_ADDRESS, toBN } from "../utils/helpers";
 import { logger } from "../utils/logger";
 import { artifacts } from "../utils/web3";
@@ -53,12 +55,15 @@ export class AgentBotClaims {
             }
             if (lastRewardEpoch >= 0) {
                 logger.info(`Agent ${this.agent.vaultAddress} is claiming delegation rewards for ${addressToClaim} for epoch ${lastRewardEpoch}`);
-                await this.agent.collateralPool.claimDelegationRewards(rewardManager.address, lastRewardEpoch, [], { from: this.agent.owner.workAddress });
+                const res = await this.agent.collateralPool.claimDelegationRewards(rewardManager.address, lastRewardEpoch, [], { from: this.agent.owner.workAddress });
+                const claimedEvent = requiredEventArgs(res, 'CPClaimedReward');
+                const currency = await Currencies.evmNative(this.context);
+                logger.info(`Agent ${this.agent.vaultAddress} claimed ${currency.format(claimedEvent.amountNatWei)} from its collateral pool.`);
             }
             logger.info(`Agent ${this.agent.vaultAddress} finished checking for delegation claims.`);
         } catch (error) {
             console.error(`Error handling delegation rewards for collateral pool for agent ${this.agent.vaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agent.vaultAddress} run into error while handling delegation rewards for collateral pool:`, error);
+            logger.error(`Agent ${this.agent.vaultAddress} ran into error while handling delegation rewards for collateral pool:`, error);
         }
     }
 
@@ -81,7 +86,7 @@ export class AgentBotClaims {
             logger.info(`Agent ${this.agent.vaultAddress} finished checking for airdrop distribution.`);
         } catch (error) {
             console.error(`Error handling airdrop distribution for collateral pool for agent ${this.agent.vaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agent.vaultAddress} run into error while handling airdrop distribution for collateral pool:`, error);
+            logger.error(`Agent ${this.agent.vaultAddress} ran into error while handling airdrop distribution for collateral pool:`, error);
         }
     }
 }

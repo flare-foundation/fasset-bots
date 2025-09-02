@@ -741,7 +741,7 @@ describe("AgentBot cli commands unit tests", () => {
         const result = await getMaximumTransferToCoreVault(botCliCommands.context, vaultAddress);
         const currency = await Currencies.fasset(bot.context);
         await expect(botCliCommands.transferToCoreVault(vaultAddress, result.maximumTransferUBA.addn(1))).to.eventually.be.rejectedWith(
-            `Cannot transfer funds. Requested amount ${currency.format(result.maximumTransferUBA.addn(1), { unit: false })} is higher than allowed ${currency.format(result.maximumTransferUBA, { unit: false })}`
+            `Cannot transfer to core vault. Requested amount ${currency.format(result.maximumTransferUBA.addn(1), { unit: false })} is higher than allowed ${currency.format(result.maximumTransferUBA, { unit: false })}`
         )
         const res = await botCliCommands.transferToCoreVault(vaultAddress, result.maximumTransferUBA);
         const transferRedemptionId = toBN(res.transferRedemptionRequestId);

@@ -70,7 +70,7 @@ export class Liquidator extends ActorBase {
         } catch (error) {
             const fassetSymbol = this.context.fAssetSymbol;
             console.error(`Error handling events and performing liquidations for ${fassetSymbol} liquidator ${this.address}: ${error}`);
-            logger.error(`Liquidator ${this.address} run into error while handling events and performing ${fassetSymbol} liquidations:`, error);
+            logger.error(`Liquidator ${this.address} ran into error while handling events and performing ${fassetSymbol} liquidations:`, error);
         } finally {
             this.handlingEvents = false;
         }

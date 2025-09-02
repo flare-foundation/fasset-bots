@@ -66,7 +66,7 @@ export class AgentBotCollateralManagement {
             }
         } catch (error) {
             console.error(`Error while checking for vault collateral top up for agent ${this.agent.vaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agent.vaultAddress} run into error while checking for vault collateral top up:`, error);
+            logger.error(`Agent ${this.agent.vaultAddress} ran into error while checking for vault collateral top up:`, error);
         }
     }
 
@@ -77,27 +77,27 @@ export class AgentBotCollateralManagement {
             const requiredTopUpPool = await this.requiredTopUp(requiredCrPoolBIPS, agentInfo, poolCollateralPrice);
             const ownerBalance = await this.tokens.native.balance(this.agent.owner.workAddress);
             const topupPool = minBN(requiredTopUpPool, ownerBalance.sub(this.agentBotSettings.minBalanceOnWorkAccount));
+            const topupPoolF = await this.tokens.poolCollateral.format(topupPool);
             if (topupPool.gt(BN_ZERO)) {
-                const topupPoolF = await this.tokens.poolCollateral.format(topupPool);
                 try {
-                    logger.info(`Agent ${this.agent.vaultAddress} is trying to buy collateral pool tokens ${topupPoolF} from owner ${this.agent.owner}.`);
+                    logger.info(`Agent ${this.agent.vaultAddress} is trying to buy ${topupPoolF} collateral pool tokens from owner ${this.agent.owner}.`);
                     await this.bot.locks.nativeChainLock(this.bot.owner.workAddress).lockAndRun(async () => {
                         await this.agent.buyCollateralPoolTokens(topupPool);
                     });
                     await this.notifier.sendPoolCollateralTopUpAlert(topupPoolF);
-                    logger.info(`Agent ${this.agent.vaultAddress} bought collateral pool tokens ${topupPoolF} from owner ${this.agent.owner}.`);
+                    logger.info(`Agent ${this.agent.vaultAddress} bought ${topupPoolF} collateral pool tokens from owner ${this.agent.owner}.`);
                 } catch (err) {
                     await this.notifier.sendPoolCollateralTopUpFailedAlert(topupPoolF);
-                    logger.error(`Agent ${this.agent.vaultAddress} could not buy collateral pool tokens ${topupPoolF} from owner ${this.agent.owner}:`, err);
+                    logger.error(`Agent ${this.agent.vaultAddress} could not buy ${topupPoolF} collateral pool tokens from owner ${this.agent.owner}:`, err);
                 }
             } else if (requiredTopUpPool.gt(BN_ZERO)) {
                 const requiredTopUpPoolF = await this.tokens.poolCollateral.format(requiredTopUpPool);
                 await this.notifier.sendPoolCollateralTopUpFailedAlert(requiredTopUpPoolF);
-                logger.warn(`Agent ${this.agent.vaultAddress} could not buy collateral pool tokens - owner work balance critically low`);
+                logger.warn(`Agent ${this.agent.vaultAddress} could not buy ${topupPoolF} collateral pool tokens - owner work balance critically low`);
             }
         } catch (error) {
             console.error(`Error while checking for pool collateral top up for agent ${this.agent.vaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agent.vaultAddress} run into error while checking for pool collateral top up:`, error);
+            logger.error(`Agent ${this.agent.vaultAddress} ran into error while checking for pool collateral top up:`, error);
         }
     }
 
@@ -112,7 +112,7 @@ export class AgentBotCollateralManagement {
             }
         } catch (error) {
             console.error(`Error while checking owner vault collateral balance for agent ${this.agent.vaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agent.vaultAddress} run into error while checking owner vault collateral balance:`, error);
+            logger.error(`Agent ${this.agent.vaultAddress} ran into error while checking owner vault collateral balance:`, error);
         }
     }
 
@@ -132,7 +132,7 @@ export class AgentBotCollateralManagement {
             }
         } catch (error) {
             console.error(`Error while checking owner native balance for agent ${this.agent.vaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agent.vaultAddress} run into error while checking owner native balance:`, error);
+            logger.error(`Agent ${this.agent.vaultAddress} ran into error while checking owner native balance:`, error);
         }
     }
 
@@ -159,7 +159,7 @@ export class AgentBotCollateralManagement {
             }
         } catch (error) {
             console.error(`Error while checking if agent can end liquidation for agent ${this.agent.vaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agent.vaultAddress} run into error while checking if agent can end liquidation:`, error);
+            logger.error(`Agent ${this.agent.vaultAddress} ran into error while checking if agent can end liquidation:`, error);
         }
     }
 

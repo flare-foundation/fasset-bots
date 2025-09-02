@@ -67,7 +67,7 @@ export class AgentBotUpdateSettings {
             logger.info(`Agent ${this.agent.vaultAddress} finished handling open update settings.`);
         } catch (error) {
             console.error(`Error while handling open update settings for agent ${this.agent.vaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agent.vaultAddress} run into error while handling open update settings:`, error);
+            logger.error(`Agent ${this.agent.vaultAddress} ran into error while handling open update settings:`, error);
         }
 
     }
@@ -99,7 +99,7 @@ export class AgentBotUpdateSettings {
                     break;
                 default:
                     console.error(`Update setting state: ${updateSetting.state} not supported`);
-                    logger.error(`Agent ${this.agent.vaultAddress} run into update setting state ${updateSetting.state} not supported for update setting ${updateSetting.name}.`);
+                    logger.error(`Agent ${this.agent.vaultAddress} ran into update setting state ${updateSetting.state} not supported for update setting ${updateSetting.name}.`);
             }
         } catch (error) {
             logger.error(`Error handling setting update ${updateSetting.name}:`, error);
@@ -149,7 +149,7 @@ export class AgentBotUpdateSettings {
                     console.log(`Agent ${this.agent.vaultAddress} cannot update agent setting ${updateSetting.name}=${updateSetting.value} due to contract revert: ${reason}`);
                     return true;
                 }
-                logger.error(`Agent ${this.agent.vaultAddress} run into error while updating setting ${updateSetting.name}=${updateSetting.value}:`, error);
+                logger.error(`Agent ${this.agent.vaultAddress} ran into error while updating setting ${updateSetting.name}=${updateSetting.value}:`, error);
             }
         } else {
             logger.info(`Agent ${this.agent.vaultAddress} cannot update agent setting ${updateSetting.name}=${updateSetting.value}. Allowed at ${updateSetting.validAt}. Current ${latestTimestamp}.`);

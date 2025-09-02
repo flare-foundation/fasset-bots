@@ -39,7 +39,7 @@ export class AgentBotCollateralWithdrawal {
             }
         } catch (error) {
             console.error(`Error while handling wait for collateral withdrawal for agent ${this.agent.vaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agent.vaultAddress} run into error while handling wait for collateral withdrawal during handleTimelockedProcesses:`, error);
+            logger.error(`Agent ${this.agent.vaultAddress} ran into error while handling wait for collateral withdrawal during handleTimelockedProcesses:`, error);
         }
     }
 
@@ -61,7 +61,7 @@ export class AgentBotCollateralWithdrawal {
             }
         } catch (error) {
             console.error(`Error while handling wait for pool token redemption for agent ${this.agent.vaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agent.vaultAddress} run into error while handling wait for pool token redemption during handleTimelockedProcesses:`, error);
+            logger.error(`Agent ${this.agent.vaultAddress} ran into error while handling wait for pool token redemption during handleTimelockedProcesses:`, error);
         }
     }
 
@@ -99,7 +99,7 @@ export class AgentBotCollateralWithdrawal {
                     await this.notifier.sendAgentCannotWithdrawCollateral(await token.format(withdrawAmount), type);
                     return true;
                 }
-                logger.error(`Agent ${this.agent.vaultAddress} run into error while withdrawing ${type} collateral:`, error);
+                logger.error(`Agent ${this.agent.vaultAddress} ran into error while withdrawing ${type} collateral:`, error);
             }
         } else {
             logger.info(`Agent ${this.agent.vaultAddress} cannot withdraw ${type} collateral. Allowed at ${withdrawValidAt}. Current ${latestTimestamp}.`);

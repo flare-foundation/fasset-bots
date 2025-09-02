@@ -60,7 +60,7 @@ export class AgentBotUnderlyingWithdrawal {
                         cancelled: true,
                     });
                 } else {
-                    logger.info(`Agent ${this.agent.vaultAddress} cannot yet cancel underlying withdrawal transaction with  id ${latestUnderlyingWithdrawal.id}. Allowed at ${allowedAt}. Current ${latestTimestamp}.`);
+                    logger.info(`Agent ${this.agent.vaultAddress} cannot yet cancel underlying withdrawal transaction with id ${latestUnderlyingWithdrawal.id}. Allowed at ${allowedAt}. Current ${latestTimestamp}.`);
                 }
             }
         } catch (error: any) {
@@ -77,7 +77,7 @@ export class AgentBotUnderlyingWithdrawal {
                     agentEnt.underlyingWithdrawalWaitingForCancelation = false;
                 });
                 console.error(`Error while handling underlying cancellation for agent ${this.agent.vaultAddress}: ${error}`);
-                logger.error(`Agent ${this.agent.vaultAddress} run into error while handling underlying cancellation during handleTimelockedProcesses:`, error);
+                logger.error(`Agent ${this.agent.vaultAddress} ran into error while handling underlying cancellation during handleTimelockedProcesses:`, error);
             }
         }
     }

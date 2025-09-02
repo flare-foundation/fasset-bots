@@ -88,7 +88,7 @@ export class AgentBotReturnFromCoreVault {
             logger.info(`Agent ${this.agent.vaultAddress} finished handling open returns from core vault.`);
         } catch (error) {
             console.error(`Error while handling open returns from core vault for agent ${this.agent.vaultAddress}: ${error}`);
-            logger.error(`Agent ${this.agent.vaultAddress} run into error while handling open returns from core vault:`, error);
+            logger.error(`Agent ${this.agent.vaultAddress} ran into error while handling open returns from core vault:`, error);
         }
     }
 
@@ -103,7 +103,7 @@ export class AgentBotReturnFromCoreVault {
                 break;
             default:
                 console.error(`ReturnFromCoreVault state: ${returnFromCoreVault.state} not supported`);
-                logger.error(`Agent ${this.agent.vaultAddress} run into ReturnFromCoreVault state ${returnFromCoreVault.state} not supported for return from core vault ${id} with requestId ${returnFromCoreVault.requestId.toString()}.`);
+                logger.error(`Agent ${this.agent.vaultAddress} ran into ReturnFromCoreVault state ${returnFromCoreVault.state} not supported for return from core vault ${id} with requestId ${returnFromCoreVault.requestId.toString()}.`);
         }
     }
 
