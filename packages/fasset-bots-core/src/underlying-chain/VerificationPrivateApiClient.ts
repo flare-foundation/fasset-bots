@@ -49,7 +49,7 @@ export class VerificationPrivateApiClient implements IVerificationApiClient {
             (verifier: AxiosInstance) => verifier.post<PreparedResponseRes<T>>(`/${encodeURIComponent(attestationName)}/prepareResponse`, request),
             "prepareResponse"
         ).catch((e: AxiosError) => {
-            const message = `Verification API error: cannot submit request ${formatArgs(request)}: ${e.status}: ${(e.response?.data as any)?.error}`;
+            const message = `Verification API error: cannot submit request ${formatArgs(request)}: ${e.response?.status}: ${(e.response?.data as any)?.error}`;
             logger.error(message);
             throw new VerificationApiError(message);
         });

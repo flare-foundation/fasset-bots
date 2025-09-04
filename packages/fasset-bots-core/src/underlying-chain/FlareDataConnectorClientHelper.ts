@@ -124,7 +124,7 @@ export class FlareDataConnectorClientHelper implements IFlareDataConnectorClient
             (verifier: AxiosInstance) => verifier.post<PrepareRequestResult>(`/${encodeURIComponent(attestationName)}/prepareRequest`, request),
             "submitRequestToFlareDataConnector"
         ).catch((e: AxiosError) => {
-            const message = `Flare data connector error: cannot submit request ${formatArgs(request)}: ${e.status}: ${(e.response?.data as any)?.error}`;
+            const message = `Flare data connector error: cannot submit request ${formatArgs(request)}: ${e.response?.status}: ${(e.response?.data as any)?.error}`;
             logger.error(message);
             throw new FlareDataConnectorClientError(message);
         });
@@ -229,11 +229,11 @@ export class FlareDataConnectorClientHelper implements IFlareDataConnectorClient
             response = await client.post<VotingRoundResult<ARESBase>>(`/api/v0/fdc/get-proof-round-id-bytes`, request);
         } catch (error) {
             if (error instanceof AxiosError) {
-                if (error.status === 400) {
+                if (error.response?.status === 400) {
                     logger.error(`Flare data connector request not proved: ${error.response?.data?.error}`);
                     return AttestationNotProved.DISPROVED;
                 }
-                logger.error(`Flare data connector error (status=${error.status}, message="${error.response?.data?.error}"):`, error);
+                logger.error(`Flare data connector error (status=${error.response?.status}, message="${error.response?.data?.error}"):`, error);
             } else {
                 logger.error(`Flare data connector unknown error:`, error);
             }
