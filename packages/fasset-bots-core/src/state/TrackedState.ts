@@ -175,10 +175,6 @@ export class TrackedState {
             const collateral = this.collaterals.get(event.args.collateralClass, event.args.collateralToken);
             collateral.minCollateralRatioBIPS = toBN(event.args.minCollateralRatioBIPS);
             collateral.safetyMinCollateralRatioBIPS = toBN(event.args.safetyMinCollateralRatioBIPS);
-        } else if (eventIs(event, this.context.assetManager, "CollateralTypeDeprecated")) {
-            logger.info(`Tracked State received event 'CollateralTypeDeprecated' with data ${formatArgs(event.args)}.`);
-            const collateral = this.collaterals.get(event.args.collateralClass, event.args.collateralToken);
-            collateral.validUntil = toBN(event.args.validUntil);
         } else if (eventIs(event, this.context.assetManager, "AgentCollateralTypeChanged")) {
             logger.info(`Tracked State received event 'AgentCollateralTypeChanged' with data ${formatArgs(event.args)}.`);
             if (event.args.collateralClass.toNumber() === CollateralClass.VAULT) {

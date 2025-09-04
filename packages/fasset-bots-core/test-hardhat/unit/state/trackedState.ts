@@ -629,22 +629,6 @@ describe("Tracked state tests", () => {
         await trackedState.readUnhandledEvents();
         const getCollateral0 = trackedState.collaterals.get(newCollateral.collateralClass, newCollateral.token);
         expect(toBN(getCollateral0.validUntil).eqn(0)).to.be.true;
-        // deprecate
-        const settings = await context.assetManager.getSettings();
-        await context.assetManagerController.deprecateCollateralType(
-            [context.assetManager.address],
-            agentVaultCollateral.collateralClass,
-            agentVaultCollateral.token,
-            settings.tokenInvalidationTimeMinSeconds,
-            { from: governance }
-        );
-        await trackedState.readUnhandledEvents();
-        const getCollateral1 = trackedState.collaterals.get(agentVaultCollateral.collateralClass, agentVaultCollateral.token);
-        expect(toBN(getCollateral1.validUntil).gtn(0)).to.be.true;
-        // switch collateral
-        await agentB.assetManager.switchVaultCollateral(agentB.vaultAddress, newCollateral.token, { from: agentB.owner.workAddress });
-        await trackedState.readUnhandledEvents();
-        expect(trackedState.agents.get(agentB.agentVault.address)?.agentSettings.vaultCollateralToken).to.eq(newCollateral.token);
     });
 
     it("Should handle event 'AgentCollateralTypeChanged'", async () => {

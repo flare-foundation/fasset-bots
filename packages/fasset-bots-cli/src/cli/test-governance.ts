@@ -3,14 +3,13 @@ import "source-map-support/register";
 
 import { CollateralClass, CollateralType } from "@flarenetwork/fasset-bots-core";
 import { ChainContracts, Secrets, loadConfigFile, loadContracts } from "@flarenetwork/fasset-bots-core/config";
-import { IIAssetManagerControllerInstance } from "@flarenetwork/fasset-bots-core/types";
 import { artifacts, authenticatedHttpProvider, initWeb3, logger, requireNotNull, requireNotNullCmd, toBNExp, web3 } from "@flarenetwork/fasset-bots-core/utils";
+import type { OptionValues } from "commander";
 import { readFileSync } from "fs";
 import { AgentRegistrationTransport } from "../utils/open-beta";
 import { programWithCommonOptions } from "../utils/program";
 import { toplevelRun } from "../utils/toplevel";
 import { validateAddress, validateDecimal } from "../utils/validation";
-import type { OptionValues } from "commander";
 
 const FakeERC20 = artifacts.require("FakeERC20");
 const AgentOwnerRegistry = artifacts.require("AgentOwnerRegistry");
@@ -62,19 +61,6 @@ program
     .action(async (paramFile: string) => {
         const options: { config: string; secrets: string } = program.opts();
         await addCollateralToken(options.secrets, options.config, paramFile);
-    });
-
-program
-    .command("deprecateCollateralToken")
-    .description("deprecate collateral token (on all asset managers)")
-    .argument("tokenAddress", "token address")
-    .action(async (tokenAddress: string) => {
-        const options: { config: string; secrets: string } = program.opts();
-        const secrets = await Secrets.load(options.secrets);
-        const deployerAddress = secrets.required("deployer.address");
-        await runOnAssetManagerController(options.secrets, options.config, async (controller, managers) => {
-            await controller.deprecateCollateralType(managers, CollateralClass.VAULT, tokenAddress, 86400, { from: deployerAddress });
-        });
     });
 
 program
@@ -166,14 +152,6 @@ async function transferFakeTokens(secretsFile: string, configFileName: string, t
     const decimals = Number(await token.decimals());
     const amountBN = toBNExp(amount, decimals);
     await token.transfer(recipientAddress, amountBN, { from: deployerAddress });
-}
-
-async function runOnAssetManagerController(secretsFile: string, configFileName: string, method: (controller: IIAssetManagerControllerInstance, assetManagers: string[]) => Promise<void>) {
-    const [_secrets, config] = await initEnvironment(secretsFile, configFileName);
-    const contracts = loadContracts(requireNotNull(config.contractsJsonFile));
-    const controller = await IIAssetManagerController.at(contracts.AssetManagerController.address);
-    const assetManagers = await controller.getAssetManagers();
-    return await method(controller, assetManagers);
 }
 
 async function addCollateralToken(secretsFile: string, configFileName: string, paramFile: string) {

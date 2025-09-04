@@ -435,14 +435,6 @@ export class Agent {
     }
 
     /**
-     * Switches vault collateral. If the current agent's vault collateral token gets deprecated, the agent must switch with this method.
-     * @param token vault collateral token address
-     */
-    async switchVaultCollateral(token: string): Promise<void> {
-        await this.assetManager.switchVaultCollateral(this.vaultAddress, token, { from: this.owner.workAddress });
-    }
-
-    /**
      * Calculate the amount of new tokens needed to replace the old tokens in vault.
      */
     async calculateVaultCollateralReplacementAmount(token: string) {

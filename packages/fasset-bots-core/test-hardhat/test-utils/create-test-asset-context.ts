@@ -377,7 +377,7 @@ function createTestAssetManagerSettings(
         __buybackCollateralFactorBIPS: 0,
         vaultCollateralBuyForFlareFactorBIPS: toBIPS(1.05),
         minUpdateRepeatTimeSeconds: bnToString(parameters.minUpdateRepeatTimeSeconds),
-        tokenInvalidationTimeMinSeconds: 1 * DAYS,
+        __tokenInvalidationTimeMinSeconds: 0,
         agentExitAvailableTimelockSeconds: 10 * MINUTES,
         agentFeeChangeTimelockSeconds: 6 * HOURS,
         agentMintingCRChangeTimelockSeconds: bnToString(parameters.agentMintingCRChangeTimelockSeconds),

@@ -745,28 +745,6 @@ export class AgentBotCommands {
     }
 
     /**
-     * Switches vault collateral
-     * @param agentVault agent's vault address
-     * @param token vault collateral token address
-     */
-    async switchVaultCollateral(agentVault: string, token: string): Promise<void> {
-        const { agentBot } = await this.getAgentBot(agentVault);
-        await agentBot.agent.switchVaultCollateral(token);
-        logger.info(`Agent ${agentVault} switched vault collateral to ${token}.`);
-    }
-
-    /**
-     * Switch vault collateral, but before that deposit the equivalent amount as the current balance.
-     */
-    async depositAndSwitchVaultCollateral(agentVault: string, token: string): Promise<void> {
-        const { agentBot } = await this.getAgentBot(agentVault);
-        const amountToDeposit = await agentBot.agent.calculateVaultCollateralReplacementAmount(token);
-        await agentBot.agent.depositTokensToVault(token, amountToDeposit);
-        await agentBot.agent.switchVaultCollateral(token);
-        logger.info(`Agent ${agentVault} deposited and switched vault collateral to ${token}.`);
-    }
-
-    /**
      * Upgrades WNat contract
      * @param agentVault agent's vault address
      */

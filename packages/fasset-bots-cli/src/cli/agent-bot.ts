@@ -419,24 +419,6 @@ program
         console.log(`It is safe to withdraw up to ${currency.format(safeToWithdrawUnderlying)}.`);
     });
 
-program
-    .command("switchVaultCollateral")
-    .description("switch vault collateral")
-    .argument("<agentVaultAddress>")
-    .argument("<token>", "token name or address")
-    .option("--deposit", "automatically deposit the amount of new tokens, equivalent to the amount of old tokens in the vault")
-    .action(async (agentVault: string, token: string, cmdOptions: { deposit?: boolean }) => {
-        const options: { config: string; secrets: string; fasset: string } = program.opts();
-        const secrets = await Secrets.load(options.secrets);
-        const cli = await AgentBotCommands.create(secrets, options.config, options.fasset, registerToplevelFinalizer);
-        token = getContractByName(options.config, token);
-        if (cmdOptions.deposit) {
-            await cli.depositAndSwitchVaultCollateral(agentVault, token);
-        } else {
-            await cli.switchVaultCollateral(agentVault, token);
-        }
-    });
-
 function getContractByName(config: string, nameOrAddress: string) {
     if (nameOrAddress.startsWith("0x")) {
         return nameOrAddress;

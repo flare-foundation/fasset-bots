@@ -28,21 +28,21 @@ describe("Web3 event decoder unit tests", () => {
             removed: false,
             logIndex: 0,
             transactionIndex: 0,
-            transactionHash: "0x453b338dd87494bcd2a9c2f3ca3fda717fef1d4d882d53666fd7d7e4f40cdf7f",
-            blockHash: "0xabeb07002dd9e2fc4d76c847d3829957bbb80fea576bd41bb18895654b8ed10f",
-            blockNumber: 81,
+            transactionHash: "0xe32e0177e970e4734dc2c0b8a77a32c2334579501eb2750e8e0b2a8d795e4407",
+            blockHash: "0xb6920b300aeeb2b32a2729636423fc8e23e7278f2bd318ef13d249661e16a8bd",
+            blockNumber: 21457354,
             address: assetManagerAddress,
-            data: "0x00000000000000000000000000000000000000000000000000000000000000020000000000000000000000006f35c791c8e6a2fb92fcee0b7c8609bb7f6dde2d0000000000000000000000000000000000000000000000000000000065b23737",
-            topics: ["0x0a93c441628a8345854526201d5fec9110fe2e4ad5a0822eb6eda950864075e6"],
+            data: "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000008f1b34207d97b1c5ac2b65a72ca1afc11417ad1b",
+            topics: ["0x000000000000000000000000edc84bc0a3f609388d0f68dbf752aa6c1afb5ebf"],
             id: "log_4059b9da",
         };
-        const eventDecoder = new Web3ContractEventDecoder({ assetManager: context.assetManager, priceChangeEmitter: context.priceChangeEmitter }, { requireKnownAddress: true });
+        const eventDecoder = new Web3ContractEventDecoder({ assetManager: context.assetManager, agentOwnerRegistry: context.agentOwnerRegistry }, { requireKnownAddress: true });
         // set event as anonymous and do some id changes to satisy requirements
         // must make a copy, otherwise later tests break
-        const evtType = JSON.parse(JSON.stringify(eventDecoder.eventTypes.get("0xfa93c441628a8345854526201d5fec9110fe2e4ad5a0822eb6eda950864075e6"))) as AbiItem;
-        evtType!.anonymous = true;
-        evtType!.name = undefined;
-        eventDecoder.eventTypes.set("0x0a93c441628a8345854526201d5fec9110fe2e4ad5a0822eb6eda950864075e6", evtType!);
+        const evtType = JSON.parse(JSON.stringify(eventDecoder.eventTypes.get("0x174ce844d7e28d695e043ecb1f4f404b2b32b9d554236756bbbf09c730cfaf20"))) as AbiItem;
+        evtType.anonymous = true;
+        evtType.name = undefined;
+        eventDecoder.eventTypes.set("0x000000000000000000000000edc84bc0a3f609388d0f68dbf752aa6c1afb5ebf", evtType);
         // decode event
         const decode = eventDecoder.decodeEvent(rawEvent);
         expect(decode?.event).eq("<unknown>");

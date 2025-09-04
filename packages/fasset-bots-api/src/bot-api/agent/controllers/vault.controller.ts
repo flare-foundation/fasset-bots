@@ -54,15 +54,6 @@ export class AgentVaultController {
         return handleApiResponse(this.agentService.getFreeVaultCollateral(fAssetSymbol, agentVaultAddress));
     }
 
-    @Post("collateral/switch/:fAssetSymbol/:agentVaultAddress/:tokenAddress")
-    public async switchVaultCollateral(
-        @Param("fAssetSymbol") fAssetSymbol: string,
-        @Param("agentVaultAddress") agentVaultAddress: string,
-        @Param("tokenAddress") tokenAddress: string
-    ): Promise<ApiResponseWrapper<void>> {
-        return handleApiResponse(this.agentService.switchVaultCollateral(fAssetSymbol, agentVaultAddress, tokenAddress));
-    }
-
     @Post("close/:fAssetSymbol/:agentVaultAddress")
     @HttpCode(200)
     public async closeVault(
