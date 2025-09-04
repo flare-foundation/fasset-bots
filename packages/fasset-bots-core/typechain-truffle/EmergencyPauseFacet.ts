@@ -222,18 +222,6 @@ export interface CollateralTypeAdded {
   };
 }
 
-export interface CollateralTypeDeprecated {
-  name: "CollateralTypeDeprecated";
-  args: {
-    collateralClass: BN;
-    collateralToken: string;
-    validUntil: BN;
-    0: BN;
-    1: string;
-    2: BN;
-  };
-}
-
 export interface ContractChanged {
   name: "ContractChanged";
   args: {
@@ -299,8 +287,10 @@ export interface EmergencyPauseTransfersTriggered {
 export interface EmergencyPauseTriggered {
   name: "EmergencyPauseTriggered";
   args: {
+    level: BN;
     pausedUntil: BN;
     0: BN;
+    1: BN;
   };
 }
 
@@ -586,6 +576,16 @@ export interface RedemptionTicketUpdated {
   };
 }
 
+export interface RedemptionTicketsConsolidated {
+  name: "RedemptionTicketsConsolidated";
+  args: {
+    firstTicketId: BN;
+    nextTicketId: BN;
+    0: BN;
+    1: BN;
+  };
+}
+
 export interface SelfClose {
   name: "SelfClose";
   args: {
@@ -728,7 +728,6 @@ export type AllEvents =
   | CollateralReservationDeleted
   | CollateralReserved
   | CollateralTypeAdded
-  | CollateralTypeDeprecated
   | ContractChanged
   | CurrentUnderlyingBlockUpdated
   | DuplicatePaymentConfirmed
@@ -757,6 +756,7 @@ export type AllEvents =
   | RedemptionTicketCreated
   | RedemptionTicketDeleted
   | RedemptionTicketUpdated
+  | RedemptionTicketsConsolidated
   | SelfClose
   | SelfMint
   | SettingArrayChanged
@@ -772,21 +772,25 @@ export type AllEvents =
 export interface EmergencyPauseFacetInstance extends Truffle.ContractInstance {
   emergencyPause: {
     (
+      _level: number | BN | string,
       _byGovernance: boolean,
       _duration: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<Truffle.TransactionResponse<AllEvents>>;
     call(
+      _level: number | BN | string,
       _byGovernance: boolean,
       _duration: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<void>;
     sendTransaction(
+      _level: number | BN | string,
       _byGovernance: boolean,
       _duration: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
+      _level: number | BN | string,
       _byGovernance: boolean,
       _duration: number | BN | string,
       txDetails?: Truffle.TransactionDetails
@@ -795,39 +799,36 @@ export interface EmergencyPauseFacetInstance extends Truffle.ContractInstance {
 
   emergencyPauseDetails(
     txDetails?: Truffle.TransactionDetails
-  ): Promise<{ 0: BN; 1: BN; 2: boolean }>;
+  ): Promise<{ 0: BN; 1: BN; 2: BN; 3: boolean }>;
+
+  emergencyPauseLevel(txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
   emergencyPaused(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
 
   emergencyPausedUntil(txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
-  resetEmergencyPauseTotalDuration: {
-    (txDetails?: Truffle.TransactionDetails): Promise<
-      Truffle.TransactionResponse<AllEvents>
-    >;
-    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
-    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
-    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
-  };
-
   methods: {
     emergencyPause: {
       (
+        _level: number | BN | string,
         _byGovernance: boolean,
         _duration: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<Truffle.TransactionResponse<AllEvents>>;
       call(
+        _level: number | BN | string,
         _byGovernance: boolean,
         _duration: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<void>;
       sendTransaction(
+        _level: number | BN | string,
         _byGovernance: boolean,
         _duration: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
       estimateGas(
+        _level: number | BN | string,
         _byGovernance: boolean,
         _duration: number | BN | string,
         txDetails?: Truffle.TransactionDetails
@@ -836,20 +837,13 @@ export interface EmergencyPauseFacetInstance extends Truffle.ContractInstance {
 
     emergencyPauseDetails(
       txDetails?: Truffle.TransactionDetails
-    ): Promise<{ 0: BN; 1: BN; 2: boolean }>;
+    ): Promise<{ 0: BN; 1: BN; 2: BN; 3: boolean }>;
+
+    emergencyPauseLevel(txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
     emergencyPaused(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
 
     emergencyPausedUntil(txDetails?: Truffle.TransactionDetails): Promise<BN>;
-
-    resetEmergencyPauseTotalDuration: {
-      (txDetails?: Truffle.TransactionDetails): Promise<
-        Truffle.TransactionResponse<AllEvents>
-      >;
-      call(txDetails?: Truffle.TransactionDetails): Promise<void>;
-      sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
-      estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
-    };
   };
 
   getPastEvents(event: string): Promise<EventData[]>;

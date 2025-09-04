@@ -172,7 +172,7 @@ export interface AssetManagerInitInstance extends Truffle.ContractInstance {
         minUpdateRepeatTimeSeconds: number | BN | string;
         __buybackCollateralFactorBIPS: number | BN | string;
         __announcedUnderlyingConfirmationMinSeconds: number | BN | string;
-        tokenInvalidationTimeMinSeconds: number | BN | string;
+        __tokenInvalidationTimeMinSeconds: number | BN | string;
         vaultCollateralBuyForFlareFactorBIPS: number | BN | string;
         agentExitAvailableTimelockSeconds: number | BN | string;
         agentFeeChangeTimelockSeconds: number | BN | string;
@@ -256,7 +256,7 @@ export interface AssetManagerInitInstance extends Truffle.ContractInstance {
         minUpdateRepeatTimeSeconds: number | BN | string;
         __buybackCollateralFactorBIPS: number | BN | string;
         __announcedUnderlyingConfirmationMinSeconds: number | BN | string;
-        tokenInvalidationTimeMinSeconds: number | BN | string;
+        __tokenInvalidationTimeMinSeconds: number | BN | string;
         vaultCollateralBuyForFlareFactorBIPS: number | BN | string;
         agentExitAvailableTimelockSeconds: number | BN | string;
         agentFeeChangeTimelockSeconds: number | BN | string;
@@ -340,7 +340,7 @@ export interface AssetManagerInitInstance extends Truffle.ContractInstance {
         minUpdateRepeatTimeSeconds: number | BN | string;
         __buybackCollateralFactorBIPS: number | BN | string;
         __announcedUnderlyingConfirmationMinSeconds: number | BN | string;
-        tokenInvalidationTimeMinSeconds: number | BN | string;
+        __tokenInvalidationTimeMinSeconds: number | BN | string;
         vaultCollateralBuyForFlareFactorBIPS: number | BN | string;
         agentExitAvailableTimelockSeconds: number | BN | string;
         agentFeeChangeTimelockSeconds: number | BN | string;
@@ -424,7 +424,7 @@ export interface AssetManagerInitInstance extends Truffle.ContractInstance {
         minUpdateRepeatTimeSeconds: number | BN | string;
         __buybackCollateralFactorBIPS: number | BN | string;
         __announcedUnderlyingConfirmationMinSeconds: number | BN | string;
-        tokenInvalidationTimeMinSeconds: number | BN | string;
+        __tokenInvalidationTimeMinSeconds: number | BN | string;
         vaultCollateralBuyForFlareFactorBIPS: number | BN | string;
         agentExitAvailableTimelockSeconds: number | BN | string;
         agentFeeChangeTimelockSeconds: number | BN | string;
@@ -577,7 +577,7 @@ export interface AssetManagerInitInstance extends Truffle.ContractInstance {
           minUpdateRepeatTimeSeconds: number | BN | string;
           __buybackCollateralFactorBIPS: number | BN | string;
           __announcedUnderlyingConfirmationMinSeconds: number | BN | string;
-          tokenInvalidationTimeMinSeconds: number | BN | string;
+          __tokenInvalidationTimeMinSeconds: number | BN | string;
           vaultCollateralBuyForFlareFactorBIPS: number | BN | string;
           agentExitAvailableTimelockSeconds: number | BN | string;
           agentFeeChangeTimelockSeconds: number | BN | string;
@@ -661,7 +661,7 @@ export interface AssetManagerInitInstance extends Truffle.ContractInstance {
           minUpdateRepeatTimeSeconds: number | BN | string;
           __buybackCollateralFactorBIPS: number | BN | string;
           __announcedUnderlyingConfirmationMinSeconds: number | BN | string;
-          tokenInvalidationTimeMinSeconds: number | BN | string;
+          __tokenInvalidationTimeMinSeconds: number | BN | string;
           vaultCollateralBuyForFlareFactorBIPS: number | BN | string;
           agentExitAvailableTimelockSeconds: number | BN | string;
           agentFeeChangeTimelockSeconds: number | BN | string;
@@ -745,7 +745,7 @@ export interface AssetManagerInitInstance extends Truffle.ContractInstance {
           minUpdateRepeatTimeSeconds: number | BN | string;
           __buybackCollateralFactorBIPS: number | BN | string;
           __announcedUnderlyingConfirmationMinSeconds: number | BN | string;
-          tokenInvalidationTimeMinSeconds: number | BN | string;
+          __tokenInvalidationTimeMinSeconds: number | BN | string;
           vaultCollateralBuyForFlareFactorBIPS: number | BN | string;
           agentExitAvailableTimelockSeconds: number | BN | string;
           agentFeeChangeTimelockSeconds: number | BN | string;
@@ -829,7 +829,7 @@ export interface AssetManagerInitInstance extends Truffle.ContractInstance {
           minUpdateRepeatTimeSeconds: number | BN | string;
           __buybackCollateralFactorBIPS: number | BN | string;
           __announcedUnderlyingConfirmationMinSeconds: number | BN | string;
-          tokenInvalidationTimeMinSeconds: number | BN | string;
+          __tokenInvalidationTimeMinSeconds: number | BN | string;
           vaultCollateralBuyForFlareFactorBIPS: number | BN | string;
           agentExitAvailableTimelockSeconds: number | BN | string;
           agentFeeChangeTimelockSeconds: number | BN | string;

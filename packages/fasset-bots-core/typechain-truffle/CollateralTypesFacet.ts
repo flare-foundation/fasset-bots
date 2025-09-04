@@ -50,22 +50,7 @@ export interface CollateralTypeAdded {
   };
 }
 
-export interface CollateralTypeDeprecated {
-  name: "CollateralTypeDeprecated";
-  args: {
-    collateralClass: BN;
-    collateralToken: string;
-    validUntil: BN;
-    0: BN;
-    1: string;
-    2: BN;
-  };
-}
-
-export type AllEvents =
-  | CollateralRatiosChanged
-  | CollateralTypeAdded
-  | CollateralTypeDeprecated;
+export type AllEvents = CollateralRatiosChanged | CollateralTypeAdded;
 
 export interface CollateralTypesFacetInstance extends Truffle.ContractInstance {
   addCollateralType: {
@@ -123,33 +108,6 @@ export interface CollateralTypesFacetInstance extends Truffle.ContractInstance {
         minCollateralRatioBIPS: number | BN | string;
         safetyMinCollateralRatioBIPS: number | BN | string;
       },
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
-  deprecateCollateralType: {
-    (
-      _collateralClass: number | BN | string,
-      _token: string,
-      _invalidationTimeSec: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      _collateralClass: number | BN | string,
-      _token: string,
-      _invalidationTimeSec: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _collateralClass: number | BN | string,
-      _token: string,
-      _invalidationTimeSec: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _collateralClass: number | BN | string,
-      _token: string,
-      _invalidationTimeSec: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
@@ -273,33 +231,6 @@ export interface CollateralTypesFacetInstance extends Truffle.ContractInstance {
           minCollateralRatioBIPS: number | BN | string;
           safetyMinCollateralRatioBIPS: number | BN | string;
         },
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
-
-    deprecateCollateralType: {
-      (
-        _collateralClass: number | BN | string,
-        _token: string,
-        _invalidationTimeSec: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        _collateralClass: number | BN | string,
-        _token: string,
-        _invalidationTimeSec: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        _collateralClass: number | BN | string,
-        _token: string,
-        _invalidationTimeSec: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        _collateralClass: number | BN | string,
-        _token: string,
-        _invalidationTimeSec: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };

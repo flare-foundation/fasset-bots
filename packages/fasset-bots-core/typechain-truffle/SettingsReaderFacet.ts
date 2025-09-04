@@ -76,7 +76,7 @@ export interface SettingsReaderFacetInstance extends Truffle.ContractInstance {
     minUpdateRepeatTimeSeconds: BN;
     __buybackCollateralFactorBIPS: BN;
     __announcedUnderlyingConfirmationMinSeconds: BN;
-    tokenInvalidationTimeMinSeconds: BN;
+    __tokenInvalidationTimeMinSeconds: BN;
     vaultCollateralBuyForFlareFactorBIPS: BN;
     agentExitAvailableTimelockSeconds: BN;
     agentFeeChangeTimelockSeconds: BN;
@@ -162,7 +162,7 @@ export interface SettingsReaderFacetInstance extends Truffle.ContractInstance {
       minUpdateRepeatTimeSeconds: BN;
       __buybackCollateralFactorBIPS: BN;
       __announcedUnderlyingConfirmationMinSeconds: BN;
-      tokenInvalidationTimeMinSeconds: BN;
+      __tokenInvalidationTimeMinSeconds: BN;
       vaultCollateralBuyForFlareFactorBIPS: BN;
       agentExitAvailableTimelockSeconds: BN;
       agentFeeChangeTimelockSeconds: BN;

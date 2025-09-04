@@ -246,18 +246,6 @@ export interface CollateralTypeAdded {
   };
 }
 
-export interface CollateralTypeDeprecated {
-  name: "CollateralTypeDeprecated";
-  args: {
-    collateralClass: BN;
-    collateralToken: string;
-    validUntil: BN;
-    0: BN;
-    1: string;
-    2: BN;
-  };
-}
-
 export interface ContractChanged {
   name: "ContractChanged";
   args: {
@@ -355,8 +343,10 @@ export interface EmergencyPauseTransfersTriggered {
 export interface EmergencyPauseTriggered {
   name: "EmergencyPauseTriggered";
   args: {
+    level: BN;
     pausedUntil: BN;
     0: BN;
+    1: BN;
   };
 }
 
@@ -670,6 +660,16 @@ export interface RedemptionTicketUpdated {
   };
 }
 
+export interface RedemptionTicketsConsolidated {
+  name: "RedemptionTicketsConsolidated";
+  args: {
+    firstTicketId: BN;
+    nextTicketId: BN;
+    0: BN;
+    1: BN;
+  };
+}
+
 export interface ReturnFromCoreVaultCancelled {
   name: "ReturnFromCoreVaultCancelled";
   args: {
@@ -904,7 +904,6 @@ export type AllEvents =
   | CollateralReservationDeleted
   | CollateralReserved
   | CollateralTypeAdded
-  | CollateralTypeDeprecated
   | ContractChanged
   | CoreVaultRedemptionRequested
   | CurrentUnderlyingBlockUpdated
@@ -938,6 +937,7 @@ export type AllEvents =
   | RedemptionTicketCreated
   | RedemptionTicketDeleted
   | RedemptionTicketUpdated
+  | RedemptionTicketsConsolidated
   | ReturnFromCoreVaultCancelled
   | ReturnFromCoreVaultConfirmed
   | ReturnFromCoreVaultRequested
@@ -1908,6 +1908,25 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
     ): Promise<number>;
   };
 
+  consolidateSmallTickets: {
+    (
+      _firstTicketId: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse<AllEvents>>;
+    call(
+      _firstTicketId: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      _firstTicketId: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _firstTicketId: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
   controllerAttached(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
 
   convertDustToTicket: {
@@ -2054,33 +2073,6 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
   currentUnderlyingBlock(
     txDetails?: Truffle.TransactionDetails
   ): Promise<{ 0: BN; 1: BN; 2: BN }>;
-
-  deprecateCollateralType: {
-    (
-      _collateralClass: number | BN | string,
-      _token: string,
-      _invalidationTimeSec: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      _collateralClass: number | BN | string,
-      _token: string,
-      _invalidationTimeSec: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _collateralClass: number | BN | string,
-      _token: string,
-      _invalidationTimeSec: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _collateralClass: number | BN | string,
-      _token: string,
-      _invalidationTimeSec: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
 
   destroyAgent: {
     (
@@ -2329,21 +2321,25 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
 
   emergencyPause: {
     (
+      _level: number | BN | string,
       _byGovernance: boolean,
       _duration: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<Truffle.TransactionResponse<AllEvents>>;
     call(
+      _level: number | BN | string,
       _byGovernance: boolean,
       _duration: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<void>;
     sendTransaction(
+      _level: number | BN | string,
       _byGovernance: boolean,
       _duration: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
+      _level: number | BN | string,
       _byGovernance: boolean,
       _duration: number | BN | string,
       txDetails?: Truffle.TransactionDetails
@@ -2352,34 +2348,9 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
 
   emergencyPauseDetails(
     txDetails?: Truffle.TransactionDetails
-  ): Promise<{ 0: BN; 1: BN; 2: boolean }>;
+  ): Promise<{ 0: BN; 1: BN; 2: BN; 3: boolean }>;
 
-  emergencyPauseTransfers: {
-    (
-      _byGovernance: boolean,
-      _duration: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      _byGovernance: boolean,
-      _duration: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _byGovernance: boolean,
-      _duration: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _byGovernance: boolean,
-      _duration: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
-  emergencyPauseTransfersDetails(
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<{ 0: BN; 1: BN; 2: boolean }>;
+  emergencyPauseLevel(txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
   emergencyPaused(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
 
@@ -3036,7 +3007,7 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
     minUpdateRepeatTimeSeconds: BN;
     __buybackCollateralFactorBIPS: BN;
     __announcedUnderlyingConfirmationMinSeconds: BN;
-    tokenInvalidationTimeMinSeconds: BN;
+    __tokenInvalidationTimeMinSeconds: BN;
     vaultCollateralBuyForFlareFactorBIPS: BN;
     agentExitAvailableTimelockSeconds: BN;
     agentFeeChangeTimelockSeconds: BN;
@@ -3818,24 +3789,6 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
       _executor: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
-  };
-
-  resetEmergencyPauseTotalDuration: {
-    (txDetails?: Truffle.TransactionDetails): Promise<
-      Truffle.TransactionResponse<AllEvents>
-    >;
-    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
-    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
-    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
-  };
-
-  resetEmergencyPauseTransfersTotalDuration: {
-    (txDetails?: Truffle.TransactionDetails): Promise<
-      Truffle.TransactionResponse<AllEvents>
-    >;
-    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
-    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
-    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
   };
 
   selfClose: {
@@ -4770,25 +4723,6 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
     ): Promise<number>;
   };
 
-  setTokenInvalidationTimeMinSeconds: {
-    (
-      _value: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      _value: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _value: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _value: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
   setVaultCollateralBuyForFlareFactorBIPS: {
     (
       _value: number | BN | string,
@@ -4859,29 +4793,6 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
     estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
   };
 
-  switchVaultCollateral: {
-    (
-      _agentVault: string,
-      _token: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      _agentVault: string,
-      _token: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _agentVault: string,
-      _token: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _agentVault: string,
-      _token: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
   transferToCoreVault: {
     (
       _agentVault: string,
@@ -4904,14 +4815,6 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
-
-  transfersEmergencyPaused(
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<boolean>;
-
-  transfersEmergencyPausedUntil(
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<BN>;
 
   unpauseMinting: {
     (txDetails?: Truffle.TransactionDetails): Promise<
@@ -6186,6 +6089,25 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
       ): Promise<number>;
     };
 
+    consolidateSmallTickets: {
+      (
+        _firstTicketId: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+      call(
+        _firstTicketId: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        _firstTicketId: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        _firstTicketId: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
     controllerAttached(
       txDetails?: Truffle.TransactionDetails
     ): Promise<boolean>;
@@ -6334,33 +6256,6 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
     currentUnderlyingBlock(
       txDetails?: Truffle.TransactionDetails
     ): Promise<{ 0: BN; 1: BN; 2: BN }>;
-
-    deprecateCollateralType: {
-      (
-        _collateralClass: number | BN | string,
-        _token: string,
-        _invalidationTimeSec: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        _collateralClass: number | BN | string,
-        _token: string,
-        _invalidationTimeSec: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        _collateralClass: number | BN | string,
-        _token: string,
-        _invalidationTimeSec: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        _collateralClass: number | BN | string,
-        _token: string,
-        _invalidationTimeSec: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
 
     destroyAgent: {
       (
@@ -6609,21 +6504,25 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
 
     emergencyPause: {
       (
+        _level: number | BN | string,
         _byGovernance: boolean,
         _duration: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<Truffle.TransactionResponse<AllEvents>>;
       call(
+        _level: number | BN | string,
         _byGovernance: boolean,
         _duration: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<void>;
       sendTransaction(
+        _level: number | BN | string,
         _byGovernance: boolean,
         _duration: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
       estimateGas(
+        _level: number | BN | string,
         _byGovernance: boolean,
         _duration: number | BN | string,
         txDetails?: Truffle.TransactionDetails
@@ -6632,34 +6531,9 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
 
     emergencyPauseDetails(
       txDetails?: Truffle.TransactionDetails
-    ): Promise<{ 0: BN; 1: BN; 2: boolean }>;
+    ): Promise<{ 0: BN; 1: BN; 2: BN; 3: boolean }>;
 
-    emergencyPauseTransfers: {
-      (
-        _byGovernance: boolean,
-        _duration: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        _byGovernance: boolean,
-        _duration: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        _byGovernance: boolean,
-        _duration: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        _byGovernance: boolean,
-        _duration: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
-
-    emergencyPauseTransfersDetails(
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<{ 0: BN; 1: BN; 2: boolean }>;
+    emergencyPauseLevel(txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
     emergencyPaused(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
 
@@ -7318,7 +7192,7 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
       minUpdateRepeatTimeSeconds: BN;
       __buybackCollateralFactorBIPS: BN;
       __announcedUnderlyingConfirmationMinSeconds: BN;
-      tokenInvalidationTimeMinSeconds: BN;
+      __tokenInvalidationTimeMinSeconds: BN;
       vaultCollateralBuyForFlareFactorBIPS: BN;
       agentExitAvailableTimelockSeconds: BN;
       agentFeeChangeTimelockSeconds: BN;
@@ -8100,24 +7974,6 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
         _executor: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
-    };
-
-    resetEmergencyPauseTotalDuration: {
-      (txDetails?: Truffle.TransactionDetails): Promise<
-        Truffle.TransactionResponse<AllEvents>
-      >;
-      call(txDetails?: Truffle.TransactionDetails): Promise<void>;
-      sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
-      estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
-    };
-
-    resetEmergencyPauseTransfersTotalDuration: {
-      (txDetails?: Truffle.TransactionDetails): Promise<
-        Truffle.TransactionResponse<AllEvents>
-      >;
-      call(txDetails?: Truffle.TransactionDetails): Promise<void>;
-      sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
-      estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
     };
 
     selfClose: {
@@ -9076,25 +8932,6 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
       ): Promise<number>;
     };
 
-    setTokenInvalidationTimeMinSeconds: {
-      (
-        _value: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        _value: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        _value: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        _value: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
-
     setVaultCollateralBuyForFlareFactorBIPS: {
       (
         _value: number | BN | string,
@@ -9165,29 +9002,6 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
       estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
     };
 
-    switchVaultCollateral: {
-      (
-        _agentVault: string,
-        _token: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        _agentVault: string,
-        _token: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        _agentVault: string,
-        _token: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        _agentVault: string,
-        _token: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
-
     transferToCoreVault: {
       (
         _agentVault: string,
@@ -9210,14 +9024,6 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };
-
-    transfersEmergencyPaused(
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<boolean>;
-
-    transfersEmergencyPausedUntil(
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<BN>;
 
     unpauseMinting: {
       (txDetails?: Truffle.TransactionDetails): Promise<

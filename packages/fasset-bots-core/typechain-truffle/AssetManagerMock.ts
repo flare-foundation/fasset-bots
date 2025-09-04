@@ -90,6 +90,10 @@ export interface AssetManagerMockInstance extends Truffle.ContractInstance {
     ): Promise<number>;
   };
 
+  emergencyPauseLevel(txDetails?: Truffle.TransactionDetails): Promise<BN>;
+
+  emergencyPaused(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
+
   fAsset(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
   fasset(txDetails?: Truffle.TransactionDetails): Promise<string>;
@@ -388,10 +392,6 @@ export interface AssetManagerMockInstance extends Truffle.ContractInstance {
     ): Promise<number>;
   };
 
-  transfersEmergencyPaused(
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<boolean>;
-
   updateCollateral: {
     (
       _agentVault: string,
@@ -450,6 +450,10 @@ export interface AssetManagerMockInstance extends Truffle.ContractInstance {
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };
+
+    emergencyPauseLevel(txDetails?: Truffle.TransactionDetails): Promise<BN>;
+
+    emergencyPaused(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
 
     fAsset(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
@@ -751,10 +755,6 @@ export interface AssetManagerMockInstance extends Truffle.ContractInstance {
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };
-
-    transfersEmergencyPaused(
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<boolean>;
 
     updateCollateral: {
       (

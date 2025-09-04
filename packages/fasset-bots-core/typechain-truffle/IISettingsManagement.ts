@@ -624,25 +624,6 @@ export interface IISettingsManagementInstance extends Truffle.ContractInstance {
     ): Promise<number>;
   };
 
-  setTokenInvalidationTimeMinSeconds: {
-    (
-      _value: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      _value: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _value: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _value: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
   setVaultCollateralBuyForFlareFactorBIPS: {
     (
       _value: number | BN | string,
@@ -1355,25 +1336,6 @@ export interface IISettingsManagementInstance extends Truffle.ContractInstance {
       estimateGas(
         _underlyingBlocks: number | BN | string,
         _underlyingSeconds: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
-
-    setTokenInvalidationTimeMinSeconds: {
-      (
-        _value: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        _value: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        _value: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        _value: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };

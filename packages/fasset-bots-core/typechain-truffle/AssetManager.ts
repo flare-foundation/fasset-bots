@@ -229,18 +229,6 @@ export interface CollateralTypeAdded {
   };
 }
 
-export interface CollateralTypeDeprecated {
-  name: "CollateralTypeDeprecated";
-  args: {
-    collateralClass: BN;
-    collateralToken: string;
-    validUntil: BN;
-    0: BN;
-    1: string;
-    2: BN;
-  };
-}
-
 export interface ContractChanged {
   name: "ContractChanged";
   args: {
@@ -322,8 +310,10 @@ export interface EmergencyPauseTransfersTriggered {
 export interface EmergencyPauseTriggered {
   name: "EmergencyPauseTriggered";
   args: {
+    level: BN;
     pausedUntil: BN;
     0: BN;
+    1: BN;
   };
 }
 
@@ -609,6 +599,16 @@ export interface RedemptionTicketUpdated {
   };
 }
 
+export interface RedemptionTicketsConsolidated {
+  name: "RedemptionTicketsConsolidated";
+  args: {
+    firstTicketId: BN;
+    nextTicketId: BN;
+    0: BN;
+    1: BN;
+  };
+}
+
 export interface SelfClose {
   name: "SelfClose";
   args: {
@@ -751,7 +751,6 @@ export type AllEvents =
   | CollateralReservationDeleted
   | CollateralReserved
   | CollateralTypeAdded
-  | CollateralTypeDeprecated
   | ContractChanged
   | CurrentUnderlyingBlockUpdated
   | DiamondCut
@@ -781,6 +780,7 @@ export type AllEvents =
   | RedemptionTicketCreated
   | RedemptionTicketDeleted
   | RedemptionTicketUpdated
+  | RedemptionTicketsConsolidated
   | SelfClose
   | SelfMint
   | SettingArrayChanged

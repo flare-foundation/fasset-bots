@@ -134,29 +134,6 @@ export interface AgentCollateralFacetInstance extends Truffle.ContractInstance {
     ): Promise<number>;
   };
 
-  switchVaultCollateral: {
-    (
-      _agentVault: string,
-      _token: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      _agentVault: string,
-      _token: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _agentVault: string,
-      _token: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _agentVault: string,
-      _token: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
   updateCollateral: {
     (
       _agentVault: string,
@@ -264,29 +241,6 @@ export interface AgentCollateralFacetInstance extends Truffle.ContractInstance {
       estimateGas(
         _token: string,
         _amountWei: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
-
-    switchVaultCollateral: {
-      (
-        _agentVault: string,
-        _token: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        _agentVault: string,
-        _token: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        _agentVault: string,
-        _token: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        _agentVault: string,
-        _token: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };

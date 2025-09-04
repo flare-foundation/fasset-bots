@@ -66,7 +66,6 @@ import { CollateralTypesFacetContract } from "./CollateralTypesFacet";
 import { CoreVaultClientFacetContract } from "./CoreVaultClientFacet";
 import { CoreVaultClientSettingsFacetContract } from "./CoreVaultClientSettingsFacet";
 import { EmergencyPauseFacetContract } from "./EmergencyPauseFacet";
-import { EmergencyPauseTransfersFacetContract } from "./EmergencyPauseTransfersFacet";
 import { LiquidationFacetContract } from "./LiquidationFacet";
 import { MintingDefaultsFacetContract } from "./MintingDefaultsFacet";
 import { MintingFacetContract } from "./MintingFacet";
@@ -311,9 +310,6 @@ export type * from "./types";
         name: "CoreVaultClientSettingsFacet"
       ): CoreVaultClientSettingsFacetContract;
       require(name: "EmergencyPauseFacet"): EmergencyPauseFacetContract;
-      require(
-        name: "EmergencyPauseTransfersFacet"
-      ): EmergencyPauseTransfersFacetContract;
       require(name: "LiquidationFacet"): LiquidationFacetContract;
       require(name: "MintingDefaultsFacet"): MintingDefaultsFacetContract;
       require(name: "MintingFacet"): MintingFacetContract;
@@ -707,10 +703,6 @@ export {
   EmergencyPauseFacetContract,
   EmergencyPauseFacetInstance,
 } from "./EmergencyPauseFacet";
-export {
-  EmergencyPauseTransfersFacetContract,
-  EmergencyPauseTransfersFacetInstance,
-} from "./EmergencyPauseTransfersFacet";
 export {
   LiquidationFacetContract,
   LiquidationFacetInstance,

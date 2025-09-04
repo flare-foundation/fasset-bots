@@ -222,18 +222,6 @@ export interface CollateralTypeAdded {
   };
 }
 
-export interface CollateralTypeDeprecated {
-  name: "CollateralTypeDeprecated";
-  args: {
-    collateralClass: BN;
-    collateralToken: string;
-    validUntil: BN;
-    0: BN;
-    1: string;
-    2: BN;
-  };
-}
-
 export interface ContractChanged {
   name: "ContractChanged";
   args: {
@@ -299,8 +287,10 @@ export interface EmergencyPauseTransfersTriggered {
 export interface EmergencyPauseTriggered {
   name: "EmergencyPauseTriggered";
   args: {
+    level: BN;
     pausedUntil: BN;
     0: BN;
+    1: BN;
   };
 }
 
@@ -586,6 +576,16 @@ export interface RedemptionTicketUpdated {
   };
 }
 
+export interface RedemptionTicketsConsolidated {
+  name: "RedemptionTicketsConsolidated";
+  args: {
+    firstTicketId: BN;
+    nextTicketId: BN;
+    0: BN;
+    1: BN;
+  };
+}
+
 export interface SelfClose {
   name: "SelfClose";
   args: {
@@ -728,7 +728,6 @@ export type AllEvents =
   | CollateralReservationDeleted
   | CollateralReserved
   | CollateralTypeAdded
-  | CollateralTypeDeprecated
   | ContractChanged
   | CurrentUnderlyingBlockUpdated
   | DuplicatePaymentConfirmed
@@ -757,6 +756,7 @@ export type AllEvents =
   | RedemptionTicketCreated
   | RedemptionTicketDeleted
   | RedemptionTicketUpdated
+  | RedemptionTicketsConsolidated
   | SelfClose
   | SelfMint
   | SettingArrayChanged
@@ -1374,25 +1374,6 @@ export interface SettingsManagementFacetInstance
     estimateGas(
       _underlyingBlocks: number | BN | string,
       _underlyingSeconds: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
-  setTokenInvalidationTimeMinSeconds: {
-    (
-      _value: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      _value: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _value: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _value: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
@@ -2109,25 +2090,6 @@ export interface SettingsManagementFacetInstance
       estimateGas(
         _underlyingBlocks: number | BN | string,
         _underlyingSeconds: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
-
-    setTokenInvalidationTimeMinSeconds: {
-      (
-        _value: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        _value: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        _value: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        _value: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };

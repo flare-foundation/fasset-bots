@@ -134,6 +134,16 @@ export interface RedemptionTicketUpdated {
   };
 }
 
+export interface RedemptionTicketsConsolidated {
+  name: "RedemptionTicketsConsolidated";
+  args: {
+    firstTicketId: BN;
+    nextTicketId: BN;
+    0: BN;
+    1: BN;
+  };
+}
+
 export interface SelfClose {
   name: "SelfClose";
   args: {
@@ -154,10 +164,30 @@ export type AllEvents =
   | RedemptionTicketCreated
   | RedemptionTicketDeleted
   | RedemptionTicketUpdated
+  | RedemptionTicketsConsolidated
   | SelfClose;
 
 export interface RedemptionRequestsFacetInstance
   extends Truffle.ContractInstance {
+  consolidateSmallTickets: {
+    (
+      _firstTicketId: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse<AllEvents>>;
+    call(
+      _firstTicketId: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      _firstTicketId: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _firstTicketId: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
   convertDustToTicket: {
     (_agentVault: string, txDetails?: Truffle.TransactionDetails): Promise<
       Truffle.TransactionResponse<AllEvents>
@@ -373,6 +403,25 @@ export interface RedemptionRequestsFacetInstance
   };
 
   methods: {
+    consolidateSmallTickets: {
+      (
+        _firstTicketId: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+      call(
+        _firstTicketId: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        _firstTicketId: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        _firstTicketId: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
     convertDustToTicket: {
       (_agentVault: string, txDetails?: Truffle.TransactionDetails): Promise<
         Truffle.TransactionResponse<AllEvents>
