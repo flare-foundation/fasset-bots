@@ -1,8 +1,8 @@
 import "dotenv/config";
 import "source-map-support/register";
 
-import { ActivityTimestampEntity, AgentBotRunner, PricePublisherService, TimeKeeperService, TimekeeperTimingConfig } from "@flarenetwork/fasset-bots-core";
-import { closeBotConfig, createBotConfig, EM, loadAgentConfigFile, Secrets } from "@flarenetwork/fasset-bots-core/config";
+import { AgentBotRunner, PricePublisherService, startActivityTimestampUpdater, stopActivityTimestampUpdater, TimeKeeperService, TimekeeperTimingConfig } from "@flarenetwork/fasset-bots-core";
+import { closeBotConfig, createBotConfig, loadAgentConfigFile, Secrets } from "@flarenetwork/fasset-bots-core/config";
 import { assertNotNullCmd, authenticatedHttpProvider, CommandLineError, formatFixed, initWeb3, isNotNull, logger, sendWeb3Transaction, toBN, toBNExp, web3 } from "@flarenetwork/fasset-bots-core/utils";
 import BN from "bn.js";
 import { programWithCommonOptions } from "../utils/program";
@@ -16,7 +16,6 @@ const timekeeperConfig: TimekeeperTimingConfig = {
     maxUpdateTimeDelayMs: 30_000,
 }
 
-let activityUpdateTimer: NodeJS.Timeout | null = null;
 const activityUpdateInterval = 60000; // 1min
 
 const program = programWithCommonOptions("agent", "all_fassets");
@@ -47,27 +46,6 @@ async function validateBalance(address: string, minBalance: BN) {
     if (fromBalance.lt(minBalance)) {
         throw new CommandLineError(`Balance on owner address too small`);
     }
-}
-
-async function activityTimestampUpdate(rootEm: EM) {
-    await rootEm.transactional(async (em) => {
-        let stateEnt = await em.findOne(ActivityTimestampEntity, { id: 1 });
-        if (!stateEnt) {
-            stateEnt = new ActivityTimestampEntity();
-        } else {
-            stateEnt.lastActiveTimestamp = toBN(Math.floor((new Date()).getTime() / 1000));
-        }
-        await em.persistAndFlush(stateEnt);
-    }).catch(error => {
-        logger.error("Error updating timestamp:", error);
-        console.error(`Error updating timestamp: ${error}`);
-    });
-}
-
-function startTimestampUpdater(rootEm: EM) {
-    const threadEm = rootEm.fork();
-    void activityTimestampUpdate(threadEm);
-    activityUpdateTimer = setInterval(() => void activityTimestampUpdate(threadEm), activityUpdateInterval);
 }
 
 program.action(async () => {
@@ -122,7 +100,7 @@ program.action(async () => {
             await ctx.wallet.addExistingAccount(ownerUnderlyingAddress, ownerUnderlyingPrivateKey);
         }
         // start activity update
-        startTimestampUpdater(botConfig.orm.em);
+        startActivityTimestampUpdater(botConfig.orm.em, activityUpdateInterval);
         // run
         try {
             console.log("Agent bot started, press CTRL+C to end");
@@ -137,11 +115,7 @@ program.action(async () => {
             if (pricePublisherService) {
                 await pricePublisherService.stop();
             }
-            if (activityUpdateTimer) {
-                clearInterval(activityUpdateTimer);
-                logger.info("Activity update timer was cleared.");
-                console.log("Activity update timer was cleared.");
-            }
+            stopActivityTimestampUpdater();
             await timekeeperService.stopAll();
             await closeBotConfig(botConfig);
         }
