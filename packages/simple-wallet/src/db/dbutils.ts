@@ -60,16 +60,17 @@ export async function createInitialTransactionEntity(
 
 export async function updateTransactionEntity(rootEm: EntityManager, id: number, modify: (transactionEnt: TransactionEntity) => void): Promise<void> {
     await transactional(rootEm, async (em) => {
-        const transactionEnt: TransactionEntity = await fetchTransactionEntityById(em, id);
+        const transactionEnt: TransactionEntity = await fetchTransactionEntityById(em, id, LockMode.PESSIMISTIC_WRITE);
         modify(transactionEnt);
         await em.persistAndFlush(transactionEnt);
     });
 }
 
-export async function fetchTransactionEntityById(rootEm: EntityManager, id: number): Promise<TransactionEntity> {
+export async function fetchTransactionEntityById(rootEm: EntityManager, id: number, lockMode: LockMode = LockMode.NONE): Promise<TransactionEntity> {
     return await rootEm.findOneOrFail(TransactionEntity, { id }, {
         refresh: true,
         populate: ["replaced_by", "rbfReplacementFor", "inputs", "ancestor", "ancestor.replaced_by"],
+        lockMode
     });
 }
 
@@ -216,7 +217,7 @@ export async function checkIfIsDeleting(rootEm: EntityManager, address: string):
 export async function setAccountIsDeleting(rootEm: EntityManager, address: string): Promise<void> {
     logger.info(`Settings ${address} to be deleted.`);
     await transactional(rootEm, async (em) => {
-        const wa = await em.findOne(WalletAddressEntity, { address } as FilterQuery<WalletAddressEntity>);
+        const wa = await em.findOne(WalletAddressEntity, { address } as FilterQuery<WalletAddressEntity>, { lockMode: LockMode.PESSIMISTIC_WRITE });
         /* istanbul ignore else */
         if (wa) {
             wa.isDeleting = true;

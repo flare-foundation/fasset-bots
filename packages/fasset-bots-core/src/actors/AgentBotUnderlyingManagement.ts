@@ -1,4 +1,6 @@
-import { RequiredEntityData } from "@mikro-orm/core";
+import { TransactionStatus } from "@flarenetwork/simple-wallet";
+import { Payment } from "@flarenetwork/state-connector-protocol/dist/generated/types/typescript/Payment";
+import { LockMode, RequiredEntityData } from "@mikro-orm/core";
 import BN from "bn.js";
 import { AgentBotSettings } from "../config";
 import { EM } from "../config/orm";
@@ -7,17 +9,15 @@ import { AgentUnderlyingPaymentState, AgentUnderlyingPaymentType } from "../enti
 import { Agent } from "../fasset/Agent";
 import { AttestationHelperError, attestationProved } from "../underlying-chain/AttestationHelper";
 import { AttestationNotProved } from "../underlying-chain/interfaces/IFlareDataConnectorClient";
+import { confirmationAllowedAt } from "../utils/fasset-helpers";
 import { squashSpace } from "../utils/formatting";
 import { assertNotNull, BN_ZERO, errorIncluded, messageForExpectedError, requireNotNull, toBN } from "../utils/helpers";
 import { logger } from "../utils/logger";
 import { AgentNotifier } from "../utils/notifier/AgentNotifier";
+import { latestBlockTimestampBN } from "../utils/web3helpers";
 import { web3DeepNormalize } from "../utils/web3normalize";
 import { AgentBot } from "./AgentBot";
 import { AgentTokenBalances } from "./AgentTokenBalances";
-import { TransactionStatus } from "@flarenetwork/simple-wallet";
-import { Payment } from "@flarenetwork/state-connector-protocol/dist/generated/types/typescript/Payment";
-import { confirmationAllowedAt } from "../utils/fasset-helpers";
-import { latestBlockTimestampBN } from "../utils/web3helpers";
 
 export class AgentBotUnderlyingManagement {
     static deepCopyWithObjectCreate = true;
@@ -416,7 +416,7 @@ export class AgentBotUnderlyingManagement {
 
     async updateUnderlyingPayment(rootEm: EM, uid: { id: number }, modifications: Partial<AgentUnderlyingPayment>): Promise<AgentUnderlyingPayment> {
         return await this.bot.runInTransaction(rootEm, async (em) => {
-            const underlyingPayment = await em.findOneOrFail(AgentUnderlyingPayment, { id: uid.id }, { refresh: true });
+            const underlyingPayment = await em.findOneOrFail(AgentUnderlyingPayment, { id: uid.id }, { refresh: true, lockMode: LockMode.PESSIMISTIC_WRITE });
             Object.assign(underlyingPayment, modifications);
             return underlyingPayment;
         });

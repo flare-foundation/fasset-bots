@@ -3,6 +3,7 @@
     "module": "node16",
     "target": "es2018",
     "moduleResolution": "node16",
+    "lib": ["ES2018"],
     "allowJs": true,
     "declaration": true,
     "declarationMap": true,

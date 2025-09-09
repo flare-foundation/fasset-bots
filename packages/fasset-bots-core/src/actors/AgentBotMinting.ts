@@ -1,5 +1,5 @@
 import { ConfirmedBlockHeightExists, Payment } from "@flarenetwork/state-connector-protocol";
-import { RequiredEntityData } from "@mikro-orm/core";
+import { LockMode, RequiredEntityData } from "@mikro-orm/core";
 import BN from "bn.js";
 import { CollateralReservationDeleted, CollateralReserved, MintingExecuted, SelfMint } from "../../typechain-truffle/IIAssetManager";
 import { EM } from "../config/orm";
@@ -9,14 +9,14 @@ import { Agent } from "../fasset/Agent";
 import { AttestationHelperError, attestationProved } from "../underlying-chain/AttestationHelper";
 import { ITransaction, TX_SUCCESS } from "../underlying-chain/interfaces/IBlockChain";
 import { AttestationNotProved } from "../underlying-chain/interfaces/IFlareDataConnectorClient";
+import { lastFinalizedUnderlyingBlock } from "../utils";
 import { EventArgs } from "../utils/events/common";
+import { formatArgs } from "../utils/formatting";
 import { BN_ZERO, MAX_BIPS, assertNotNull, errorIncluded, messageForExpectedError, toBN } from "../utils/helpers";
 import { logger } from "../utils/logger";
 import { AgentNotifier } from "../utils/notifier/AgentNotifier";
 import { web3DeepNormalize } from "../utils/web3normalize";
 import { AgentBot } from "./AgentBot";
-import { formatArgs } from "../utils/formatting";
-import { lastFinalizedUnderlyingBlock } from "../utils";
 
 type MintingId = { id: number } | { requestId: BN };
 
@@ -406,7 +406,7 @@ export class AgentBotMinting {
      */
     async updateMinting(rootEm: EM, mintingId: MintingId, modifications: Partial<AgentMinting>): Promise<AgentMinting> {
         return await this.bot.runInTransaction(rootEm, async (em) => {
-            const minting = await this.findMinting(em, mintingId);
+            const minting = await this.findMinting(em, mintingId, LockMode.PESSIMISTIC_WRITE);
             Object.assign(minting, modifications);
             return minting;
         });
@@ -418,11 +418,11 @@ export class AgentBotMinting {
      * @param mintingId either db id or collateral reservation id
      * @returns instance of AgentMinting
      */
-    async findMinting(em: EM, mintingId: MintingId): Promise<AgentMinting> {
+    async findMinting(em: EM, mintingId: MintingId, lockMode: LockMode = LockMode.NONE): Promise<AgentMinting> {
         if ("id" in mintingId) {
-            return await em.findOneOrFail(AgentMinting, { id: mintingId.id }, { refresh: true });
+            return await em.findOneOrFail(AgentMinting, { id: mintingId.id }, { refresh: true, lockMode });
         } else {
-            return await em.findOneOrFail(AgentMinting, { agentAddress: this.agent.vaultAddress, requestId: mintingId.requestId }, { refresh: true });
+            return await em.findOneOrFail(AgentMinting, { agentAddress: this.agent.vaultAddress, requestId: mintingId.requestId }, { refresh: true, lockMode });
         }
     }
 }

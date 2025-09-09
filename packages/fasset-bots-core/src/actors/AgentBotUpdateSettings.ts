@@ -1,4 +1,4 @@
-import { RequiredEntityData } from "@mikro-orm/core";
+import { LockMode, RequiredEntityData } from "@mikro-orm/core";
 import BN from "bn.js";
 import { EM } from "../config/orm";
 import { AgentEntity, AgentUpdateSetting } from "../entities/agent";
@@ -116,7 +116,7 @@ export class AgentBotUpdateSettings {
         const updatedOrExpired = await this.updateAgentSettings(updateSetting);
         if (updatedOrExpired) {
             await this.bot.runInTransaction(rootEm, async (em) => {
-                const writeUpdateSetting = await em.findOneOrFail(AgentUpdateSetting, { id: updateSetting.id }, { refresh: true });
+                const writeUpdateSetting = await em.findOneOrFail(AgentUpdateSetting, { id: updateSetting.id }, { refresh: true, lockMode: LockMode.PESSIMISTIC_WRITE });
                 writeUpdateSetting.state = AgentUpdateSettingState.DONE;
             });
         }

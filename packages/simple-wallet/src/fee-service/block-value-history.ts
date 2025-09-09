@@ -1,5 +1,5 @@
 import { errorMessage } from "@flarenetwork/fasset-bots-common";
-import { EntityManager } from "@mikro-orm/core";
+import { EntityManager, LockMode } from "@mikro-orm/core";
 import BN from "bn.js";
 import { transactional } from "../db/dbutils";
 import { HistoryItem } from "../entity/historyItem";
@@ -87,7 +87,7 @@ export class BlockValueHistory {
 
     async addToDb(rootEm: EntityManager, blockHeight: number, value: BN) {
         await transactional(rootEm, async (em) => {
-            const ent = await em.findOne(HistoryItem, { chainType: this.chainType, blockHeight });
+            const ent = await em.findOne(HistoryItem, { chainType: this.chainType, blockHeight }, { lockMode: LockMode.PESSIMISTIC_WRITE });
             if (ent != null) {
                 if (ent[this.dbKey] != null) {
                     logger.warn(`History value "${this.dbKey}" for chain ${this.chainType} and block height ${blockHeight} already exists with value ${ent[this.dbKey]}; overwritten with ${value}`);

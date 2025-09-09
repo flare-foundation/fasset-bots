@@ -1,5 +1,5 @@
 import { errorMessage } from "@flarenetwork/fasset-bots-common";
-import { EntityManager } from "@mikro-orm/core";
+import { EntityManager, LockMode } from "@mikro-orm/core";
 import axios, { AxiosError } from "axios";
 import * as bitcore from "bitcore-lib";
 import BN from "bn.js";
@@ -22,10 +22,10 @@ import {
     BaseWalletConfig,
     ITransactionMonitor,
     IWalletKeys,
-    WalletNotifier,
     SignedObject,
     TransactionInfo,
     UTXOFeeParams,
+    WalletNotifier,
     WriteWalletInterface,
 } from "../../interfaces/IWalletTransaction";
 import {
@@ -321,7 +321,7 @@ export abstract class UTXOWalletImplementation extends UTXOAccountGeneration imp
 
             const utxoToTxMap = await this.transactionUTXOService.getUTXOToTransactionMap(dbUTXOs, txEnt.id);
             await transactional(this.rootEm, async (em) => {
-                const txEntToUpdate = await fetchTransactionEntityById(em, txEnt.id);
+                const txEntToUpdate = await fetchTransactionEntityById(em, txEnt.id, LockMode.PESSIMISTIC_WRITE);
                 const inputs = await this.transactionUTXOService.createInputsFromUTXOs(em, dbUTXOs, utxoToTxMap);
 
                 txEntToUpdate.raw = JSON.stringify(transaction);

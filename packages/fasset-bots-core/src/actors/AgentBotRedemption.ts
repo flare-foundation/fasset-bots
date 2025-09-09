@@ -1,6 +1,6 @@
 import { TransactionStatus } from "@flarenetwork/simple-wallet";
 import { ConfirmedBlockHeightExists } from "@flarenetwork/state-connector-protocol";
-import { RequiredEntityData } from "@mikro-orm/core";
+import { LockMode, RequiredEntityData } from "@mikro-orm/core";
 import BN from "bn.js";
 import { RedemptionDefault, RedemptionPaymentBlocked, RedemptionPaymentFailed, RedemptionPerformed, RedemptionRequested } from "../../typechain-truffle/IIAssetManager";
 import { EM } from "../config/orm";
@@ -542,7 +542,7 @@ export class AgentBotRedemption {
      */
     async updateRedemption(rootEm: EM, rd: RedemptionId, modifications: Partial<AgentRedemption>): Promise<AgentRedemption> {
         return await this.bot.runInTransaction(rootEm, async (em) => {
-            const redemption = await this.findRedemption(em, rd);
+            const redemption = await this.findRedemption(em, rd, LockMode.PESSIMISTIC_WRITE);
             Object.assign(redemption, modifications);
             return redemption;
         });
@@ -553,11 +553,11 @@ export class AgentBotRedemption {
      * @param em entity manager
      * @param instance of AgentRedemption
      */
-    async findRedemption(em: EM, rd: RedemptionId) {
+    async findRedemption(em: EM, rd: RedemptionId, lockMode: LockMode = LockMode.NONE) {
         if ("id" in rd) {
-            return await em.findOneOrFail(AgentRedemption, { id: rd.id }, { refresh: true });
+            return await em.findOneOrFail(AgentRedemption, { id: rd.id }, { refresh: true, lockMode });
         } else {
-            return await em.findOneOrFail(AgentRedemption, { agentAddress: this.agent.vaultAddress, requestId: rd.requestId }, { refresh: true });
+            return await em.findOneOrFail(AgentRedemption, { agentAddress: this.agent.vaultAddress, requestId: rd.requestId }, { refresh: true, lockMode });
         }
     }
 

@@ -1,11 +1,11 @@
-import { ChainType } from "../../src/utils/constants";
+import { EntityManager, LockMode, RequiredEntityData } from "@mikro-orm/core";
 import BN from "bn.js";
-import { TransactionInputEntity } from "../../src/entity/transactionInput";
 import { toBN } from "web3-utils";
-import { EntityManager, RequiredEntityData } from "@mikro-orm/core";
+import { TransactionEntity, TransactionStatus, WalletAddressEntity, XRP } from "../../src";
 import { transactional, updateMonitoringState } from "../../src/db/dbutils";
+import { TransactionInputEntity } from "../../src/entity/transactionInput";
 import { MempoolUTXO } from "../../src/interfaces/IBlockchainAPI";
-import { TransactionEntity, TransactionStatus, XRP, WalletAddressEntity } from "../../src";
+import { ChainType } from "../../src/utils/constants";
 import { logger } from "../../src/utils/logger";
 
 export function createTransactionEntity(source: string, destination: string, txHash: string, inputs?: TransactionEntity[], status?: TransactionStatus): TransactionEntity {
@@ -118,7 +118,7 @@ export async function createAndSignXRPTransactionWithStatus(wClient: XRP, source
 
 export async function updateWalletInDB(rootEm: EntityManager, address: string, modify: (walletEnt: WalletAddressEntity) => Promise<void>) {
     await transactional(rootEm, async (em) => {
-        const ent = await em.findOneOrFail(WalletAddressEntity, { 'address': address });
+        const ent = await em.findOneOrFail(WalletAddressEntity, { 'address': address }, { lockMode: LockMode.PESSIMISTIC_WRITE });
         await modify(ent);
         await em.persistAndFlush(ent);
     });

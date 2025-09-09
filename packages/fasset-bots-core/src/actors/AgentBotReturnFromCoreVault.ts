@@ -1,19 +1,19 @@
-import { RequiredEntityData } from "@mikro-orm/core";
+import { LockMode, RequiredEntityData } from "@mikro-orm/core";
+import BN from "bn.js";
 import { ReturnFromCoreVaultCancelled, ReturnFromCoreVaultConfirmed, ReturnFromCoreVaultRequested } from "../../typechain-truffle/IIAssetManager";
 import { EM } from "../config/orm";
 import { ReturnFromCoreVault } from "../entities/agent";
 import { ReturnFromCoreVaultState } from "../entities/common";
 import { Agent } from "../fasset/Agent";
+import { AttestationHelperError, attestationProved } from "../underlying-chain/AttestationHelper";
+import { ITransaction } from "../underlying-chain/interfaces/IBlockChain";
+import { AttestationNotProved } from "../underlying-chain/interfaces/IFlareDataConnectorClient";
+import { squashSpace, web3DeepNormalize } from "../utils";
 import { EventArgs } from "../utils/events/common";
 import { assertNotNull, messageForExpectedError, requireNotNull, toBN } from "../utils/helpers";
 import { logger } from "../utils/logger";
 import { AgentNotifier } from "../utils/notifier/AgentNotifier";
 import { AgentBot } from "./AgentBot";
-import { squashSpace, web3DeepNormalize } from "../utils";
-import { ITransaction } from "../underlying-chain/interfaces/IBlockChain";
-import { AttestationHelperError, attestationProved } from "../underlying-chain/AttestationHelper";
-import { AttestationNotProved } from "../underlying-chain/interfaces/IFlareDataConnectorClient";
-import BN from "bn.js";
 
 export class AgentBotReturnFromCoreVault {
     static deepCopyWithObjectCreate = true;
@@ -200,7 +200,7 @@ export class AgentBotReturnFromCoreVault {
 
     async updateReturnFromCoreVault(rootEm: EM, uid: { id: number }, modifications: Partial<ReturnFromCoreVault>): Promise<ReturnFromCoreVault> {
         return await this.bot.runInTransaction(rootEm, async (em) => {
-            const underlyingPayment = await em.findOneOrFail(ReturnFromCoreVault, { id: uid.id }, { refresh: true });
+            const underlyingPayment = await em.findOneOrFail(ReturnFromCoreVault, { id: uid.id }, { refresh: true, lockMode: LockMode.PESSIMISTIC_WRITE });
             Object.assign(underlyingPayment, modifications);
             return underlyingPayment;
         });

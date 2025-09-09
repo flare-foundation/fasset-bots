@@ -1,5 +1,6 @@
+import { NotifierTransport, loggerAsyncStorage } from "@flarenetwork/fasset-bots-common";
 import { AddressValidity, ConfirmedBlockHeightExists } from "@flarenetwork/state-connector-protocol";
-import { FilterQuery } from "@mikro-orm/core";
+import { FilterQuery, LockMode } from "@mikro-orm/core";
 import BN from "bn.js";
 import { AgentPing, ReturnFromCoreVaultRequested, TransferToCoreVaultStarted } from "../../typechain-truffle/IIAssetManager";
 import { AgentBotSettings, Secrets } from "../config";
@@ -9,10 +10,11 @@ import { AgentEntity } from "../entities/agent";
 import { AgentRedemptionState } from "../entities/common";
 import { IAssetAgentContext } from "../fasset-bots/IAssetBotContext";
 import { Agent, OwnerAddressPair } from "../fasset/Agent";
+import { AgentStatus } from "../fasset/AssetManagerTypes";
 import { attestationProved } from "../underlying-chain/AttestationHelper";
 import { ChainId } from "../underlying-chain/ChainId";
 import { TX_SUCCESS } from "../underlying-chain/interfaces/IBlockChain";
-import { CommandLineError, TokenBalances, checkUnderlyingFunds, programVersion, SimpleThrottler, getMaximumTransferToCoreVault, Currencies } from "../utils";
+import { CommandLineError, Currencies, SimpleThrottler, TokenBalances, checkUnderlyingFunds, getMaximumTransferToCoreVault, programVersion } from "../utils";
 import { EventArgs, EvmEvent } from "../utils/events/common";
 import { eventIs, requiredEventArgs } from "../utils/events/truffle";
 import { FairLock } from "../utils/FairLock";
@@ -20,7 +22,6 @@ import { formatArgs, formatTimestamp, squashSpace } from "../utils/formatting";
 import { BN_ZERO, BNish, DAYS, MINUTES, TRANSACTION_FEE_CV_MAX_IN_DROPS, TRANSACTION_FEE_FACTOR_CV_REDEMPTION, ZERO_ADDRESS, assertNotNull, getOrCreate, maxBN, minBN, requireNotNull, sleepUntil, toBN } from "../utils/helpers";
 import { logger } from "../utils/logger";
 import { AgentNotifier } from "../utils/notifier/AgentNotifier";
-import { NotifierTransport } from "@flarenetwork/fasset-bots-common";
 import { artifacts, web3 } from "../utils/web3";
 import { latestBlockTimestampBN } from "../utils/web3helpers";
 import { AgentBotClaims } from "./AgentBotClaims";
@@ -30,13 +31,11 @@ import { AgentBotCollateralWithdrawal } from "./AgentBotCollateralWithdrawal";
 import { AgentBotEventReader } from "./AgentBotEventReader";
 import { AgentBotMinting } from "./AgentBotMinting";
 import { AgentBotRedemption } from "./AgentBotRedemption";
+import { AgentBotReturnFromCoreVault } from "./AgentBotReturnFromCoreVault";
 import { AgentBotUnderlyingManagement } from "./AgentBotUnderlyingManagement";
 import { AgentBotUnderlyingWithdrawal } from "./AgentBotUnderlyingWithdrawal";
 import { AgentBotUpdateSettings } from "./AgentBotUpdateSettings";
 import { AgentTokenBalances } from "./AgentTokenBalances";
-import { AgentBotReturnFromCoreVault } from "./AgentBotReturnFromCoreVault";
-import { AgentStatus } from "../fasset/AssetManagerTypes";
-import { loggerAsyncStorage } from "@flarenetwork/fasset-bots-common";
 
 const PING_RESPONSE_MIN_INTERVAL_PER_SENDER_MS = 2 * MINUTES * 1000;
 
@@ -725,7 +724,7 @@ export class AgentBot {
      */
     async updateAgentEntity(rootEm: EM, modify: (agentEnt: AgentEntity) => Promise<void>): Promise<void> {
         await this.runInTransaction(rootEm, async (em) => {
-            const agentEnt: AgentEntity = await this.fetchAgentEntity(em);
+            const agentEnt: AgentEntity = await this.fetchAgentEntity(em, LockMode.PESSIMISTIC_WRITE);
             await modify(agentEnt);
         });
     }
@@ -734,8 +733,8 @@ export class AgentBot {
      * Fetches AgentEntity
      * @param rootEm root EntityManager to manage the database context
      */
-    async fetchAgentEntity(rootEm: EM): Promise<AgentEntity> {
-        return await rootEm.findOneOrFail(AgentEntity, { vaultAddress: this.agent.vaultAddress } as FilterQuery<AgentEntity>, { refresh: true });
+    async fetchAgentEntity(rootEm: EM, lockMode: LockMode = LockMode.NONE): Promise<AgentEntity> {
+        return await rootEm.findOneOrFail(AgentEntity, { vaultAddress: this.agent.vaultAddress } as FilterQuery<AgentEntity>, { refresh: true, lockMode });
     }
 
     async runInTransaction<T>(rootEm: EM, method: (em: EM) => Promise<T>) {
