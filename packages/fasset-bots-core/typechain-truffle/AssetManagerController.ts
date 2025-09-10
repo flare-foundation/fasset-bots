@@ -327,6 +327,10 @@ export interface AssetManagerControllerInstance
 
   getAssetManagers(txDetails?: Truffle.TransactionDetails): Promise<string[]>;
 
+  getEmergencyPauseSenders(
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<string[]>;
+
   governance(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
   governanceSettings(txDetails?: Truffle.TransactionDetails): Promise<string>;
@@ -1699,6 +1703,10 @@ export interface AssetManagerControllerInstance
     getAddressUpdater(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
     getAssetManagers(txDetails?: Truffle.TransactionDetails): Promise<string[]>;
+
+    getEmergencyPauseSenders(
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string[]>;
 
     governance(txDetails?: Truffle.TransactionDetails): Promise<string>;
 

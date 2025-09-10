@@ -401,6 +401,19 @@
     },
     {
       "inputs": [],
+      "name": "getEmergencyPauseSenders",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "",
+          "type": "address[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "governance",
       "outputs": [
         {
