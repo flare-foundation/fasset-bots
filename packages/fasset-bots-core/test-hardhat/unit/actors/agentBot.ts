@@ -164,8 +164,29 @@ describe("Agent bot unit tests", () => {
         rd.redeemerAddress = "";
         await orm.em.persistAndFlush(rd);
         await updateAgentBotUnderlyingBlockProof(context, agentBot);
-        await agentBot.redemption.handleOpenRedemption(orm.em, rd.state, rd);
+        await agentBot.redemption.handleActiveRedemptionInState(orm.em, rd.state, rd);
         expect(spyLog).to.have.been.called.once;
+    });
+
+    it("Should fail updating redemption state when current state is not correct", async () => {
+        const agentBot = await createTestAgentBot(context, governance, orm, ownerAddress, ownerUnderlyingAddress, false);
+        const spyLog = spy.on(console, "error");
+        // create redemption with invalid state
+        const rd = new AgentRedemption();
+        rd.state = AgentRedemptionState.PAID;
+        rd.agentAddress = "";
+        rd.requestId = toBN("");
+        rd.paymentAddress = ""
+        rd.valueUBA = toBN(0);
+        rd.feeUBA = toBN(0);
+        rd.paymentReference = "";
+        rd.lastUnderlyingBlock = toBN(0);
+        rd.lastUnderlyingTimestamp = toBN(0);
+        rd.redeemerAddress = "";
+        await orm.em.persistAndFlush(rd);
+        await updateAgentBotUnderlyingBlockProof(context, agentBot);
+        await expect(agentBot.redemption.payRedemption(orm.em, rd))
+            .eventually.rejectedWith(/Expected redemption \d+ to be in state started, but it is in state paid/);
     });
 
     it("Should not do next minting step due to invalid minting state", async () => {

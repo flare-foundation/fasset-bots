@@ -84,7 +84,7 @@ export class AgentBotRedemption {
 
     async redemptionDefault(rootEm: EM, args: EventArgs<RedemptionDefault>) {
         await this.bot.runInTransaction(rootEm, async (em) => {
-            const redemption = await this.findRedemption(em, { requestId: toBN(args.requestId) });
+            const redemption = await this.findRedemption(em, { requestId: toBN(args.requestId) }, LockMode.PESSIMISTIC_WRITE);
             redemption.defaulted = true;
             if (redemption.state === AgentRedemptionState.UNPAID || redemption.state === AgentRedemptionState.REJECTED) {
                 redemption.finalState = this.getFinalState(redemption);
@@ -101,7 +101,7 @@ export class AgentBotRedemption {
      * @param agentVault agent's vault address
      */
     private async finishRedemption(rootEm: EM, rd: { requestId: BNish }, finalState: AgentRedemptionFinalState) {
-        await this.updateRedemption(rootEm, { requestId: toBN(rd.requestId) }, {
+        await this.updateRedemption(rootEm, { requestId: toBN(rd.requestId) }, null, {
             state: AgentRedemptionState.DONE,
             finalState: finalState,
         });
@@ -125,7 +125,7 @@ export class AgentBotRedemption {
             /* istanbul ignore next */
             if (this.bot.stopRequested()) return;
             try {
-                await this.handleOpenRedemption(rootEm, state, redemption);
+                await this.handleActiveRedemptionInState(rootEm, state, redemption);
             } catch (error) {
                 logger.error(`Error handling redemption ${redemption.requestId} in state ${state}`, error);
             }
@@ -181,7 +181,7 @@ export class AgentBotRedemption {
             .getResultList();
     }
 
-    async handleOpenRedemption(rootEm: EM, state: AgentRedemptionState, redemption: Readonly<AgentRedemption>) {
+    async handleActiveRedemptionInState(rootEm: EM, state: AgentRedemptionState, redemption: Readonly<AgentRedemption>) {
         switch (state) {
             case AgentRedemptionState.STARTED:
                 await this.checkBeforeRedemptionPayment(rootEm, redemption);
@@ -228,7 +228,7 @@ export class AgentBotRedemption {
                 throw error;
             }
         }
-        redemption = await this.updateRedemption(rootEm, redemption, {
+        redemption = await this.updateRedemption(rootEm, redemption, null, {
             state: AgentRedemptionState.DONE,
             finalState: finalState ?? this.getFinalState(redemption),
         });
@@ -272,7 +272,7 @@ export class AgentBotRedemption {
                 Time expired on underlying chain. Last block for payment was ${redemption.lastUnderlyingBlock}
                 with timestamp ${redemption.lastUnderlyingTimestamp}. Current block is ${lastFinalizedBlock.number}
                 with timestamp ${lastFinalizedBlock.timestamp}.`);
-            redemption = await this.updateRedemption(rootEm, redemption, {
+            redemption = await this.updateRedemption(rootEm, redemption, AgentRedemptionState.STARTED, {
                 state: AgentRedemptionState.UNPAID,
             });
         }
@@ -288,11 +288,11 @@ export class AgentBotRedemption {
         const poolFeeUBA = redemptionFee.mul(redemptionPoolFeeShareBIPS).divn(MAX_BIPS);
         let maxRedemptionFee = redemptionFee.sub(poolFeeUBA);
 
-        // special redemption ticket - `transferToCoreVault`
-        if (maxRedemptionFee.eq(BN_ZERO)) {
-            const coreVaultSourceAddress = await requireNotNull(this.context.coreVaultManager).coreVaultAddress();
-            if (redemption.paymentAddress === coreVaultSourceAddress) { // additional check
-                maxRedemptionFee = await this.bot.getTransferToCoreVaultMaxFee(redemption.paymentAddress, redemption.valueUBA)
+        // for transfers to core vault, check the free underlying can cover transaction fee, since there is no redemption fee
+        if (maxRedemptionFee.eq(BN_ZERO) && this.context.coreVaultManager != null) {
+            const coreVaultSourceAddress = await this.context.coreVaultManager.coreVaultAddress();
+            if (redemption.paymentAddress === coreVaultSourceAddress) { // is it transfer to core vault?
+                maxRedemptionFee = await this.bot.getTransferToCoreVaultMaxFee(redemption.paymentAddress, redemption.valueUBA);
                 if (maxRedemptionFee.eq(BN_ZERO)) {
                     logger.error(`Cannot pay for redemption ${redemption.requestId}, current fee is greater than agent can spend.`);
                     await this.notifier.sendTransferToCVRedemptionNoFreeUnderlying(redemption.requestId);
@@ -304,7 +304,7 @@ export class AgentBotRedemption {
             }
         }
 
-        redemption = await this.updateRedemption(rootEm, redemption, {
+        redemption = await this.updateRedemption(rootEm, redemption, AgentRedemptionState.STARTED, {
             state: AgentRedemptionState.PAYING,
         });
         try {
@@ -319,7 +319,7 @@ export class AgentBotRedemption {
                     feeSourceAddress: feeSourceAddress
                 });
             });
-            redemption = await this.updateRedemption(rootEm, redemption, {
+            redemption = await this.updateRedemption(rootEm, redemption, AgentRedemptionState.PAYING, {
                 txDbId: txDbId,
                 state: AgentRedemptionState.PAID,
             });
@@ -345,7 +345,7 @@ export class AgentBotRedemption {
             const request = await this.bot.locks.nativeChainLock(this.bot.requestSubmitterAddress()).lockAndRun(async () => {
                 return await this.context.attestationProvider.requestAddressValidityProof(redemption.paymentAddress);
             });
-            redemption = await this.updateRedemption(rootEm, redemption, {
+            redemption = await this.updateRedemption(rootEm, redemption, AgentRedemptionState.STARTED, {
                 state: AgentRedemptionState.REQUESTED_REJECTION_PROOF,
                 proofRequestRound: request.round,
                 proofRequestData: request.data,
@@ -382,7 +382,7 @@ export class AgentBotRedemption {
                 await this.bot.locks.nativeChainLock(this.bot.owner.workAddress).lockAndRun(async () => {
                     await this.context.assetManager.rejectInvalidRedemption(web3DeepNormalize(proof), redemption.requestId, { from: this.agent.owner.workAddress });
                 });
-                redemption = await this.updateRedemption(rootEm, redemption, {
+                redemption = await this.updateRedemption(rootEm, redemption, AgentRedemptionState.REQUESTED_REJECTION_PROOF, {
                     state: AgentRedemptionState.DONE,
                     finalState: AgentRedemptionFinalState.REJECTED,
                 });
@@ -403,7 +403,7 @@ export class AgentBotRedemption {
                 await this.notifier.sendRedemptionAddressValidationNoProof(redemption.requestId,
                     redemption.proofRequestRound, redemption.proofRequestData, redemption.paymentAddress);
                 logger.info(`Agent ${this.agent.vaultAddress} will retry obtaining address validation proof for redemption ${redemption.requestId}.`);
-                redemption = await this.updateRedemption(rootEm, redemption, {
+                redemption = await this.updateRedemption(rootEm, redemption, AgentRedemptionState.REQUESTED_REJECTION_PROOF, {
                     state: AgentRedemptionState.STARTED,
                     proofRequestRound: undefined,
                     proofRequestData: undefined,
@@ -436,7 +436,7 @@ export class AgentBotRedemption {
         const info = await this.context.wallet.checkTransactionStatus(redemption.txDbId);
         if (info.status == TransactionStatus.TX_SUCCESS || info.status == TransactionStatus.TX_FAILED) {
             if (info.transactionHash) {
-                redemption = await this.updateRedemption(rootEm, redemption, {
+                redemption = await this.updateRedemption(rootEm, redemption, null, {
                     txHash: info.transactionHash
                 });
                 assertNotNull(redemption.txHash);
@@ -448,7 +448,7 @@ export class AgentBotRedemption {
             info.replacedByStatus == TransactionStatus.TX_SUCCESS || info.replacedByStatus == TransactionStatus.TX_FAILED
         )) {
             if (info.replacedByHash) {
-                redemption = await this.updateRedemption(rootEm, redemption, {
+                redemption = await this.updateRedemption(rootEm, redemption, null, {
                     txHash: info.replacedByHash
                 });
                 assertNotNull(redemption.txHash);
@@ -471,7 +471,7 @@ export class AgentBotRedemption {
             const request = await this.bot.locks.nativeChainLock(this.bot.requestSubmitterAddress()).lockAndRun(async () => {
                 return await this.context.attestationProvider.requestPaymentProof(txHash, this.agent.underlyingAddress, redemption.paymentAddress);
             });
-            redemption = await this.updateRedemption(rootEm, redemption, {
+            redemption = await this.updateRedemption(rootEm, redemption, AgentRedemptionState.PAID, {
                 state: AgentRedemptionState.REQUESTED_PROOF,
                 proofRequestRound: request.round,
                 proofRequestData: request.data,
@@ -518,7 +518,7 @@ export class AgentBotRedemption {
                     throw error;
                 }
             }
-            redemption = await this.updateRedemption(rootEm, redemption, {
+            redemption = await this.updateRedemption(rootEm, redemption, AgentRedemptionState.REQUESTED_PROOF, {
                 state: AgentRedemptionState.DONE,
             });
             logger.info(`Agent ${this.agent.vaultAddress} confirmed redemption payment for redemption ${redemption.requestId} with proof ${JSON.stringify(web3DeepNormalize(proof))}.`);
@@ -528,7 +528,7 @@ export class AgentBotRedemption {
             if (await this.bot.enoughTimePassedToObtainProof(redemption)) {
                 await this.notifier.sendRedemptionNoProofObtained(redemption.requestId, redemption.proofRequestRound, redemption.proofRequestData);
                 logger.info(`Agent ${this.agent.vaultAddress} will retry obtaining proof of payment for redemption ${redemption.requestId}.`);
-                redemption = await this.updateRedemption(rootEm, redemption, {
+                redemption = await this.updateRedemption(rootEm, redemption, AgentRedemptionState.REQUESTED_PROOF, {
                     state: AgentRedemptionState.PAID,
                     proofRequestRound: undefined,
                     proofRequestData: undefined,
@@ -539,10 +539,14 @@ export class AgentBotRedemption {
 
     /**
      * Load and update redemption object in its own transaction.
+     * If expectedState is not null, it checks in the same transaction that redemption state matches expectedState.
      */
-    async updateRedemption(rootEm: EM, rd: RedemptionId, modifications: Partial<AgentRedemption>): Promise<AgentRedemption> {
+    async updateRedemption(rootEm: EM, rd: RedemptionId, expectedState: AgentRedemptionState | null, modifications: Partial<AgentRedemption>): Promise<AgentRedemption> {
         return await this.bot.runInTransaction(rootEm, async (em) => {
             const redemption = await this.findRedemption(em, rd, LockMode.PESSIMISTIC_WRITE);
+            if (expectedState != null && redemption.state !== expectedState) {
+                throw new Error(`Expected redemption ${redemption.requestId} to be in state ${expectedState}, but it is in state ${redemption.state}`);
+            }
             Object.assign(redemption, modifications);
             return redemption;
         });

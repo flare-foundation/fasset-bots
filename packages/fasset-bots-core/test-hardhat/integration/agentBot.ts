@@ -498,7 +498,7 @@ describe("Agent bot tests", () => {
         assert.equal(redemptionDone.finalState, AgentRedemptionFinalState.EXPIRED_UNPAID);
     });
 
-    it("Should perform redemption - agent pays, time expires in indexer: DELETE/REWRITE", async () => {
+    it("Should perform redemption", async () => {
         // perform minting
         const crt = await minter.reserveCollateral(agentBot.agent.vaultAddress, 2);
         await agentBot.runStep(orm.em);
