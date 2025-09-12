@@ -1,21 +1,18 @@
-import axios, { AxiosInstance } from "axios";
+import BN from "bn.js";
 import { BlockchainIndexerHelper } from "../underlying-chain/BlockchainIndexerHelper";
+import { ChainId } from "../underlying-chain/ChainId";
 import { IBlock, IBlockId, ITransaction } from "../underlying-chain/interfaces/IBlockChain";
 import { MockChain } from "./MockChain";
-import { ChainId } from "../underlying-chain/ChainId";
-import BN from "bn.js";
 
 export class MockIndexer extends BlockchainIndexerHelper {
     static deepCopyWithObjectCreate = true;
 
-    client: AxiosInstance;
     constructor(
         public indexerWebServerUrls: string[],
         public chainId: ChainId,
         public chain: MockChain
     ) {
         super(indexerWebServerUrls, chainId, [""]);
-        this.client = axios.create({});
     }
 
     finalizationBlocks: number = this.chain.finalizationBlocks;

@@ -1,4 +1,4 @@
-import { createAxiosInstance, DEFAULT_RATE_LIMIT_OPTIONS } from "@flarenetwork/fasset-bots-common";
+import { createRateLimitedAxiosInstance, DEFAULT_RATE_LIMIT_OPTIONS } from "@flarenetwork/fasset-bots-common";
 import { expect } from "chai";
 import fs from "fs";
 import { FeeStatsResponse, UTXOBlockHeightResponse } from "../../src/interfaces/IBlockchainAPI";
@@ -112,7 +112,7 @@ describe("Util tests", () => {
     });
 
     it.skip("Download historic fee stats", async () => {
-        const axiosClient = createAxiosInstance("https://blockbook-bitcoin.flare.network/api/v2/", undefined, DEFAULT_RATE_LIMIT_OPTIONS);
+        const axiosClient = createRateLimitedAxiosInstance("https://blockbook-bitcoin.flare.network/api/v2/", undefined, DEFAULT_RATE_LIMIT_OPTIONS);
         const res = await axiosClient.get<UTXOBlockHeightResponse>(``);
         const blockHeight = res.data.blockbook.bestHeight;
 

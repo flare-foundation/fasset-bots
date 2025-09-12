@@ -63,11 +63,7 @@ export function createAxiosConfig(url: string, apiKey?: string, timeoutMs?: numb
         timeout: timeoutMs ?? DEFAULT_RATE_LIMIT_OPTIONS.timeoutMs,
         headers: {
             "Content-Type": "application/json",
-        },
-        validateStatus: function (status: number) {
-            /* istanbul ignore next */
-            return (status >= 200 && status < 300) || status == 500;
-        },
+        }
     };
     if (apiKey) {
         createAxiosConfig.headers ??= {};
@@ -77,7 +73,7 @@ export function createAxiosConfig(url: string, apiKey?: string, timeoutMs?: numb
     return createAxiosConfig;
 }
 
-export function createAxiosInstance(url: string, apiKey?: string, rateLimitOptions?: RateLimitOptions): RateLimitedAxiosInstance {
+export function createRateLimitedAxiosInstance(url: string, apiKey?: string, rateLimitOptions?: RateLimitOptions): RateLimitedAxiosInstance {
     return axiosRateLimit(axios.create(createAxiosConfig(url, apiKey, rateLimitOptions?.timeoutMs)), {
         ...DEFAULT_RATE_LIMIT_OPTIONS,
         ...rateLimitOptions,

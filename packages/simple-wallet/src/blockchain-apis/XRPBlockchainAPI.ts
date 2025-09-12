@@ -1,4 +1,4 @@
-import { createAxiosInstance, tryWithClients } from "@flarenetwork/fasset-bots-common";
+import { createRateLimitedAxiosInstance, tryWithClients } from "@flarenetwork/fasset-bots-common";
 import { AxiosInstance, AxiosResponse } from "axios";
 import type { AccountInfoRequest, AccountInfoResponse, ServerInfoResponse, SubmitResponse, TxResponse } from "xrpl";
 import { BaseWalletConfig } from "../interfaces/IWalletTransaction";
@@ -8,7 +8,7 @@ export class XRPBlockchainAPI {
 
     constructor(createConfig: BaseWalletConfig) {
         for (const [index, url] of createConfig.urls.entries()) {
-            this.clients.push(createAxiosInstance(url, createConfig.apiTokenKeys?.[index], createConfig.rateLimitOptions));
+            this.clients.push(createRateLimitedAxiosInstance(url, createConfig.apiTokenKeys?.[index], createConfig.rateLimitOptions));
         }
     }
 

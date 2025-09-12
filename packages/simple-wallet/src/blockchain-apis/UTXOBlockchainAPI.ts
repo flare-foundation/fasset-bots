@@ -1,4 +1,4 @@
-import { createAxiosInstance, tryWithClients } from "@flarenetwork/fasset-bots-common";
+import { createRateLimitedAxiosInstance, tryWithClients } from "@flarenetwork/fasset-bots-common";
 import { AxiosInstance, AxiosResponse } from "axios";
 import BN from "bn.js";
 import { getConfirmedAfter, getDustAmount } from "../chain-clients/utxo/UTXOUtils";
@@ -21,7 +21,7 @@ export class UTXOBlockchainAPI implements IBlockchainAPI {
 
     constructor(createConfig: WalletServiceConfigBase, chainType: ChainType) {
         for (const [index, url] of createConfig.urls.entries()) {
-            this.clients.push(createAxiosInstance(url, createConfig.apiTokenKeys?.[index], createConfig.rateLimitOptions));
+            this.clients.push(createRateLimitedAxiosInstance(url, createConfig.apiTokenKeys?.[index], createConfig.rateLimitOptions));
         }
         this.chainType = chainType;
     }
