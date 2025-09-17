@@ -59,7 +59,7 @@
             }
         }
     },
-    "rpcUrl": "https://songbird-api-tracer.flare.network/ext/C/rpc",
+    "rpcUrl": "https://songbird-api.flare.network/ext/C/rpc",
     "dataAccessLayerUrls": [
         "https://sgb-data-availability.flare.network"
     ],

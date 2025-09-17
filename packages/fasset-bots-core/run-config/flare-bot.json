@@ -59,7 +59,7 @@
             }
         }
     },
-    "rpcUrl": "https://flare-api-tracer.flare.network/ext/C/rpc",
+    "rpcUrl": "https://flare-api.flare.network/ext/C/rpc",
     "dataAccessLayerUrls": [
         "https://flr-data-availability.flare.network"
     ],

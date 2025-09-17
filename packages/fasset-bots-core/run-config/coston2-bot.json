@@ -61,7 +61,7 @@
             }
         }
     },
-    "rpcUrl": "https://coston2-api-tracer.flare.network/ext/C/rpc",
+    "rpcUrl": "https://coston2-api.flare.network/ext/C/rpc",
     "dataAccessLayerUrls": [
         "https://ctn2-data-availability.flare.network"
     ],
