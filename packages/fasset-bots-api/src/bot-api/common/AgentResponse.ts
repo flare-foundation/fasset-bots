@@ -129,6 +129,8 @@ export interface VaultInfo {
     allLots: string;
     underlyingSymbol: string;
     redeemCapacity: string;
+    agentOnlyPoolCollateral: string;
+    agentOnlyPoolCollateralUSD: string;
 }
 
 export interface AllVaults {

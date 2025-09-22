@@ -482,6 +482,8 @@ export class AgentService {
             if (!cli) {
                 continue;
             }
+            const wnatBalance = await cli.context.wNat.balanceOf(cli.owner.workAddress);
+            balances.push({ symbol: await cli.context.wNat.symbol(), balance: formatFixed(toBN(wnatBalance), 18, { decimals: 3, groupDigits: true, groupSeparator: "," }) });
             const collateralTypes = await cli.context.assetManager.getCollateralTypes();
             for (const collateralType of collateralTypes) {
                 if (Number(collateralType.validUntil) != 0) {
@@ -646,15 +648,21 @@ export class AgentService {
                 const collateralToken = await IERC20.at(collateral.token);
 
                 //Calculate usd values
-                const vaultCollateralType = await cli.context.assetManager.getCollateralType(CollateralClass.VAULT, infoVault.vaultCollateralToken)
+                const vaultCollateralType = await cli.context.assetManager.getCollateralType(CollateralClass.VAULT, infoVault.vaultCollateralToken);
                 const existingPrice = prices.find(p => p.symbol === vaultCollateralType.tokenFtsoSymbol);
+                const poolToken = await CollateralPoolToken.at(info.collateralPoolToken);
+                const poolTokenTotalSupply = await poolToken.totalSupply();
+                const agentPoolNATBalance = toBN(info.totalAgentPoolTokensWei).toString() == "0" ? toBN(0) : toBN(info.totalAgentPoolTokensWei).mul(toBN(info.totalPoolCollateralNATWei)).div(poolTokenTotalSupply);
+                let agentPoolNATBalanceUSD = toBN(0);
                 let totalPoolCollateralUSD = toBN(0);
                 if (existingPrice) {
                     totalPoolCollateralUSD = toBN(info.totalPoolCollateralNATWei).mul(priceUSD).div(toBNExp(1, 18 + Number(cflrPrice.decimals)));
+                    agentPoolNATBalanceUSD = agentPoolNATBalance.mul(priceUSD).div(toBNExp(1, 18 + Number(cflrPrice.decimals)));
                 } else {
                     const priceVault = await priceReader.getPrice(vaultCollateralType.tokenFtsoSymbol, false, settings.maxTrustedPriceAgeSeconds);
                     const priceVaultUSD = priceVault.price.mul(toBNExp(1, 18));
                     totalPoolCollateralUSD = toBN(info.totalPoolCollateralNATWei).mul(priceUSD).div(toBNExp(1, 18 + Number(cflrPrice.decimals)));
+                    agentPoolNATBalanceUSD = agentPoolNATBalance.mul(priceUSD).div(toBNExp(1, 18 + Number(cflrPrice.decimals)));
                     prices.push({ symbol: vaultCollateralType.tokenFtsoSymbol, price: priceVaultUSD, decimals: Number(priceVault.decimals) });
                 }
                 const totalCollateralUSDPool = formatFixed(totalPoolCollateralUSD, 18, { decimals: 3, groupDigits: true, groupSeparator: "," });
@@ -690,7 +698,9 @@ export class AgentService {
                     delegationPercentage: delegationPercentage.toString(),
                     allLots: (Number(info.freeCollateralLots) + mintedLots.toNumber()).toString(),
                     underlyingSymbol: cli.context.chainInfo.symbol,
-                    redeemCapacity: (toBN(info.mintedUBA).div(lotSize)).toString()
+                    redeemCapacity: (toBN(info.mintedUBA).div(lotSize)).toString(),
+                    agentOnlyPoolCollateral: formatFixed(agentPoolNATBalance, 18, { decimals: 3, groupDigits: true, groupSeparator: "," }),
+                    agentOnlyPoolCollateralUSD: formatFixed(agentPoolNATBalanceUSD, 18, { decimals: 3, groupDigits: true, groupSeparator: "," }),
                 };
                 allVaults.push(vaultInfo);
             }
@@ -963,22 +973,61 @@ export class AgentService {
         const natBot = this.infoBotMap.get(this.fxrpSymbol) as AgentBotCommands;
         const natSymbol = natBot.context.nativeChainInfo.tokenSymbol;
         const fDecimals = await natBot.context.fAsset.decimals();
+        const collateralTypes = await natBot.context.assetManager.getCollateralTypes();
         if (challAddress) {
             const status = this.challengerActivity >= (now - 180000);
-            const natBalance = await web3.eth.getBalance(challAddress);
+            const wnatBalance = await natBot.context.wNat.balanceOf(challAddress);
             const fassetBalance = await natBot.context.fAsset.balanceOf(challAddress);
             const balances: AllBalances[] = [];
-            balances.push({ symbol: natSymbol, balance: formatFixed(toBN(natBalance), 18, { decimals: 3, groupDigits: true, groupSeparator: "," }) });
+            balances.push({ symbol: "W"+natSymbol, balance: formatFixed(toBN(wnatBalance), 18, { decimals: 3, groupDigits: true, groupSeparator: "," }) });
             balances.push({ symbol: natBot.context.fAssetSymbol, balance: formatFixed(toBN(fassetBalance), fDecimals.toNumber(), { decimals: 3, groupDigits: true, groupSeparator: "," }) });
+            for (const collateralType of collateralTypes) {
+                if (Number(collateralType.validUntil) != 0) {
+                    continue;
+                }
+                const b = balances.find((c) => c.symbol === collateralType.tokenFtsoSymbol);
+                if (b) {
+                    continue;
+                }
+                const symbol = collateralType.tokenFtsoSymbol;
+                const token = await IERC20.at(collateralType.token);
+                const balance = await token.balanceOf(challAddress);
+                const decimals = (await token.decimals()).toNumber();
+                const collateral = { symbol, balance: formatFixed(toBN(balance), decimals, { decimals: 3, groupDigits: true, groupSeparator: "," }) } as any;
+                if (symbol === "CFLR" || symbol === "C2FLR" || symbol === "SGB" || symbol == "FLR") {
+                    const nonWrappedBalance = await web3.eth.getBalance(challAddress);
+                    collateral.balance = formatFixed(toBN(nonWrappedBalance), decimals, { decimals: 3, groupDigits: true, groupSeparator: "," });
+                }
+                balances.push(collateral);
+            }
             others.push({ type: "Agent Challenger", address: challAddress, status: status, balances: balances });
         }
         if (liqAddress) {
             const status = this.liquidatorActivity >= (now - 180000);
-            const natBalance = await web3.eth.getBalance(liqAddress);
+            const wnatBalance = await natBot.context.wNat.balanceOf(liqAddress);
             const fassetBalance = await natBot.context.fAsset.balanceOf(liqAddress);
             const balances: AllBalances[] = [];
-            balances.push({ symbol: natSymbol, balance: formatFixed(toBN(natBalance), 18, { decimals: 3, groupDigits: true, groupSeparator: "," }) });
+            balances.push({ symbol: "w"+natSymbol, balance: formatFixed(toBN(wnatBalance), 18, { decimals: 3, groupDigits: true, groupSeparator: "," }) });
             balances.push({ symbol: natBot.context.fAssetSymbol, balance: formatFixed(toBN(fassetBalance), fDecimals.toNumber(), { decimals: 3, groupDigits: true, groupSeparator: "," }) });
+            for (const collateralType of collateralTypes) {
+                if (Number(collateralType.validUntil) != 0) {
+                    continue;
+                }
+                const b = balances.find((c) => c.symbol === collateralType.tokenFtsoSymbol);
+                if (b) {
+                    continue;
+                }
+                const symbol = collateralType.tokenFtsoSymbol;
+                const token = await IERC20.at(collateralType.token);
+                const balance = await token.balanceOf(liqAddress);
+                const decimals = (await token.decimals()).toNumber();
+                const collateral = { symbol, balance: formatFixed(toBN(balance), decimals, { decimals: 3, groupDigits: true, groupSeparator: "," }) } as any;
+                if (symbol === "CFLR" || symbol === "C2FLR" || symbol === "SGB" || symbol == "FLR") {
+                    const nonWrappedBalance = await web3.eth.getBalance(liqAddress);
+                    collateral.balance = formatFixed(toBN(nonWrappedBalance), decimals, { decimals: 3, groupDigits: true, groupSeparator: "," });
+                }
+                balances.push(collateral);
+            }
             others.push({ type: "Agent Liquidator", address: liqAddress, status: status, balances: balances });
         }
         return others;
