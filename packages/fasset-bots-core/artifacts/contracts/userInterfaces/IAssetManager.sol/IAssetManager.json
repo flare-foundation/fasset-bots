@@ -657,36 +657,29 @@
     },
     {
       "anonymous": false,
-      "inputs": [],
-      "name": "EmergencyPauseTransfersCanceled",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "pausedUntil",
-          "type": "uint256"
-        }
-      ],
-      "name": "EmergencyPauseTransfersTriggered",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
       "inputs": [
         {
           "indexed": false,
           "internalType": "enum EmergencyPause.Level",
-          "name": "level",
+          "name": "externalLevel",
           "type": "uint8"
         },
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "pausedUntil",
+          "name": "externalPausedUntil",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum EmergencyPause.Level",
+          "name": "governanceLevel",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "governancePausedUntil",
           "type": "uint256"
         }
       ],

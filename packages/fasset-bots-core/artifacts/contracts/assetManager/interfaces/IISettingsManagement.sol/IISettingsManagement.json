@@ -363,7 +363,7 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "_rewardNATWei",
+          "name": "_rewardUSD5",
           "type": "uint256"
         },
         {

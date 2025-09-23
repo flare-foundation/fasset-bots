@@ -218,6 +218,24 @@ export interface IIAssetManagerControllerInstance
     ): Promise<number>;
   };
 
+  cancelExternalEmergencyPause: {
+    (_assetManagers: string[], txDetails?: Truffle.TransactionDetails): Promise<
+      Truffle.TransactionResponse<AllEvents>
+    >;
+    call(
+      _assetManagers: string[],
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      _assetManagers: string[],
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _assetManagers: string[],
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
   cancelGovernanceCall: {
     (_encodedCall: string, txDetails?: Truffle.TransactionDetails): Promise<
       Truffle.TransactionResponse<AllEvents>
@@ -397,6 +415,24 @@ export interface IIAssetManagerControllerInstance
   };
 
   replacedBy(txDetails?: Truffle.TransactionDetails): Promise<string>;
+
+  resetEmergencyPauseTotalDuration: {
+    (_assetManagers: string[], txDetails?: Truffle.TransactionDetails): Promise<
+      Truffle.TransactionResponse<AllEvents>
+    >;
+    call(
+      _assetManagers: string[],
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      _assetManagers: string[],
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _assetManagers: string[],
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
 
   setAgentExitAvailableTimelockSeconds: {
     (
@@ -1061,25 +1097,25 @@ export interface IIAssetManagerControllerInstance
   setPaymentChallengeReward: {
     (
       _assetManagers: string[],
-      _rewardVaultCollateralWei: number | BN | string,
+      _rewardVaultCollateralUSD5: number | BN | string,
       _rewardBIPS: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<Truffle.TransactionResponse<AllEvents>>;
     call(
       _assetManagers: string[],
-      _rewardVaultCollateralWei: number | BN | string,
+      _rewardVaultCollateralUSD5: number | BN | string,
       _rewardBIPS: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<void>;
     sendTransaction(
       _assetManagers: string[],
-      _rewardVaultCollateralWei: number | BN | string,
+      _rewardVaultCollateralUSD5: number | BN | string,
       _rewardBIPS: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
       _assetManagers: string[],
-      _rewardVaultCollateralWei: number | BN | string,
+      _rewardVaultCollateralUSD5: number | BN | string,
       _rewardBIPS: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
@@ -1543,6 +1579,25 @@ export interface IIAssetManagerControllerInstance
       ): Promise<number>;
     };
 
+    cancelExternalEmergencyPause: {
+      (
+        _assetManagers: string[],
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+      call(
+        _assetManagers: string[],
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        _assetManagers: string[],
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        _assetManagers: string[],
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
     cancelGovernanceCall: {
       (_encodedCall: string, txDetails?: Truffle.TransactionDetails): Promise<
         Truffle.TransactionResponse<AllEvents>
@@ -1723,6 +1778,25 @@ export interface IIAssetManagerControllerInstance
     };
 
     replacedBy(txDetails?: Truffle.TransactionDetails): Promise<string>;
+
+    resetEmergencyPauseTotalDuration: {
+      (
+        _assetManagers: string[],
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+      call(
+        _assetManagers: string[],
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        _assetManagers: string[],
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        _assetManagers: string[],
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
 
     setAgentExitAvailableTimelockSeconds: {
       (
@@ -2387,25 +2461,25 @@ export interface IIAssetManagerControllerInstance
     setPaymentChallengeReward: {
       (
         _assetManagers: string[],
-        _rewardVaultCollateralWei: number | BN | string,
+        _rewardVaultCollateralUSD5: number | BN | string,
         _rewardBIPS: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<Truffle.TransactionResponse<AllEvents>>;
       call(
         _assetManagers: string[],
-        _rewardVaultCollateralWei: number | BN | string,
+        _rewardVaultCollateralUSD5: number | BN | string,
         _rewardBIPS: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<void>;
       sendTransaction(
         _assetManagers: string[],
-        _rewardVaultCollateralWei: number | BN | string,
+        _rewardVaultCollateralUSD5: number | BN | string,
         _rewardBIPS: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
       estimateGas(
         _assetManagers: string[],
-        _rewardVaultCollateralWei: number | BN | string,
+        _rewardVaultCollateralUSD5: number | BN | string,
         _rewardBIPS: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;

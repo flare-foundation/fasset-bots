@@ -296,6 +296,19 @@
     {
       "inputs": [
         {
+          "internalType": "contract IIAssetManager[]",
+          "name": "_assetManagers",
+          "type": "address[]"
+        }
+      ],
+      "name": "cancelExternalEmergencyPause",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "bytes",
           "name": "_encodedCall",
           "type": "bytes"
@@ -520,6 +533,19 @@
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "contract IIAssetManager[]",
+          "name": "_assetManagers",
+          "type": "address[]"
+        }
+      ],
+      "name": "resetEmergencyPauseTotalDuration",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -1055,7 +1081,7 @@
         },
         {
           "internalType": "uint256",
-          "name": "_rewardVaultCollateralWei",
+          "name": "_rewardVaultCollateralUSD5",
           "type": "uint256"
         },
         {

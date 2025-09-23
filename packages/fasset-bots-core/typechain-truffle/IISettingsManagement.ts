@@ -508,22 +508,22 @@ export interface IISettingsManagementInstance extends Truffle.ContractInstance {
 
   setPaymentChallengeReward: {
     (
-      _rewardNATWei: number | BN | string,
+      _rewardUSD5: number | BN | string,
       _rewardBIPS: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<Truffle.TransactionResponse<AllEvents>>;
     call(
-      _rewardNATWei: number | BN | string,
+      _rewardUSD5: number | BN | string,
       _rewardBIPS: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<void>;
     sendTransaction(
-      _rewardNATWei: number | BN | string,
+      _rewardUSD5: number | BN | string,
       _rewardBIPS: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
-      _rewardNATWei: number | BN | string,
+      _rewardUSD5: number | BN | string,
       _rewardBIPS: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
@@ -1221,22 +1221,22 @@ export interface IISettingsManagementInstance extends Truffle.ContractInstance {
 
     setPaymentChallengeReward: {
       (
-        _rewardNATWei: number | BN | string,
+        _rewardUSD5: number | BN | string,
         _rewardBIPS: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<Truffle.TransactionResponse<AllEvents>>;
       call(
-        _rewardNATWei: number | BN | string,
+        _rewardUSD5: number | BN | string,
         _rewardBIPS: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<void>;
       sendTransaction(
-        _rewardNATWei: number | BN | string,
+        _rewardUSD5: number | BN | string,
         _rewardBIPS: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
       estimateGas(
-        _rewardNATWei: number | BN | string,
+        _rewardUSD5: number | BN | string,
         _rewardBIPS: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
