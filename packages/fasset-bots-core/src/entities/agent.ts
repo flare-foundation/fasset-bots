@@ -370,6 +370,8 @@ export class AgentUpdateSetting {
 }
 
 @Entity()
+@Unique({ properties: ["agentAddress", "requestId"] })
+@Index({ properties: ["state"] })
 export class ReturnFromCoreVault {
     @PrimaryKey({ autoincrement: true })
     id!: number;
