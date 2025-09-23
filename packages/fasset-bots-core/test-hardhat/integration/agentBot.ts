@@ -990,7 +990,7 @@ describe("Agent bot tests", () => {
         // top up ownerAddress
         const deposit = toBNExp(5_000_000, 6).toString();
         const agentInfo = await agentBot.agent.getAgentInfo();
-        await mintVaultCollateralToOwner(deposit, agentInfo.vaultCollateralToken, ownerAddress);
+        await mintVaultCollateralToOwner(context, deposit, agentInfo.vaultCollateralToken, ownerAddress);
         // mock price changes and run liquidation trigger
         await context.priceStore.finalizePrices();
         // send notifications: top up successful
