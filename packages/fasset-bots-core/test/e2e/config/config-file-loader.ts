@@ -3,7 +3,7 @@ import chaiAsPromised from "chai-as-promised";
 import { readFileSync } from "fs";
 import { loadConfigFile, updateConfigFilePaths, validateAgentConfigFile, validateConfigFile } from "../../../src/config/config-file-loader";
 import { BotConfigFile } from "../../../src/config/config-files/BotConfigFile";
-import { COSTON_CONFIG_EXTENDS_1, COSTON_CONFIG_EXTENDS_2, COSTON_CONFIG_INVALID, COSTON_CONFIG_LOOP_1, COSTON_RUN_CONFIG_CONTRACTS } from "../../test-utils/test-bot-config";
+import { COSTON_CONFIG_EXTENDS_1, COSTON_CONFIG_EXTENDS_2, COSTON_CONFIG_INVALID, COSTON_CONFIG_LOOP_1, COSTON_RUN_CONFIG_STANDARD } from "../../test-utils/test-bot-config";
 import { resolveInFassetBotsCore } from "../../../src/utils";
 use(chaiAsPromised);
 
@@ -15,7 +15,7 @@ function simpleLoadConfigFile(fpath: string) {
 
 describe("config file loader tests", () => {
     it("Should load config file", async () => {
-        const configFile = loadConfigFile(COSTON_RUN_CONFIG_CONTRACTS);
+        const configFile = loadConfigFile(COSTON_RUN_CONFIG_STANDARD);
         expect(configFile.contractsJsonFile).eq(resolveInFassetBotsCore("fasset-deployment/coston.json"));
         expect(configFile.assetManagerController).eq(undefined);
         expect(configFile.fAssets.FTestXRP.tokenSymbol).eq("testXRP");
@@ -50,7 +50,7 @@ describe("config file loader tests", () => {
     });
 
     it("Should not validate config - contractsJsonFile or addressUpdater must be defined", async () => {
-        const runConfig = simpleLoadConfigFile(COSTON_RUN_CONFIG_CONTRACTS);
+        const runConfig = simpleLoadConfigFile(COSTON_RUN_CONFIG_STANDARD);
         runConfig.contractsJsonFile = undefined;
         runConfig.assetManagerController = undefined;
         expect(() => validateConfigFile(runConfig))
@@ -58,7 +58,7 @@ describe("config file loader tests", () => {
     });
 
     it("Should not validate config - attestation provider must be defined", async () => {
-        const runConfig: BotConfigFile = simpleLoadConfigFile(COSTON_RUN_CONFIG_CONTRACTS);
+        const runConfig: BotConfigFile = simpleLoadConfigFile(COSTON_RUN_CONFIG_STANDARD);
         runConfig.dataAccessLayerUrls = undefined;
         expect(() => validateAgentConfigFile(runConfig))
             .to.throw(`At least one attestation provider url is required`);
@@ -68,7 +68,7 @@ describe("config file loader tests", () => {
     });
 
     it("Should not validate config - walletUrl must be defined", async () => {
-        const runConfig: BotConfigFile = simpleLoadConfigFile(COSTON_RUN_CONFIG_CONTRACTS);
+        const runConfig: BotConfigFile = simpleLoadConfigFile(COSTON_RUN_CONFIG_STANDARD);
         const [symbol, fasset] = Object.entries(runConfig.fAssets)[0];
         fasset.walletUrls = undefined;
         expect(() => validateAgentConfigFile(runConfig))
