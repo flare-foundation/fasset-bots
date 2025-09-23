@@ -29,7 +29,7 @@
             "safetyMinCollateralRatioBIPS": 13000
         }
     ],
-    "mintingCap": "750 000 000000",
+    "mintingCap": "1 750 000 000000",
     "lotSize": "10 000000",
     "collateralReservationFeeBIPS": 50,
     "mintingPoolHoldingsRequiredBIPS": 5000,
@@ -60,7 +60,6 @@
     "withdrawalWaitMinSeconds": 3600,
     "vaultCollateralBuyForFlareFactorBIPS": 10000,
     "minUpdateRepeatTimeSeconds": 86400,
-    "tokenInvalidationTimeMinSeconds": 86400,
     "agentExitAvailableTimelockSeconds": 10800,
     "agentFeeChangeTimelockSeconds": 3600,
     "agentMintingCRChangeTimelockSeconds": 300,
