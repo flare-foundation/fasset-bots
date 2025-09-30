@@ -44,15 +44,18 @@ export class Minter {
         return new Minter(ctx, address, underlyingAddress, wallet);
     }
 
-    async reserveCollateral(agent: string, lots: BNish, executorAddress?: string, executorFeeNatWei?: BNish) {
-        const res = await this._reserveCollateral(agent, lots, true, executorAddress, executorFeeNatWei);
+    async reserveCollateral(agent: string, lots: BNish, executorAddress?: string, executorFeeNatWei?: BNish, crFeeBump?: number) {
+        const res = await this._reserveCollateral(agent, lots, true, executorAddress, executorFeeNatWei, crFeeBump);
         return requiredEventArgs(res, 'CollateralReserved');
     }
 
-    async _reserveCollateral(agent: string, lots: BNish, checkUnderlyingAddressFunds: boolean, executorAddress?: string, executorFeeNatWei?: BNish) {
+    async _reserveCollateral(agent: string, lots: BNish, checkUnderlyingAddressFunds: boolean, executorAddress?: string, executorFeeNatWei?: BNish, crFeeBump?: number) {
         const agentInfo = await this.assetManager.getAgentInfo(agent);
         const settings = await this.assetManager.getSettings();
-        const crFee = await this.getCollateralReservationFee(lots);
+        let crFee = await this.getCollateralReservationFee(lots);
+        if (crFeeBump != null) {
+            crFee = crFee.muln(MAX_BIPS * (1 + crFeeBump)).divn(MAX_BIPS)
+        }
         const executor = executorAddress ? executorAddress : ZERO_ADDRESS;
         const totalNatFee = executor != ZERO_ADDRESS ? crFee.add(toBN(requireNotNull(executorFeeNatWei, "executor fee required if executor used"))) : crFee;
         // check funds before reserveCollateral
