@@ -54,7 +54,7 @@ export class Minter {
         const settings = await this.assetManager.getSettings();
         let crFee = await this.getCollateralReservationFee(lots);
         if (crFeeBump != null) {
-            crFee = crFee.muln(MAX_BIPS * (1 + crFeeBump)).divn(MAX_BIPS)
+            crFee = crFee.muln(Math.floor(MAX_BIPS * (1 + crFeeBump))).divn(MAX_BIPS)
         }
         const executor = executorAddress ? executorAddress : ZERO_ADDRESS;
         const totalNatFee = executor != ZERO_ADDRESS ? crFee.add(toBN(requireNotNull(executorFeeNatWei, "executor fee required if executor used"))) : crFee;

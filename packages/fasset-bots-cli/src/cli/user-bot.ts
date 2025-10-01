@@ -87,7 +87,7 @@ program
         validateAddress(cmdOptions.executor, "Executor address");
         validate(!cmdOptions.executor || !!cmdOptions.executorFee, "Option executorFee must be set when executor is set.");
         validate(!cmdOptions.executorFee || !!cmdOptions.executor, "Option executor must be set when executorFee is set.");
-        validateDecimal(cmdOptions.crFeeBump, "CRT fee bump", { min: 0, max: 0.2 });
+        validateDecimal(cmdOptions.crFeeBump, "CR fee bump", { min: 0, max: 0.2 });
         const minterBot = await UserBotCommands.create(options.secrets, options.config, options.fasset, options.dir, registerToplevelFinalizer);
         const agentVault = cmdOptions.agent ?? (await minterBot.infoBot().findBestAgent(toBN(numberOfLots)));
         const crFeeBump = (cmdOptions.crFeeBump != null) ? Number(cmdOptions.crFeeBump) : undefined
