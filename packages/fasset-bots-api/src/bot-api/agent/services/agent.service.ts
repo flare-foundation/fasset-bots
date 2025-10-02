@@ -10,7 +10,7 @@ import * as cron from "node-cron";
 import Web3 from "web3";
 import { SecretsFile } from "../../../../../fasset-bots-core/src/config/config-files/SecretsFile";
 import { ORM } from "../../../../../fasset-bots-core/src/config/orm";
-import { APIKey, AgentBalance, AgentCreateResponse, AgentData, AgentSettings, AgentUnderlying, AgentVaultStatus, AllBalances, AllCollaterals, CollateralTemplate, Collaterals, Delegation, DepositableVaultCVData, ExtendedAgentVaultInfo, RedemptionQueueData, RequestableVaultCVData, UnderlyingAddress, VaultCollaterals, VaultInfo } from "../../common/AgentResponse";
+import { APIKey, AgentBalance, AgentCreateResponse, AgentData, AgentSettings, AgentUnderlying, AgentVaultStatus, AllBalances, AllCollaterals, CollateralTemplate, Collaterals, Delegation, DepositableVaultCVData, ExtendedAgentVaultInfo, OtherBotsData, RedemptionQueueData, RequestableVaultCVData, UnderlyingAddress, VaultCollaterals, VaultInfo } from "../../common/AgentResponse";
 import { AgentSettingsDTO, Alerts, DelegateDTO, PostAlert } from "../../common/AgentSettingsDTO";
 import { Alert } from "../../common/entities/AlertDB";
 import { cachedSecrets } from "../agentServer";
@@ -606,7 +606,6 @@ export class AgentService {
             const priceReader = await TokenPriceReader.create(settings);
             const cflrPrice = await priceReader.getPrice(cli.context.nativeChainInfo.tokenSymbol, false, settings.maxTrustedPriceAgeSeconds);
             const priceUSD = cflrPrice.price.mul(toBNExp(1, 18));
-            const prices = [{ symbol: cli.context.nativeChainInfo.tokenSymbol, price: priceUSD, decimals: Number(cflrPrice.decimals) }];
 
             const lotSize = toBN(settings.lotSizeAMG).mul(toBN(settings.assetMintingGranularityUBA));
             // For each vault calculate needed info
@@ -620,7 +619,6 @@ export class AgentService {
                     updating = true;
                 }
                 const info = await this.getAgentVaultInfoFull(vault.vaultAddress, cli);
-                const infoVault = await cli.context.assetManager.getAgentInfo(vault.vaultAddress);
                 const mintedLots = toBN(info.mintedUBA).div(lotSize);
                 const vaultCR = formatCR(info.vaultCollateralRatioBIPS);
                 const poolCR = formatCR(info.poolCollateralRatioBIPS);
@@ -646,25 +644,13 @@ export class AgentService {
                 }
                 const collateral: any = collateralTypes.find(item => item.tokenFtsoSymbol === info.vaultCollateralToken);
                 const collateralToken = await IERC20.at(collateral.token);
-
-                //Calculate usd values
-                const vaultCollateralType = await cli.context.assetManager.getCollateralType(CollateralClass.VAULT, infoVault.vaultCollateralToken);
-                const existingPrice = prices.find(p => p.symbol === vaultCollateralType.tokenFtsoSymbol);
                 const poolToken = await CollateralPoolToken.at(info.collateralPoolToken);
                 const poolTokenTotalSupply = await poolToken.totalSupply();
                 const agentPoolNATBalance = toBN(info.totalAgentPoolTokensWei).toString() == "0" ? toBN(0) : toBN(info.totalAgentPoolTokensWei).mul(toBN(info.totalPoolCollateralNATWei)).div(poolTokenTotalSupply);
                 let agentPoolNATBalanceUSD = toBN(0);
                 let totalPoolCollateralUSD = toBN(0);
-                if (existingPrice) {
-                    totalPoolCollateralUSD = toBN(info.totalPoolCollateralNATWei).mul(priceUSD).div(toBNExp(1, 18 + Number(cflrPrice.decimals)));
-                    agentPoolNATBalanceUSD = agentPoolNATBalance.mul(priceUSD).div(toBNExp(1, 18 + Number(cflrPrice.decimals)));
-                } else {
-                    const priceVault = await priceReader.getPrice(vaultCollateralType.tokenFtsoSymbol, false, settings.maxTrustedPriceAgeSeconds);
-                    const priceVaultUSD = priceVault.price.mul(toBNExp(1, 18));
-                    totalPoolCollateralUSD = toBN(info.totalPoolCollateralNATWei).mul(priceUSD).div(toBNExp(1, 18 + Number(cflrPrice.decimals)));
-                    agentPoolNATBalanceUSD = agentPoolNATBalance.mul(priceUSD).div(toBNExp(1, 18 + Number(cflrPrice.decimals)));
-                    prices.push({ symbol: vaultCollateralType.tokenFtsoSymbol, price: priceVaultUSD, decimals: Number(priceVault.decimals) });
-                }
+                totalPoolCollateralUSD = toBN(info.totalPoolCollateralNATWei).mul(priceUSD).div(toBNExp(1, 18 + Number(cflrPrice.decimals)));
+                agentPoolNATBalanceUSD = agentPoolNATBalance.mul(priceUSD).div(toBNExp(1, 18 + Number(cflrPrice.decimals)));
                 const totalCollateralUSDPool = formatFixed(totalPoolCollateralUSD, 18, { decimals: 3, groupDigits: true, groupSeparator: "," });
                 const feeShare = Number(info.poolFeeShareBIPS) / MAX_BIPS;
                 const redemptionFeeShare = Number(info.redemptionPoolFeeShareBIPS) / MAX_BIPS;
@@ -965,8 +951,8 @@ export class AgentService {
         await cli.cancelReturnFromCoreVault(agentVaultAddress);
     }
 
-    async getOtherBots(): Promise<any> {
-        const others = [];
+    async getOtherBots(): Promise<OtherBotsData[]> {
+        const others: OtherBotsData[] = [];
         const challAddress = cachedSecrets.optional(`challenger.address`);
         const liqAddress = cachedSecrets.optional(`liquidator.address`);
         const now = Date.now();
@@ -1031,5 +1017,69 @@ export class AgentService {
             others.push({ type: "Agent Liquidator", address: liqAddress, status: status, balances: balances });
         }
         return others;
+    }
+
+    async getFullAgentFunds(): Promise<AllBalances[]> {
+        const fassets = await this.getFassetSymbols();
+        const totalXRPUSD = "0";
+        const totalFXRPUSD = "0";
+        const totalNATUSD = "0";
+        const totalVaultCollateralUSD = "0";
+        const balances: AllBalances[] = [];
+        const vaultCollateralBalances: Map<string, string> = new Map();
+        for (const f of fassets) {
+            if (!f.includes("XRP")) {
+                continue;
+            }
+            const cli = this.infoBotMap.get(f) as AgentBotCommands;
+            if (!cli) {
+                continue;
+            }
+            const settings = await cli.context.assetManager.getSettings();
+            const priceReader = await TokenPriceReader.create(settings);
+            const cflrPrice = await priceReader.getPrice(cli.context.nativeChainInfo.tokenSymbol, false, settings.maxTrustedPriceAgeSeconds);
+            const priceUSD = cflrPrice.price.mul(toBNExp(1, 18));
+            const prices = [{ symbol: cli.context.nativeChainInfo.tokenSymbol, price: priceUSD, decimals: Number(cflrPrice.decimals) }];
+            const collateralTypes = await cli.context.assetManager.getCollateralTypes();
+            // Get agent vaults for fasset from database
+            const agentVaults = await cli.getActiveAgentsForFAsset();
+            if (agentVaults.length == 0) {
+                continue;
+            }
+            for (const vault of agentVaults) {
+                const info = await this.getAgentVaultInfoFull(vault.vaultAddress, cli);
+                const infoVault = await cli.context.assetManager.getAgentInfo(vault.vaultAddress);
+                const collateral: any = collateralTypes.find(item => item.tokenFtsoSymbol === info.vaultCollateralToken);
+                const collateralToken = await IERC20.at(collateral.token);
+
+                //Calculate usd values
+                const vaultCollateralType = await cli.context.assetManager.getCollateralType(CollateralClass.VAULT, infoVault.vaultCollateralToken);
+                const existingPrice = prices.find(p => p.symbol === vaultCollateralType.tokenFtsoSymbol);
+                const poolToken = await CollateralPoolToken.at(info.collateralPoolToken);
+                const poolTokenTotalSupply = await poolToken.totalSupply();
+                const agentPoolNATBalance = toBN(info.totalAgentPoolTokensWei).toString() == "0" ? toBN(0) : toBN(info.totalAgentPoolTokensWei).mul(toBN(info.totalPoolCollateralNATWei)).div(poolTokenTotalSupply);
+                let agentPoolNATBalanceUSD = toBN(0);
+                agentPoolNATBalanceUSD = agentPoolNATBalance.mul(priceUSD).div(toBNExp(1, 18 + Number(cflrPrice.decimals)));
+                //let agentVaultNATBalanceUSD = toBN(0);
+                if (existingPrice) {
+                    agentPoolNATBalanceUSD = agentPoolNATBalance.mul(priceUSD).div(toBNExp(1, 18 + Number(cflrPrice.decimals)));
+                } else {
+                    const priceVault = await priceReader.getPrice(vaultCollateralType.tokenFtsoSymbol, false, settings.maxTrustedPriceAgeSeconds);
+                    const priceVaultUSD = priceVault.price.mul(toBNExp(1, 18));
+                    agentPoolNATBalanceUSD = agentPoolNATBalance.mul(priceUSD).div(toBNExp(1, 18 + Number(cflrPrice.decimals)));
+                    prices.push({ symbol: vaultCollateralType.tokenFtsoSymbol, price: priceVaultUSD, decimals: Number(priceVault.decimals) });
+                }
+                const vaultColBalance = vaultCollateralBalances.get(vaultCollateralType.tokenFtsoSymbol);
+                vaultCollateralBalances.set(vaultCollateralType.tokenFtsoSymbol, "1,200.25");
+            }
+            for (const [key, value] of vaultCollateralBalances) {
+                balances.push({symbol: key, balance: value + " $"});
+            }
+            balances.push({symbol: cli.context.nativeChainInfo.tokenSymbol, balance: "1,200.25 $"});
+            balances.push({symbol: cli.context.chainInfo.symbol, balance: "1,200.25 $"});
+            balances.push({symbol: f, balance: "1,201.25 $"});
+        }
+        balances.push({symbol: "Total", balance: "34,500.12 $"});
+        return balances;
     }
 }

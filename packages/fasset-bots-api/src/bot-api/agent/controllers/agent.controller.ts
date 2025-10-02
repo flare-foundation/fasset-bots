@@ -528,4 +528,12 @@ export class AgentController {
     ): Promise<ApiResponseWrapper<any>> {
         return handleApiResponse(this.agentService.getOtherBots());
     }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @Get("fullAgentFunds")
+    public async getFullAgentFunds(
+    ): Promise<ApiResponseWrapper<any>> {
+        return handleApiResponse(this.agentService.getFullAgentFunds());
+    }
 }

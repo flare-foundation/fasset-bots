@@ -191,3 +191,10 @@ export interface TransferToCVFee {
     feeUSD: string;
     symbol: string;
 }
+
+export interface OtherBotsData {
+    type: string;
+    address: string;
+    status: boolean;
+    balances: AllBalances[];
+}
