@@ -266,11 +266,6 @@ export class AgentService {
         return { address: account.address, privateKey: account.privateKey };
     }
 
-    async upgradeWNat(fAssetSymbol: string, agentVaultAddress: string): Promise<void> {
-        const cli = await AgentBotCommands.create(this.secrets, FASSET_BOT_CONFIG, fAssetSymbol);
-        await cli.upgradeWNatContract(agentVaultAddress);
-    }
-
     async getAgentInfo(fAssetSymbol: string): Promise<AgentData> {
         const cli = await AgentBotCommands.create(this.secrets, FASSET_BOT_CONFIG, fAssetSymbol);
         // get collateral data

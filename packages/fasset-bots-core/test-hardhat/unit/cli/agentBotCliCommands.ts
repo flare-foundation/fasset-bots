@@ -461,20 +461,6 @@ describe("AgentBot cli commands unit tests", () => {
         expect(safeToWithdrawUnderlying).to.eq("0");
     });
 
-    it("Should upgrade WNat", async () => {
-        const assetManagerControllerAddress = accounts[301];
-        const localContext = await createTestAssetContext(governance, testChainInfo.xrp, { assetManagerControllerAddress });
-        const agent = await createAgent(localContext);
-        botCliCommands.context = localContext;
-        const newWnat = await ERC20Mock.new("Wrapped NAT", "WNAT");
-        await localContext.assetManager.updateSystemContracts(localContext.assetManagerController.address, newWnat.address, { from: assetManagerControllerAddress });
-        await botCliCommands.upgradeWNatContract(agent.vaultAddress);
-        const token = (await agent.getPoolCollateral()).token;
-        expect(token).to.equal(newWnat.address);
-        //change context back
-        botCliCommands.context = context;
-    });
-
     it("Should create agent bot via bot cli commands", async () => {
         const settings = loadAgentSettings(DEFAULT_AGENT_SETTINGS_PATH_HARDHAT);
         settings.poolTokenSuffix = "AB-X5";

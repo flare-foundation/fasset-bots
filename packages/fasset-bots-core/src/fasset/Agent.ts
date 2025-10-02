@@ -450,13 +450,6 @@ export class Agent {
     }
 
     /**
-     * Upgrades WNat contract. It swaps old WNat tokens for new ones and sets it for use by the pool.
-     */
-    async upgradeWNatContract(): Promise<void> {
-        await this.assetManager.upgradeWNatContract(this.vaultAddress, { from: this.owner.workAddress });
-    }
-
-    /**
      * Initiates underlying payment from agent to owner
      */
     async emptyAgentUnderlying(destinationAddress: string): Promise<number> {
