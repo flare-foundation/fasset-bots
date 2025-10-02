@@ -158,19 +158,24 @@ export interface AgentCollateralFacetInstance extends Truffle.ContractInstance {
   };
 
   upgradeWNatContract: {
-    (_agentVault: string, txDetails?: Truffle.TransactionDetails): Promise<
-      Truffle.TransactionResponse<AllEvents>
-    >;
+    (
+      _start: number | BN | string,
+      _end: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse<AllEvents>>;
     call(
-      _agentVault: string,
+      _start: number | BN | string,
+      _end: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<void>;
     sendTransaction(
-      _agentVault: string,
+      _start: number | BN | string,
+      _end: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
-      _agentVault: string,
+      _start: number | BN | string,
+      _end: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
@@ -269,19 +274,24 @@ export interface AgentCollateralFacetInstance extends Truffle.ContractInstance {
     };
 
     upgradeWNatContract: {
-      (_agentVault: string, txDetails?: Truffle.TransactionDetails): Promise<
-        Truffle.TransactionResponse<AllEvents>
-      >;
+      (
+        _start: number | BN | string,
+        _end: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
       call(
-        _agentVault: string,
+        _start: number | BN | string,
+        _end: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<void>;
       sendTransaction(
-        _agentVault: string,
+        _start: number | BN | string,
+        _end: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
       estimateGas(
-        _agentVault: string,
+        _start: number | BN | string,
+        _end: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };
