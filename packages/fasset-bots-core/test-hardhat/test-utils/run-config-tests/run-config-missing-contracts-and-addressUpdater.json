@@ -49,6 +49,7 @@
                 "transferToCVRatio": 0.7,
                 "targetTransferToCVRatio": 0.4,
                 "returnFromCVRatio": 0.3,
+                "minimumTransferToCVSize": 0.2,
                 "targetReturnFromCVRatio": 0.6
             }
         }

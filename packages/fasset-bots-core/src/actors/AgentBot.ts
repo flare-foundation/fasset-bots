@@ -671,24 +671,25 @@ export class AgentBot {
             const lotSize = Number(settings.lotSizeAMG) * Number(settings.assetMintingGranularityUBA);
             const freeLots = Number(agentInfo.freeCollateralLots);
             const mintedLots = Number(toBN(agentInfo.mintedUBA).divn(lotSize));
+            const mintedOrReservedLots = Number(toBN(agentInfo.mintedUBA).add(toBN(agentInfo.reservedUBA)).divn(lotSize));
             const lockedLots = Number(toBN(agentInfo.mintedUBA).add(toBN(agentInfo.reservedUBA)).add(toBN(agentInfo.redeemingUBA)).divn(lotSize));
 
             const totalLots = lockedLots + freeLots;
             if (totalLots === 0) return;
 
             // transfer to CV - mintedLots must be large enough
-            if (mintedLots / totalLots > this.agentBotSettings.transferToCVRatio) {
+            if (mintedOrReservedLots / totalLots > this.agentBotSettings.transferToCVRatio) {
                 const openTransfers = await this.redemption.openTransferToCoreVaultIds(rootEm);
                 if (openTransfers.length == 0) {
                     const target = this.agentBotSettings.targetTransferToCVRatio;
-                    // agent wants
-                    const transferLots = Math.floor(mintedLots - target * (totalLots));
-                    const transferLotsAmount = toBN(transferLots * lotSize);
+                    const requestedTransferLots = Math.floor(mintedLots - target * totalLots);
+                    const requestedTransferAmount = toBN(requestedTransferLots * lotSize);
                     // check how much is allowed to transfer
                     const maxAllowedToTransfer = await getMaximumTransferToCoreVault(this.context, this.agent.vaultAddress);
                     // actual return
-                    const transferAmount = minBN(transferLotsAmount, maxAllowedToTransfer.maximumTransferUBA);
-                    if (transferAmount.gte(toBN(settings.lotSizeAMG))) {
+                    const transferAmount = minBN(requestedTransferAmount, maxAllowedToTransfer.maximumTransferUBA);
+                    const minTransferAmount = Math.floor(totalLots * lotSize * this.agentBotSettings.minimumTransferToCVSize);
+                    if (transferAmount.gte(toBN(Math.max(lotSize, minTransferAmount)))) {
                         await this.transferToCoreVault(transferAmount);
                     }
                 }
@@ -699,13 +700,12 @@ export class AgentBot {
                 const openReturns = await this.returnFromCoreVaultBot.openReturnFromCoreVaultIds(rootEm);
                 if (openReturns.length == 0) {
                     const target = this.agentBotSettings.targetReturnFromCVRatio;
-                    // agents wants
-                    const returnLots = Math.floor(target * (totalLots) - mintedLots);
+                    const returnLots = Math.floor(target * totalLots - mintedLots);
                     // check how much can CV return
                     const { 1: maxCVReturnAmount } = await this.context.assetManager.coreVaultAvailableAmount();
-                    const maxCVReturnLot = Math.floor(Number(toBN(maxCVReturnAmount).divn(lotSize)));
+                    const maxCVReturnLots = Number(toBN(maxCVReturnAmount).divn(lotSize));
                     // actual return
-                    const returnLotsToUse = Math.min(maxCVReturnLot, returnLots)
+                    const returnLotsToUse = Math.min(maxCVReturnLots, returnLots, freeLots)
                     if (returnLotsToUse >= 1) {
                         await this.returnFromCoreVault(toBN(returnLotsToUse));
                     }

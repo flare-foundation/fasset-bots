@@ -57,6 +57,7 @@
                 "returnFromCVRatio": 0.3,
                 "targetTransferToCVRatio": 0.4,
                 "targetReturnFromCVRatio": 0.6,
+                "minimumTransferToCVSize": 0.2,
                 "useAutomaticCoreVaultTransferAndReturn": true
             },
             "FSimCoinX": {
@@ -67,6 +68,7 @@
                 "returnFromCVRatio": 0.3,
                 "targetTransferToCVRatio": 0.4,
                 "targetReturnFromCVRatio": 0.6,
+                "minimumTransferToCVSize": 0.2,
                 "useAutomaticCoreVaultTransferAndReturn": true
             },
             "FTestBTC": {
@@ -77,6 +79,7 @@
                 "returnFromCVRatio": 0.3,
                 "targetTransferToCVRatio": 0.4,
                 "targetReturnFromCVRatio": 0.6,
+                "minimumTransferToCVSize": 0.2,
                 "useAutomaticCoreVaultTransferAndReturn": true
             },
             "FTestDOGE": {
@@ -87,6 +90,7 @@
                 "returnFromCVRatio": 0.3,
                 "targetTransferToCVRatio": 0.4,
                 "targetReturnFromCVRatio": 0.6,
+                "minimumTransferToCVSize": 0.2,
                 "useAutomaticCoreVaultTransferAndReturn": true
             }
         }
