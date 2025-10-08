@@ -49,6 +49,16 @@ program
     });
 
 program
+    .command("agentCapacities")
+    .description("Lists the available agents' capacity info")
+    .action(async (opts: { all: boolean }) => {
+        const options: { config: string; secrets: string; fasset: string } = program.opts();
+        const secrets = await Secrets.load(options.secrets);
+        const bot = await InfoBotCommands.create(secrets, options.config, options.fasset, registerToplevelFinalizer);
+        await bot.printAgentCapacities();
+    });
+
+program
     .command("agentInfo")
     .description("info about an agent")
     .argument("<agentVaultAddress>", "the address of the agent vault")
