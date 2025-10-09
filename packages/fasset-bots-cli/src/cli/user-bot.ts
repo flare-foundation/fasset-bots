@@ -3,7 +3,7 @@ import "source-map-support/register";
 
 import { InfoBotCommands, PoolUserBotCommands, UserBotCommands } from "@flarenetwork/fasset-bots-core";
 import { Secrets } from "@flarenetwork/fasset-bots-core/config";
-import { BN_ZERO, formatFixed, logger, toBN, toBNExp, TokenBalances } from "@flarenetwork/fasset-bots-core/utils";
+import { BN_ZERO, formatFixed, logger, sleep, toBN, toBNExp, TokenBalances } from "@flarenetwork/fasset-bots-core/utils";
 import BN from "bn.js";
 import os from "os";
 import path from "path";
@@ -51,11 +51,24 @@ program
 program
     .command("agentCapacities")
     .description("Lists the available agents' capacity info")
-    .action(async (opts: { all: boolean }) => {
+    .option("--all", "also show non-public agents")
+    .option("--repeat <seconds>")
+    .action(async (opts: { repeat: string, all: boolean }) => {
         const options: { config: string; secrets: string; fasset: string } = program.opts();
         const secrets = await Secrets.load(options.secrets);
         const bot = await InfoBotCommands.create(secrets, options.config, options.fasset, registerToplevelFinalizer);
-        await bot.printAgentCapacities();
+        if (opts.repeat) {
+            validateInteger(opts.repeat, "repeat seconds", { min: 1 });
+            const waitMs = Number(opts.repeat) * 1000;
+            // eslint-disable-next-line no-constant-condition
+            while (true) {
+                console.log("\n----------------", new Date().toLocaleTimeString(), "----------------");
+                await bot.printAgentCapacities(!opts.all);
+                await sleep(waitMs);
+            }
+        } else {
+            await bot.printAgentCapacities(!opts.all);
+        }
     });
 
 program

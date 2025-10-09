@@ -484,7 +484,7 @@ export class InfoBotCommands {
         }
     }
 
-    async printAgentCapacities() {
+    async printAgentCapacities(onlyPublic: boolean) {
         const printer = new ColumnPrinter([
             ["Agent", 30, "l"],
             ["Free", 10, "r"],
@@ -508,6 +508,7 @@ export class InfoBotCommands {
         let totalRedeeming = 0;
         for (const vaultAddr of allAgents) {
             const info = await this.context.assetManager.getAgentInfo(vaultAddr);
+            if (onlyPublic && !info.publiclyAvailable) continue;
             const ownerName = await this.context.agentOwnerRegistry.getAgentName(info.ownerManagementAddress);
             const freeLots = Number(info.freeCollateralLots);
             const mintedLots = Number(toBN(info.mintedUBA).divn(lotSize));
