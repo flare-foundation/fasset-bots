@@ -678,6 +678,7 @@ export class AgentBot {
             if (totalLots === 0) return;
 
             // transfer to CV - mintedLots must be large enough
+            logger.info(`transferToCV minted=${mintedLots} mintedOrReserved=${mintedOrReservedLots} total=${totalLots} ratio=${mintedOrReservedLots / totalLots}  threshold=${this.agentBotSettings.transferToCVRatio}`);
             if (mintedOrReservedLots / totalLots > this.agentBotSettings.transferToCVRatio) {
                 const openTransfers = await this.redemption.openTransferToCoreVaultIds(rootEm);
                 if (openTransfers.length == 0) {
@@ -689,6 +690,7 @@ export class AgentBot {
                     // actual return
                     const transferAmount = minBN(requestedTransferAmount, maxAllowedToTransfer.maximumTransferUBA);
                     const minTransferAmount = Math.floor(totalLots * lotSize * this.agentBotSettings.minimumTransferToCVSize);
+                    logger.info(`transferToCV req transfer=${requestedTransferAmount} max=${maxAllowedToTransfer.maximumTransferUBA} min=${minTransferAmount}`);
                     if (transferAmount.gte(toBN(Math.max(lotSize, minTransferAmount)))) {
                         await this.transferToCoreVault(transferAmount);
                     }
