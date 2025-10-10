@@ -14,6 +14,7 @@ import { APIKey, AgentBalance, AgentCreateResponse, AgentData, AgentSettings, Ag
 import { AgentSettingsDTO, Alerts, DelegateDTO, PostAlert } from "../../common/AgentSettingsDTO";
 import { Alert } from "../../common/entities/AlertDB";
 import { cachedSecrets } from "../agentServer";
+import { sumUsdStrings } from "../../common/utils";
 
 const IERC20 = artifacts.require("IERC20Metadata");
 const CollateralPool = artifacts.require("CollateralPool");
@@ -1021,12 +1022,13 @@ export class AgentService {
 
     async getFullAgentFunds(): Promise<AllBalances[]> {
         const fassets = await this.getFassetSymbols();
-        const totalXRPUSD = "0";
-        const totalFXRPUSD = "0";
-        const totalNATUSD = "0";
-        const totalVaultCollateralUSD = "0";
+        let totalXRPUSD = "0";
+        let totalFXRPUSD = "0";
+        let totalNATUSD = "0";
+        let totalVaultCollateralUSD = "0";
         const balances: AllBalances[] = [];
         const vaultCollateralBalances: Map<string, string> = new Map();
+        const ownerCollateralBalances: Map<string, string> = new Map();
         for (const f of fassets) {
             if (!f.includes("XRP")) {
                 continue;
@@ -1041,6 +1043,22 @@ export class AgentService {
             const priceUSD = cflrPrice.price.mul(toBNExp(1, 18));
             const prices = [{ symbol: cli.context.nativeChainInfo.tokenSymbol, price: priceUSD, decimals: Number(cflrPrice.decimals) }];
             const collateralTypes = await cli.context.assetManager.getCollateralTypes();
+            // Work and management NAT balance
+            let ownerNATBalance = toBN(0);
+            ownerNATBalance = ownerNATBalance.add(toBN(await web3.eth.getBalance(cli.owner.workAddress))).add(toBN(await web3.eth.getBalance(cli.owner.managementAddress)));
+            ownerNATBalance = ownerNATBalance.add(toBN(await cli.context.wNat.balanceOf(cli.owner.workAddress))).add(toBN(await cli.context.wNat.balanceOf(cli.owner.managementAddress)));
+            const ownerNATBalanceUSD = ownerNATBalance.mul(priceUSD).div(toBNExp(1, 18 + Number(cflrPrice.decimals)));
+            totalNATUSD = sumUsdStrings(totalNATUSD, formatFixed(ownerNATBalanceUSD, 18, { decimals: 3, groupDigits: true, groupSeparator: "," }));
+            // Owner XRP Balance
+            const ownerXRPBalance = await cli.context.wallet.getBalance(cli.ownerUnderlyingAddress);
+            const xrpPrice = await priceReader.getPrice(cli.context.chainInfo.symbol, false, settings.maxTrustedPriceAgeSeconds);
+            const xrpPriceUSD = xrpPrice.price.mul(toBNExp(1, 18));
+            const ownerXRPBalanceUSD = ownerXRPBalance.mul(xrpPriceUSD).div(toBNExp(1, 18 + Number(xrpPrice.decimals)));
+            totalXRPUSD = sumUsdStrings(totalXRPUSD, formatFixed(ownerXRPBalanceUSD, xrpPrice.decimals.toNumber(), { decimals: 3, groupDigits: true, groupSeparator: "," }));
+            //Owner FXRP balance
+            const ownerFXRPBalance = await cli.context.fAsset.balanceOf(cli.owner.workAddress);
+            const ownerFXRPBalanceUSD = ownerFXRPBalance.mul(xrpPriceUSD).div(toBNExp(1, 18 + Number(xrpPrice.decimals)));
+            totalFXRPUSD = sumUsdStrings(totalFXRPUSD, formatFixed(ownerFXRPBalanceUSD, xrpPrice.decimals.toNumber(), { decimals: 3, groupDigits: true, groupSeparator: "," }));
             // Get agent vaults for fasset from database
             const agentVaults = await cli.getActiveAgentsForFAsset();
             if (agentVaults.length == 0) {
@@ -1050,36 +1068,60 @@ export class AgentService {
                 const info = await this.getAgentVaultInfoFull(vault.vaultAddress, cli);
                 const infoVault = await cli.context.assetManager.getAgentInfo(vault.vaultAddress);
                 const collateral: any = collateralTypes.find(item => item.tokenFtsoSymbol === info.vaultCollateralToken);
-                const collateralToken = await IERC20.at(collateral.token);
-
                 //Calculate usd values
                 const vaultCollateralType = await cli.context.assetManager.getCollateralType(CollateralClass.VAULT, infoVault.vaultCollateralToken);
+                if (!ownerCollateralBalances.get(vaultCollateralType.tokenFtsoSymbol)) {
+                    const collateralToken = await IERC20.at(collateral.token);
+                    const ownerVaultCollateralBalance = toBN(await collateralToken.balanceOf(cli.owner.workAddress)).add(toBN(await collateralToken.balanceOf(cli.owner.managementAddress)));
+                    let ownerVaultCollateralBalanceUSD = toBN(0);
+                    const existingPrice = prices.find(p => p.symbol === vaultCollateralType.tokenFtsoSymbol);
+                    if (existingPrice) {
+                        ownerVaultCollateralBalanceUSD = ownerVaultCollateralBalance
+                            .mul(existingPrice.price)
+                            .div(toBNExp(1, Number(vaultCollateralType.decimals) + existingPrice.decimals));
+                    } else {
+                        const priceVault = await priceReader.getPrice(vaultCollateralType.tokenFtsoSymbol, false, settings.maxTrustedPriceAgeSeconds);
+                        const priceVaultUSD = priceVault.price.mul(toBNExp(1, 18));
+                        ownerVaultCollateralBalanceUSD = ownerVaultCollateralBalance
+                            .mul(priceVaultUSD)
+                            .div(toBNExp(1, Number(vaultCollateralType.decimals) + Number(priceVault.decimals)));
+                        prices.push({ symbol: vaultCollateralType.tokenFtsoSymbol, price: priceVaultUSD, decimals: Number(priceVault.decimals) });
+                    }
+                    ownerCollateralBalances.set(vaultCollateralType.tokenFtsoSymbol, formatFixed(ownerVaultCollateralBalanceUSD, 18, { decimals: 3, groupDigits: true, groupSeparator: "," }));
+                    totalVaultCollateralUSD = sumUsdStrings(totalVaultCollateralUSD, formatFixed(ownerVaultCollateralBalanceUSD, 18, { decimals: 3, groupDigits: true, groupSeparator: "," }));
+                }
                 const existingPrice = prices.find(p => p.symbol === vaultCollateralType.tokenFtsoSymbol);
                 const poolToken = await CollateralPoolToken.at(info.collateralPoolToken);
                 const poolTokenTotalSupply = await poolToken.totalSupply();
                 const agentPoolNATBalance = toBN(info.totalAgentPoolTokensWei).toString() == "0" ? toBN(0) : toBN(info.totalAgentPoolTokensWei).mul(toBN(info.totalPoolCollateralNATWei)).div(poolTokenTotalSupply);
-                let agentPoolNATBalanceUSD = toBN(0);
-                agentPoolNATBalanceUSD = agentPoolNATBalance.mul(priceUSD).div(toBNExp(1, 18 + Number(cflrPrice.decimals)));
-                //let agentVaultNATBalanceUSD = toBN(0);
+                const agentPoolNATBalanceUSD = agentPoolNATBalance.mul(priceUSD).div(toBNExp(1, 18 + Number(cflrPrice.decimals)));
+                totalNATUSD = sumUsdStrings(totalNATUSD, formatFixed(agentPoolNATBalanceUSD, 18, { decimals: 3, groupDigits: true, groupSeparator: "," }));
+                let agentVaultBalanceUSD = toBN(0);
                 if (existingPrice) {
-                    agentPoolNATBalanceUSD = agentPoolNATBalance.mul(priceUSD).div(toBNExp(1, 18 + Number(cflrPrice.decimals)));
+                    agentVaultBalanceUSD = toBN(info.totalVaultCollateralWei)
+                            .mul(existingPrice.price)
+                            .div(toBNExp(1, Number(vaultCollateralType.decimals) + existingPrice.decimals));
                 } else {
                     const priceVault = await priceReader.getPrice(vaultCollateralType.tokenFtsoSymbol, false, settings.maxTrustedPriceAgeSeconds);
                     const priceVaultUSD = priceVault.price.mul(toBNExp(1, 18));
-                    agentPoolNATBalanceUSD = agentPoolNATBalance.mul(priceUSD).div(toBNExp(1, 18 + Number(cflrPrice.decimals)));
+                    agentVaultBalanceUSD = toBN(info.totalVaultCollateralWei)
+                            .mul(priceVaultUSD)
+                            .div(toBNExp(1, Number(vaultCollateralType.decimals) + Number(priceVault.decimals)));
                     prices.push({ symbol: vaultCollateralType.tokenFtsoSymbol, price: priceVaultUSD, decimals: Number(priceVault.decimals) });
                 }
-                const vaultColBalance = vaultCollateralBalances.get(vaultCollateralType.tokenFtsoSymbol);
-                vaultCollateralBalances.set(vaultCollateralType.tokenFtsoSymbol, "1,200.25");
+                totalVaultCollateralUSD = sumUsdStrings(totalVaultCollateralUSD, formatFixed(agentVaultBalanceUSD, 18, { decimals: 3, groupDigits: true, groupSeparator: "," }));
+                //const vaultColBalance = vaultCollateralBalances.get(vaultCollateralType.tokenFtsoSymbol);
+                //vaultCollateralBalances.set(vaultCollateralType.tokenFtsoSymbol, "1,200.25");
             }
-            for (const [key, value] of vaultCollateralBalances) {
+            /*for (const [key, value] of vaultCollateralBalances) {
                 balances.push({symbol: key, balance: value + " $"});
-            }
-            balances.push({symbol: cli.context.nativeChainInfo.tokenSymbol, balance: "1,200.25 $"});
-            balances.push({symbol: cli.context.chainInfo.symbol, balance: "1,200.25 $"});
-            balances.push({symbol: f, balance: "1,201.25 $"});
+            }*/
+            balances.push({symbol: cli.context.nativeChainInfo.tokenSymbol, balance: totalNATUSD});
+            balances.push({symbol: cli.context.chainInfo.symbol, balance: totalXRPUSD});
+            balances.push({symbol: f, balance: totalFXRPUSD});
+            balances.push({symbol: "Vault Collaterals", balance: totalVaultCollateralUSD});
         }
-        balances.push({symbol: "Total", balance: "34,500.12 $"});
+        //balances.push({symbol: "Total", balance: "34,500.12 $"});
         return balances;
     }
 }
