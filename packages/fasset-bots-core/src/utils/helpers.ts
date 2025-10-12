@@ -444,3 +444,7 @@ export function keccak256(data: string): string {
     const emptyStringHash = "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470";
     return Web3.utils.keccak256(data) ?? emptyStringHash;
 }
+
+export function clipText(text: string, maxLength: number) {
+    return text.length <= maxLength ? text : text.slice(0, maxLength - 3) + "...";
+}
