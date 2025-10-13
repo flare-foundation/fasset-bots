@@ -31,8 +31,7 @@ export const YEARS = 365 * DAYS;
 
 export const MAX_UINT256 = toBN(1).shln(256).subn(1);
 
-export const DEFAULT_TIMEOUT = 15000;
-export const DEFAULT_RETRIES = 3;
+export const DEFAULT_RETRIES = 2;
 export const DEFAULT_RETRY_DELAY_MS = 2000;
 
 export const TRANSACTION_FEE_FACTOR = 1.4; // used in the calculation of the required underlying balance
@@ -326,18 +325,23 @@ export async function retry<T extends (...arg0: any[]) => any>(
 /**
  * Retries a function n number of times before giving up
  */
-export async function retryCall<R>(name: string, call: () => Promise<R>, maxRetries = DEFAULT_RETRIES, retryDelayMs = DEFAULT_RETRY_DELAY_MS): Promise<R> {
+export async function retryCall<R>(
+    name: string,
+    call: () => Promise<R>,
+    maxRetries = DEFAULT_RETRIES,
+    retryDelayMs = DEFAULT_RETRY_DELAY_MS
+): Promise<R> {
     for (let retry = 1; /* stopping condition in catch */; retry++) {
         try {
             const result = await call();
             return result;
         } catch (error) {
-            if (retry === maxRetries) {
+            if (retry >= maxRetries) {
                 console.log(`All ${maxRetries} retry attempts exhausted for function ${name}: ${error}`);
                 logger.error(`All ${maxRetries} retry attempts exhausted for function ${name}`, error);
                 throw error;
             }
-            logger.info(`Retry ${retry} failed for function ${name}. Retrying after delay of ${retry * retryDelayMs} ms. ${error}`);
+            logger.info(`Attempt ${retry} failed for function ${name}. Retrying after delay of ${retry * retryDelayMs} ms. ${error}`);
             await sleep(retry * retryDelayMs);
         }
     }

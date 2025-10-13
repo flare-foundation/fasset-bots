@@ -220,8 +220,7 @@ export class FlareDataConnectorClientHelper implements IFlareDataConnectorClient
     /* istanbul ignore next */
     async obtainProofFromFlareDataConnectorForClient(client: HttpApiClient, roundId: number, requestBytes: string, requestId: number): Promise<OptionalAttestationProof | null> {
         // does the client have info about this round yet?
-        const latestRound = await retryCall("roundFinalizedOnChain",
-            () => this.latestFinalizedRoundOnClient(client, requestId).catch(() => -1));
+        const latestRound = await this.latestFinalizedRoundOnClient(client, requestId).catch(() => -1);
         if (latestRound < roundId) {
             logger.info(`Client ${client.client.getUri()} does not yet have data for round ${roundId} (latest=${latestRound})`);
             return null;
