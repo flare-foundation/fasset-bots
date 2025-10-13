@@ -4,7 +4,7 @@ import { abortableSleep } from "./helpers";
 import { ApiNetworkError, ApiServiceError, DEFAULT_TIMEOUT, HttpApiClient } from "./HttpApiClient";
 import { logger } from "./logger";
 
-const PARALLEL = false;
+const PARALLEL = true;
 const DEFAULT_TRY_NEXT_AFTER = 5_000;
 const DEFAULT_KILL_AFTER = 20_000;
 

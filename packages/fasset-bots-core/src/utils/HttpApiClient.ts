@@ -69,7 +69,12 @@ export class HttpApiClient {
                 throw new ApiNetworkError(`${this.serviceName}.${methodName}: ${message}`, error);
             }
             const message = clipText(String(error), 120);
-            logger.info(`UNEXPECTED ERROR ${requestInfo} (${elapsedSec(startTimestamp)}s): ${message}`);
+            const elapsedMs = Date.now() - startTimestamp;
+            if (error instanceof Error && error.name === "CanceledError" && elapsedMs < this.timeout) {
+                logger.info(`CANCELED ${requestInfo} (${elapsedSec(startTimestamp)}s): ${error.message}`);
+            } else {
+                logger.error(`UNEXPECTED ERROR ${requestInfo} (${elapsedSec(startTimestamp)}s): ${message}`);
+            }
             throw new ApiNetworkError(`${this.serviceName}.${methodName}: UNEXPECTED ${message}`, error);
         }
     }
