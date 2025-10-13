@@ -1,14 +1,15 @@
+import { defaultTimeoutSignal, loggerAsyncStorage } from "@flarenetwork/fasset-bots-common";
 import axios from 'axios';
 import { FtsoV2PriceStoreInstance } from '../../typechain-truffle';
 import { BotConfigFile, dataAccessLayerApiKey, loadContracts, Secrets } from '../config';
 import { artifacts, assertCmd, assertNotNullCmd, errorIncluded, requireNotNull, sleep } from "../utils";
 import { FspStatusResult, FtsoFeedResultWithProof } from '../utils/data-access-layer-types';
 import { logger } from "../utils/logger";
-import { loggerAsyncStorage } from "@flarenetwork/fasset-bots-common";
 import { withSettings } from '../utils/mini-truffle-contracts/contracts';
 
 export const DEFAULT_PRICE_PUBLISHER_LOOP_DELAY_MS = 1000;
 export const PRICE_PUBLISHING_TIME_RANDOMIZATION_MS = 5000;
+export const DEFAULT_DAL_TIMEOUT_MS = 15000;
 
 const FtsoV2PriceStore = artifacts.require("FtsoV2PriceStore");
 
@@ -25,6 +26,8 @@ export class PricePublisherService {
 
     running = false;
     stopped = false;
+
+    dalTimeout = DEFAULT_DAL_TIMEOUT_MS;
 
     static async create(runConfig: BotConfigFile, secrets: Secrets, pricePublisherAddress: string) {
         assertNotNullCmd(runConfig.pricePublisherConfig, "Missing pricePublisherConfig");
@@ -91,7 +94,9 @@ export class PricePublisherService {
                     headers: {
                         'x-apikey': this.apiKeys[index],
                         'X-API-KEY': this.apiKeys[index],
-                    }
+                    },
+                    timeout: this.dalTimeout,
+                    signal: defaultTimeoutSignal(this.dalTimeout)
                 });
                 const roundId = Number(requireNotNull(response.data.latest_ftso.voting_round_id));
                 lastRoundId = Math.max(lastRoundId, roundId);
@@ -131,7 +136,9 @@ export class PricePublisherService {
             headers: {
                 'x-apikey': apiKey,
                 'X-API-KEY': apiKey,
-            }
+            },
+            timeout: this.dalTimeout,
+            signal: defaultTimeoutSignal(this.dalTimeout)
         });
         // get data
         const feedsData: FtsoFeedResultWithProof[] = response.data;

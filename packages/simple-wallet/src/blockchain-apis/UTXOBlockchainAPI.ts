@@ -1,4 +1,4 @@
-import { createRateLimitedAxiosInstance, tryWithClients } from "@flarenetwork/fasset-bots-common";
+import { createRateLimitedAxiosInstance, defaultTimeoutSignal, tryWithClients } from "@flarenetwork/fasset-bots-common";
 import { AxiosInstance, AxiosResponse } from "axios";
 import BN from "bn.js";
 import { getConfirmedAfter, getDustAmount } from "../chain-clients/utxo/UTXOUtils";
@@ -42,7 +42,7 @@ export class UTXOBlockchainAPI implements IBlockchainAPI {
 
     async getAccountBalance(account: string): Promise<BN> {
         return await this.logRequest(`getAccountBalance(${account})`, tryWithClients(this.clients, async (client: AxiosInstance) => {
-            const res = await client.get<UTXOAddressResponse>(`/address/${account}`);
+            const res = await client.get<UTXOAddressResponse>(`/address/${account}`, { signal: defaultTimeoutSignal() });
             const totalBalance = res.data.balance;
             const unconfirmedBalance = res.data.unconfirmedBalance;
 
@@ -60,7 +60,7 @@ export class UTXOBlockchainAPI implements IBlockchainAPI {
             return this.lastGetCurrentBlockHeightResult;
         }
         this.lastGetCurrentBlockHeightResult = await this.logRequest(`getCurrentBlockHeight()`, tryWithClients(this.clients, async (client: AxiosInstance) => {
-            const res = await client.get<UTXOBlockHeightResponse>(``);
+            const res = await client.get<UTXOBlockHeightResponse>(``, { signal: defaultTimeoutSignal() });
             return res.data.blockbook.bestHeight;
         }, "getCurrentBlockHeight"));
         this.lastGetCurrentBlockHeightTs = Date.now();
@@ -70,7 +70,7 @@ export class UTXOBlockchainAPI implements IBlockchainAPI {
     async getCurrentFeeRate(blockNumber?: number): Promise<number> { // in sats per kb
         const blockToCheck = blockNumber ?? await this.getCurrentBlockHeight();
         return await this.logRequest(`getCurrentFeeRate(${blockNumber})`, tryWithClients(this.clients, async (client: AxiosInstance) => {
-            const res = await client.get<FeeStatsResponse>(`/feestats/${blockToCheck}`);
+            const res = await client.get<FeeStatsResponse>(`/feestats/${blockToCheck}`, { signal: defaultTimeoutSignal() });
             const fee = res.data.averageFeePerKb;
             return fee;
         }, "getCurrentFeeRate"));
@@ -78,7 +78,7 @@ export class UTXOBlockchainAPI implements IBlockchainAPI {
 
     async getEstimateFee(inTheNextBlocks: number = 2): Promise<number> { // in sats per kb
         return await this.logRequest(`getEstimateFee(${inTheNextBlocks})`, tryWithClients(this.clients, async (client: AxiosInstance) => {
-            const res = await client.get<EstimateFeeResponse>(`/estimatefee/${inTheNextBlocks}`);
+            const res = await client.get<EstimateFeeResponse>(`/estimatefee/${inTheNextBlocks}`, { signal: defaultTimeoutSignal() });
             if (res.data.error) {
                 logger.error(`RPC Error: ${res.data.error.message} (Code: ${res.data.error.code})`);
                 return DOGE_DEFAULT_FEE_PER_KB.toNumber();
@@ -94,21 +94,21 @@ export class UTXOBlockchainAPI implements IBlockchainAPI {
 
     async getBlockTimeAt(blockNumber: number): Promise<BN> {
         return await this.logRequest(`getBlockTimeAt(${blockNumber})`, tryWithClients(this.clients, async (client: AxiosInstance) => {
-            const res = await client.get<UTXOBlockResponse>(`/block/${blockNumber}`);
+            const res = await client.get<UTXOBlockResponse>(`/block/${blockNumber}`, { signal: defaultTimeoutSignal() });
             return toBN(res.data.time ?? 0);
         }, "getBlockTimeAt"));
     }
 
     async getTransaction(txHash: string, logWithStackTrace?: boolean): Promise<UTXOTransactionResponse> {
         return await this.logRequest(`getTransaction(${txHash})`, tryWithClients(this.clients, async (client: AxiosInstance) => {
-            const res = await client.get<UTXOTransactionResponse>(`/tx/${txHash}`);
+            const res = await client.get<UTXOTransactionResponse>(`/tx/${txHash}`, { signal: defaultTimeoutSignal() });
             return res.data;
         }, "getTransaction", logWithStackTrace ?? true));
     }
 
     async getUTXOScript(txHash: string, vout: number): Promise<string> {
         return await this.logRequest(`getUTXOScript(${txHash}, ${vout})`, tryWithClients(this.clients, async (client: AxiosInstance) => {
-            const res = await client.get<UTXOTransactionResponse>(`/tx/${txHash}`);
+            const res = await client.get<UTXOTransactionResponse>(`/tx/${txHash}`, { signal: defaultTimeoutSignal() });
             /* istanbul ignore next: ignore for the ?? */
             return res.data.vout[vout]?.hex ?? "";
         }, "getUTXOScript"));
@@ -116,7 +116,7 @@ export class UTXOBlockchainAPI implements IBlockchainAPI {
 
     async getUTXOsFromMempool(address: string): Promise<MempoolUTXO[]> {
         return await this.logRequest(`getUTXOsFromMempool(${address})`, tryWithClients(this.clients, async (client: AxiosInstance) => {
-            const res = await client.get<UTXOResponse[]>(`/utxo/${address}`);
+            const res = await client.get<UTXOResponse[]>(`/utxo/${address}`, { signal: defaultTimeoutSignal() });
             return res.data
                 .filter((utxo: UTXOResponse) => toBN(utxo.value).gt(getDustAmount(this.chainType))) // keep only utxos, where utxo.value > dustValue
                 .map((utxo: UTXOResponse): MempoolUTXO => ({
@@ -132,7 +132,8 @@ export class UTXOBlockchainAPI implements IBlockchainAPI {
     async sendTransaction(tx: string): Promise<AxiosResponse> {
         return await this.logRequest(`sendTransaction(...)`, tryWithClients(this.clients, async (client: AxiosInstance) => {
             return await client.post('/sendtx/', tx, {
-                headers: { 'Content-Type': 'text/plain' }
+                headers: { 'Content-Type': 'text/plain' },
+                signal: defaultTimeoutSignal()
             });
         }, "sendTransaction"));
     }
@@ -144,11 +145,11 @@ export class UTXOBlockchainAPI implements IBlockchainAPI {
                 to: String(submittedInBlock + this.getNumberOfBlocksForSearch()),
             });
 
-            const firstResp = await client.get<UTXOAddressResponse>(`/address/${address}?${params.toString()}`);
+            const firstResp = await client.get<UTXOAddressResponse>(`/address/${address}?${params.toString()}`, { signal: defaultTimeoutSignal() });
             const totalPages = firstResp.data.totalPages ?? 0;
             for (let i = 0; i < totalPages; i++) {
                 params.set("page", String(i + 1));
-                const resp = await client.get<UTXOAddressResponse>(`/address/${address}?${params.toString()}`);
+                const resp = await client.get<UTXOAddressResponse>(`/address/${address}?${params.toString()}`, { signal: defaultTimeoutSignal() });
                 const inputSet = new Set(inputs.map(input => `${input.prevTxId}:${input.outputIndex}`));
 
                 for (const txHash of resp.data.txids ?? []) {
