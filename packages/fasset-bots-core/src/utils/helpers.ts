@@ -72,6 +72,13 @@ export function systemTimestampMS() {
 }
 
 /**
+ * Return time elapsed since `sinceTimestamp`, in seconds (with fraction). Useful for method/api timings.
+ */
+export function elapsedSec(sinceTimestamp: number): number {
+    return (Date.now() - sinceTimestamp) / 1000;
+}
+
+/**
  * Check if value is non-null.
  * Useful in array.filter, to return array of non-nullable types.
  */

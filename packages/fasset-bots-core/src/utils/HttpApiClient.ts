@@ -1,7 +1,7 @@
 import { createAxiosConfig } from "@flarenetwork/fasset-bots-common";
 import axios, { AxiosError, AxiosInstance, AxiosResponse, Method, isAxiosError } from "axios";
 import { ErrorWithCause } from "./ErrorWithCause";
-import { clipText, systemTimestamp } from "./helpers";
+import { clipText, elapsedSec } from "./helpers";
 import { logger } from "./logger";
 
 export const DEFAULT_TIMEOUT = 15_000;
@@ -43,7 +43,7 @@ export class HttpApiClient {
     async request<R>(httpMethod: Method, url: string, data: any, methodName: string, requestId: number, clientIndex: number, abortSignal?: AbortSignal): Promise<R> {
         const requestInfo = `request[${requestId}] client[${clientIndex}] ${this.serviceName}.${methodName}`;
         logger.info(`START ${requestInfo}: ${httpMethod.toUpperCase()} ${this.client.getUri()}${url}`);
-        const startTime = systemTimestamp();
+        const startTimestamp = Date.now();
         try {
             abortSignal?.throwIfAborted();  // don't start request if timeout already reached
             const response = await this.client.request<R>({
@@ -53,7 +53,7 @@ export class HttpApiClient {
                 timeout: this.timeout,
                 signal: abortSignal ?? AbortSignal.timeout(this.timeout)
             });
-            logger.info(`SUCCESS ${requestInfo} (${systemTimestamp() - startTime}s): [${response.status} ${response.statusText}]`);
+            logger.info(`SUCCESS ${requestInfo} (${elapsedSec(startTimestamp)}s): [${response.status} ${response.statusText}]`);
             return response.data;
         } catch (error) {
             if (isAxiosError(error) && error.response) {
@@ -61,14 +61,14 @@ export class HttpApiClient {
                 if (error.response) {
                     const response = error.response;
                     const responseText = clipText(typeof response.data === "string" ? response.data : tryJsonStringify(response.data), 160);
-                    logger.error(`SERVICE ERROR ${requestInfo} (${systemTimestamp() - startTime}s): [${response.status} ${response.statusText}] ${message}\n    ${responseText}`);
+                    logger.error(`SERVICE ERROR ${requestInfo} (${elapsedSec(startTimestamp)}s): [${response.status} ${response.statusText}] ${message}\n    ${responseText}`);
                     throw new ApiServiceError(`${this.serviceName}.${methodName}: ${message}`, response, error);
                 }
-                logger.error(`NETWORK ERROR ${requestInfo} (${systemTimestamp() - startTime}s): ${message}`);
+                logger.error(`NETWORK ERROR ${requestInfo} (${elapsedSec(startTimestamp)}s): ${message}`);
                 throw new ApiNetworkError(`${this.serviceName}.${methodName}: ${message}`, error);
             }
             const message = clipText(String(error), 120);
-            logger.info(`UNEXPECTED ERROR ${requestInfo} (${systemTimestamp() - startTime}s): ${message}`);
+            logger.info(`UNEXPECTED ERROR ${requestInfo} (${elapsedSec(startTimestamp)}s): ${message}`);
             throw new ApiNetworkError(`${this.serviceName}.${methodName}: UNEXPECTED ${message}`, error);
         }
     }
