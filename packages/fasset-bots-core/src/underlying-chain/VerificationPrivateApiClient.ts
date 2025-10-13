@@ -1,28 +1,28 @@
-import { createAxiosConfig, tryWithClients } from "@flarenetwork/fasset-bots-common";
 import { ARBase, AddressValidity, decodeAttestationName } from "@flarenetwork/state-connector-protocol";
-import axios, { AxiosError, AxiosInstance } from "axios";
 import { formatArgs } from "../utils/formatting";
 import { ZERO_BYTES32 } from "../utils/helpers";
 import { logger } from "../utils/logger";
+import { MultiApiClient, MultiApiClientError } from "../utils/MultiApiClient";
 import { IVerificationApiClient } from "./interfaces/IVerificationApiClient";
 
 export class VerificationApiError extends Error {}
 
-interface PreparedResponseRes<T> {
+interface VerificationResponseWrapper<T> {
     status: "VALID" | "INVALID";
     response?: T;
 }
 
 // Uses prepareResponse from private API.
 export class VerificationPrivateApiClient implements IVerificationApiClient {
-    verifiers: AxiosInstance[] = [];
+    verifier: MultiApiClient;
 
     constructor(
-        public verifierUrls: string[],
-        public verifierUrlApiKeys: string[],
+        verifierUrls: string[],
+        verifierUrlApiKeys: string[],
     ) {
+        this.verifier = MultiApiClient.create("VerifierApi");
         for (const [index, url] of verifierUrls.entries()) {
-            this.verifiers.push(axios.create(createAxiosConfig(url, verifierUrlApiKeys[index])));
+            this.verifier.addClient(url, verifierUrlApiKeys[index]);
         }
     }
 
@@ -41,18 +41,21 @@ export class VerificationPrivateApiClient implements IVerificationApiClient {
         return response.response.responseBody;
     }
 
-    async prepareResponse<T>(request: ARBase): Promise<PreparedResponseRes<T>> {
+    async prepareResponse<T>(request: ARBase): Promise<VerificationResponseWrapper<T>> {
         const attestationName = decodeAttestationName(request.attestationType);
         /* istanbul ignore next */
-        const response = await tryWithClients(
-            this.verifiers,
-            (verifier: AxiosInstance) => verifier.post<PreparedResponseRes<T>>(`/${encodeURIComponent(attestationName)}/prepareResponse`, request),
-            "prepareResponse"
-        ).catch((e: AxiosError) => {
-            const message = `Verification API error: cannot submit request ${formatArgs(request)}: ${e.response?.status}: ${(e.response?.data as any)?.error}`;
+        try {
+            return await this.verifier.post<VerificationResponseWrapper<T>>(`/${encodeURIComponent(attestationName)}/prepareResponse`, request, "prepareResponse");
+        } catch (error) {
+            let message: string;
+            if (error instanceof MultiApiClientError) {
+                const serviceErrorResp = error.lastServiceError()?.response;
+                message = `Verification API error: cannot submit request[${error.requestId}] ${formatArgs(request)}: ${serviceErrorResp?.status}: ${(serviceErrorResp?.data as any)?.error}`;
+            } else {
+                message = `Verification API error: cannot submit request ${formatArgs(request)}: ${String(error)}`;
+            }
             logger.error(message);
             throw new VerificationApiError(message);
-        });
-        return response.data;
+        }
     }
 }
