@@ -22,26 +22,27 @@ export class ApiServiceError extends ErrorWithCause {
 export class HttpApiClient {
     constructor(
         public serviceName: string,
+        public serverIndex: number,
         public client: AxiosInstance,
         public timeout: number = DEFAULT_TIMEOUT
     ) {
     }
 
-    static create(serviceName: string, baseUrl: string, apiKey?: string, timeout: number = DEFAULT_TIMEOUT) {
+    static create(serviceName: string, serverIndex: number, baseUrl: string, apiKey?: string, timeout: number = DEFAULT_TIMEOUT) {
         const client = axios.create(createAxiosConfig(baseUrl, apiKey, timeout));
-        return new HttpApiClient(serviceName, client, timeout);
+        return new HttpApiClient(serviceName, serverIndex, client, timeout);
     }
 
-    async get<R>(url: string, methodName: string, requestId: number, clientIndex: number, abortSignal?: AbortSignal): Promise<R> {
-        return await this.request("GET", url, undefined, methodName, requestId, clientIndex, abortSignal);
+    async get<R>(url: string, methodName: string, requestId: number, abortSignal?: AbortSignal): Promise<R> {
+        return await this.request("GET", url, undefined, methodName, requestId, abortSignal);
     }
 
-    async post<R>(url: string, data: any, methodName: string, requestId: number, clientIndex: number, abortSignal?: AbortSignal): Promise<R> {
-        return await this.request("POST", url, data, methodName, requestId, clientIndex, abortSignal);
+    async post<R>(url: string, data: any, methodName: string, requestId: number, abortSignal?: AbortSignal): Promise<R> {
+        return await this.request("POST", url, data, methodName, requestId, abortSignal);
     }
 
-    async request<R>(httpMethod: Method, url: string, data: any, methodName: string, requestId: number, clientIndex: number, abortSignal?: AbortSignal): Promise<R> {
-        const requestInfo = `request[${requestId}] client[${clientIndex}] ${this.serviceName}.${methodName}`;
+    async request<R>(httpMethod: Method, url: string, data: any, methodName: string, requestId: number, abortSignal?: AbortSignal): Promise<R> {
+        const requestInfo = `request[${requestId}] client[${this.serverIndex}] ${this.serviceName}.${methodName}`;
         logger.info(`START ${requestInfo}: ${httpMethod.toUpperCase()} ${this.client.getUri()}${url}`);
         const startTimestamp = Date.now();
         try {

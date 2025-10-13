@@ -56,8 +56,8 @@ export abstract class MultiApiClient {
         }
     }
 
-    addClient(baseUrl: string, apiKey?: string) {
-        const client = HttpApiClient.create(this.serviceName, baseUrl, apiKey, this.timeout);
+    addClient(baseUrl: string, apiKey?: string, serverIndex = this.clients.length) {
+        const client = HttpApiClient.create(this.serviceName, serverIndex, baseUrl, apiKey, this.timeout);
         this.clients.push(client);
     }
 
@@ -80,10 +80,10 @@ class MultiApiClientSerial extends MultiApiClient {
             throw new MultiApiClientError(`No clients for ${this.serviceName}`, requestId, []);
         }
         const errors: Error[] = [];
-        for (const [i, client] of clients.entries()) {
+        for (const client of clients) {
             try {
                 const abortSignal = AbortSignal.timeout(this.killAfter);
-                return await client.request<R>(httpMethod, url, data, methodName, requestId, i, abortSignal);
+                return await client.request<R>(httpMethod, url, data, methodName, requestId, abortSignal);
             } catch (error) {
                 errors.push(error instanceof Error ? error : ErrorWithCause.wrap(error));
             }
@@ -106,7 +106,7 @@ class MultiApiClientParallel extends MultiApiClient {
             try {
                 await abortableSleep(index * this.tryNextAfter, abortSignal);
                 return await Promise.race([
-                    client.request<R>(httpMethod, url, data, methodName, requestId, index, abortSignal),
+                    client.request<R>(httpMethod, url, data, methodName, requestId, abortSignal),
                     abortableSleep(this.killAfter, abortSignal)
                         .then(() => { throw new ApiNetworkError(`Timeout of ${this.killAfter}ms reached`, null); }),
                 ]);

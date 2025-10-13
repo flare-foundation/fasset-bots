@@ -20,9 +20,9 @@ export class VerificationPrivateApiClient implements IVerificationApiClient {
         verifierUrls: string[],
         verifierUrlApiKeys: string[],
     ) {
-        this.verifier = MultiApiClient.create("VerifierApi");
+        this.verifier = MultiApiClient.create("VerifierPrivateApi");
         for (const [index, url] of verifierUrls.entries()) {
-            this.verifier.addClient(url, verifierUrlApiKeys[index]);
+            this.verifier.addClient(url, verifierUrlApiKeys[index], index);
         }
     }
 

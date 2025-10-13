@@ -71,7 +71,7 @@ export class BlockchainIndexerHelper implements IBlockChain {
         // set client
         this.verifier = MultiApiClient.create("BlockchainIndexer");
         for (const [index, url] of indexerWebServerUrls.entries()) {
-            this.verifier.addClient(url, indexerWebServerApiKeys[index]);
+            this.verifier.addClient(url, indexerWebServerApiKeys[index], index);
         }
         this.finalizationBlocks = this.finalizationBlocksByChain();
         this.secondsPerBlock = this.secondsPerBlockByChain();
