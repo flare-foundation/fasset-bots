@@ -1,48 +1,59 @@
-import { createAxiosConfig } from "@flarenetwork/fasset-bots-common";
-import axios, { AxiosError, AxiosInstance, AxiosResponse, GenericAbortSignal, isAxiosError, Method } from "axios";
+import { Method } from "axios";
 import { ErrorWithCause } from "./ErrorWithCause";
-import { clipText, systemTimestamp } from "./helpers";
+import { abortableSleep } from "./helpers";
+import { ApiNetworkError, ApiServiceError, DEFAULT_TIMEOUT, HttpApiClient } from "./HttpApiClient";
 import { logger } from "./logger";
 
+const PARALLEL = false;
 const DEFAULT_TRY_NEXT_AFTER = 5_000;
-const DEFAULT_TIMEOUT = 15_000;
 const DEFAULT_KILL_AFTER = 20_000;
 
-let requestCounter = 0;
-
-export class ApiNetworkError extends ErrorWithCause {}
-
-export class ApiServiceError extends ErrorWithCause {
-    #response: AxiosResponse<unknown>;
-
-    constructor(message: string, response: AxiosResponse<unknown>, cause: AxiosError) {
-        super(message, cause);
-        this.#response = response;
-    }
-
-    get response() { return this.#response; }
-}
-
 export class MultiApiClientError extends Error {
+    #requestId: number;
     #errors: Error[];
 
-    constructor(message: string, errors: Error[]) {
+    constructor(message: string, requestId: number, errors: Error[]) {
         super(message);
         this.#errors = errors;
+        this.#requestId = requestId;
     }
 
     get errors() { return this.#errors; }
+    get requestId() { return this.#requestId; }
+
+    lastServiceError(): ApiServiceError | undefined {
+        for (let i = this.#errors.length - 1; i >= 0; i--) {
+            const error = this.#errors[i];
+            if (error instanceof ApiServiceError) {
+                return error;
+            }
+        }
+    }
 }
 
-export class MultiApiClient {
+export abstract class MultiApiClient {
     clients: HttpApiClient[] = [];
 
     constructor(
         public serviceName: string,
-        public tryNextAfter: number = DEFAULT_TRY_NEXT_AFTER,   // start request with next client in parallel after this time
-        public timeout: number = DEFAULT_TIMEOUT,               // axios http request timeout
-        public killAfter: number = DEFAULT_KILL_AFTER,          // stop waiting after this many seconds, even if there is no timeout from axios
+        public tryNextAfter: number,    // start request with next client in parallel after this time
+        public timeout: number,         // axios http request timeout
+        public killAfter: number,       // stop waiting after this many seconds, even if there is no timeout from axios
     ) {
+    }
+
+    static create(
+        serviceName: string,
+        parallel: boolean = PARALLEL,
+        tryNextAfter: number = DEFAULT_TRY_NEXT_AFTER,   // start request with next client in parallel after this time
+        timeout: number = DEFAULT_TIMEOUT,               // axios http request timeout
+        killAfter: number = DEFAULT_KILL_AFTER,          // stop waiting after this many seconds, even if there is no timeout from axios
+    ) {
+        if (parallel) {
+            return new MultiApiClientParallel(serviceName, tryNextAfter, timeout, killAfter);
+        } else {
+            return new MultiApiClientSerial(serviceName, 0, timeout, killAfter);
+        }
     }
 
     addClient(baseUrl: string, apiKey?: string) {
@@ -58,88 +69,59 @@ export class MultiApiClient {
         return await this.request("POST", url, data, methodName);
     }
 
-    async request<R>(httpMethod: Method, url: string, data: any, methodName: string): Promise<R> {
+    abstract request<R>(httpMethod: Method, url: string, data: any, methodName: string): Promise<R>;
+}
+
+class MultiApiClientSerial extends MultiApiClient {
+    override async request<R>(httpMethod: Method, url: string, data: any, methodName: string): Promise<R> {
         const requestId = HttpApiClient.newRequestId();
         const clients = Array.from(this.clients);
         if (clients.length === 0) {
-            throw new MultiApiClientError(`No clients for ${this.serviceName}`, []);
+            throw new MultiApiClientError(`No clients for ${this.serviceName}`, requestId, []);
         }
         const errors: Error[] = [];
-        for (let i = 0; i < clients.length; i++) {
+        for (const [i, client] of clients.entries()) {
             try {
                 const abortSignal = AbortSignal.timeout(this.killAfter);
-                return await this.clients[i].request<R>(httpMethod, url, data, methodName, requestId, i, abortSignal);
+                return await client.request<R>(httpMethod, url, data, methodName, requestId, i, abortSignal);
             } catch (error) {
                 errors.push(error instanceof Error ? error : ErrorWithCause.wrap(error));
             }
         }
         logger.error(`MULTICLIENT ERROR request[${requestId}] ${this.serviceName}.${methodName}: failed on all ${clients.length} clients`);
-        throw new MultiApiClientError(`${this.serviceName}.${methodName}: failed on all ${clients.length} clients`, errors);
+        throw new MultiApiClientError(`${this.serviceName}.${methodName}: failed on all ${clients.length} clients`, requestId, errors);
     }
 }
 
-export class HttpApiClient {
-    constructor(
-        public serviceName: string,
-        public client: AxiosInstance,
-        public timeout: number = DEFAULT_TIMEOUT,
-    ) {
-    }
-
-    static create(serviceName: string, baseUrl: string, apiKey?: string, timeout: number = DEFAULT_TIMEOUT) {
-        const client = axios.create(createAxiosConfig(baseUrl, apiKey, timeout));
-        return new HttpApiClient(serviceName, client, timeout);
-    }
-
-    async get<R>(url: string, methodName: string, requestId: number, clientIndex: number, abortSignal?: GenericAbortSignal): Promise<R> {
-        return await this.request("GET", url, undefined, methodName, requestId, clientIndex, abortSignal);
-    }
-
-    async post<R>(url: string, data: any, methodName: string, requestId: number, clientIndex: number, abortSignal?: GenericAbortSignal): Promise<R> {
-        return await this.request("POST", url, data, methodName, requestId, clientIndex, abortSignal);
-    }
-
-    async request<R>(httpMethod: Method, url: string, data: any, methodName: string, requestId: number, clientIndex: number, abortSignal?: GenericAbortSignal): Promise<R> {
-        const requestInfo = `request[${requestId}] client[${clientIndex}] ${this.serviceName}.${methodName}`;
-        logger.info(`START ${requestInfo}: ${httpMethod.toUpperCase()} ${this.client.getUri()}${url}`);
-        const startTime = systemTimestamp();
-        try {
-            const response = await this.client.request<R>({
-                method: httpMethod,
-                url: url,
-                data: data,
-                timeout: this.timeout,
-                signal: abortSignal ?? AbortSignal.timeout(this.timeout)
-            });
-            logger.info(`SUCCESS ${requestInfo} (${systemTimestamp() - startTime}s): [${response.status} ${response.statusText}]`);
-            return response.data;
-        } catch (error) {
-            if (isAxiosError(error) && error.response) {
-                if (error.response) {
-                    const response = error.response;
-                    const message = clipText(typeof response.data === "string" ? response.data : tryJsonStringify(response.data), 120);
-                    logger.error(`SERVICE ERROR ${requestInfo} (${systemTimestamp() - startTime}s): [${response.status} ${response.statusText}] ${message}`);
-                    throw new ApiServiceError(`${this.serviceName}.${methodName}: ${message}`, response, error);
-                }
-                const message = clipText(error.message, 120);
-                logger.error(`NETWORK ERROR ${requestInfo} (${systemTimestamp() - startTime}s): ${message}`);
-                throw new ApiNetworkError(`${this.serviceName}.${methodName}: ${message}`, error);
-            }
-            const message = clipText(String(error), 120);
-            logger.info(`UNEXPECTED ERROR ${requestInfo} (${systemTimestamp() - startTime}s): ${message}`);
-            throw new ApiNetworkError(`${this.serviceName}.${methodName}: UNEXPECTED ${message}`, error);
+class MultiApiClientParallel extends MultiApiClient {
+    override async request<R>(httpMethod: Method, url: string, data: any, methodName: string): Promise<R> {
+        const requestId = HttpApiClient.newRequestId();
+        const clients = Array.from(this.clients);
+        if (clients.length === 0) {
+            throw new MultiApiClientError(`No clients for ${this.serviceName}`, requestId, []);
         }
-    }
-
-    static newRequestId() {
-        return ++requestCounter;
-    }
-}
-
-function tryJsonStringify(data: unknown, indent?: number) {
-    try {
-        return JSON.stringify(data, null, indent);
-    } catch (_error) {
-        return "<cannot json stringify data>";
+        const abortController = new AbortController();
+        const abortSignal = abortController.signal;
+        const results = await Promise.allSettled(clients.map(async (client, index) => {
+            try {
+                await abortableSleep(index * this.tryNextAfter, abortSignal);
+                return await Promise.race([
+                    client.request<R>(httpMethod, url, data, methodName, requestId, index, abortSignal),
+                    abortableSleep(this.killAfter, abortSignal)
+                        .then(() => { throw new ApiNetworkError(`Timeout of ${this.killAfter}ms reached`, null); }),
+                ]);
+            } finally {
+                if (!abortSignal.aborted) {
+                    abortController.abort(new Error("Request aborted because it finished first on another client"));
+                }
+            }
+        }));
+        const successfulResult = results.find(res => res.status === "fulfilled");
+        if (successfulResult) {
+            return successfulResult.value;
+        }
+        const errors = results.map(r => (r as PromiseRejectedResult).reason);
+        logger.error(`MULTICLIENT ERROR request[${requestId}] ${this.serviceName}.${methodName}: failed on all ${clients.length} clients`);
+        throw new MultiApiClientError(`${this.serviceName}.${methodName}: failed on all ${clients.length} clients`, requestId, errors);
     }
 }

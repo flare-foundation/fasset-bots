@@ -445,6 +445,26 @@ export function keccak256(data: string): string {
     return Web3.utils.keccak256(data) ?? emptyStringHash;
 }
 
+/**
+ * Limit `text` length to `maxLength` and add `"..."` at the end if clipped (result together with `"..."` will be `maxLength` long).
+ */
 export function clipText(text: string, maxLength: number) {
     return text.length <= maxLength ? text : text.slice(0, maxLength - 3) + "...";
+}
+
+/**
+ * Like sleep(delayMS) but stop immediatelly with error if `abortSignal` is triggered.
+ */
+export function abortableSleep(delayMS: number, abortSignal: AbortSignal) {
+    let timer: NodeJS.Timeout;
+    let abortHandler: () => void;
+    return new Promise<void>((resolve, reject) => {
+        abortSignal.throwIfAborted();
+        timer = setTimeout(() => resolve(), delayMS);
+        abortHandler = () => reject(abortSignal.reason);
+        abortSignal.addEventListener("abort", abortHandler);
+    }).finally(() => {
+        if (abortHandler) abortSignal.removeEventListener("abort", abortHandler);
+        if (timer) clearTimeout(timer);
+    });
 }
