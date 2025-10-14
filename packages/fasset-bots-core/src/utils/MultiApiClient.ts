@@ -1,7 +1,7 @@
 import { Method } from "axios";
 import { ErrorWithCause } from "./ErrorWithCause";
 import { abortableSleep } from "./helpers";
-import { ApiNetworkError, ApiServiceError, DEFAULT_TIMEOUT, HttpApiClient } from "./HttpApiClient";
+import { ApiServiceError, ApiTimeoutError, DEFAULT_TIMEOUT, HttpApiClient } from "./HttpApiClient";
 import { logger } from "./logger";
 
 const PARALLEL = true;
@@ -48,7 +48,7 @@ export abstract class MultiApiClient {
         tryNextAfter: number = DEFAULT_TRY_NEXT_AFTER,   // start request with next client in parallel after this time
         timeout: number = DEFAULT_TIMEOUT,               // axios http request timeout
         killAfter: number = DEFAULT_KILL_AFTER,          // stop waiting after this many seconds, even if there is no timeout from axios
-    ) {
+    ): MultiApiClient {
         if (parallel) {
             return new MultiApiClientParallel(serviceName, tryNextAfter, timeout, killAfter);
         } else {
@@ -65,15 +65,15 @@ export abstract class MultiApiClient {
         return await this.request("GET", url, undefined, methodName);
     }
 
-    async post<R>(url: string, data: any, methodName: string): Promise<R> {
+    async post<R, D = unknown>(url: string, data: D, methodName: string): Promise<R> {
         return await this.request("POST", url, data, methodName);
     }
 
-    abstract request<R>(httpMethod: Method, url: string, data: any, methodName: string): Promise<R>;
+    abstract request<R, D = unknown>(httpMethod: Method, url: string, data: D, methodName: string): Promise<R>;
 }
 
 class MultiApiClientSerial extends MultiApiClient {
-    override async request<R>(httpMethod: Method, url: string, data: any, methodName: string): Promise<R> {
+    override async request<R, D = unknown>(httpMethod: Method, url: string, data: D, methodName: string): Promise<R> {
         const requestId = HttpApiClient.newRequestId();
         const clients = Array.from(this.clients);
         if (clients.length === 0) {
@@ -94,7 +94,7 @@ class MultiApiClientSerial extends MultiApiClient {
 }
 
 class MultiApiClientParallel extends MultiApiClient {
-    override async request<R>(httpMethod: Method, url: string, data: any, methodName: string): Promise<R> {
+    override async request<R, D = unknown>(httpMethod: Method, url: string, data: D, methodName: string): Promise<R> {
         const requestId = HttpApiClient.newRequestId();
         const clients = Array.from(this.clients);
         if (clients.length === 0) {
@@ -103,19 +103,23 @@ class MultiApiClientParallel extends MultiApiClient {
         const abortController = new AbortController();
         const abortSignal = abortController.signal;
         const results = await Promise.allSettled(clients.map(async (client, index) => {
-            try {
-                await abortableSleep(index * this.tryNextAfter, abortSignal);
-                return await Promise.race([
-                    client.request<R>(httpMethod, url, data, methodName, requestId, abortSignal),
-                    abortableSleep(this.killAfter, abortSignal)
-                        .then(() => { throw new ApiNetworkError(`Timeout of ${this.killAfter}ms reached`, null); }),
-                ]);
-            } finally {
-                if (!abortSignal.aborted) {
-                    abortController.abort(new Error("Request aborted because it finished first on another client"));
-                }
+            await abortableSleep(index * this.tryNextAfter, abortSignal);
+            const result = await Promise.race([
+                client.request<R>(httpMethod, url, data, methodName, requestId, abortSignal),
+                abortableSleep(this.killAfter, abortSignal)
+                    .then(() => { throw new ApiTimeoutError(`${this.serviceName}.${methodName}: Timeout of ${this.killAfter}ms reached`, null); }),
+            ]);
+            // on success, cancel attempts on other clients
+            if (!abortSignal.aborted) {
+                abortController.abort(new Error("Request aborted because it finished first on another client"));
             }
+            return result;
         }));
+        // cancel requests that are hanging after timeouts expired
+        if (!abortSignal.aborted) {
+            abortController.abort(new Error("Request aborted because it finished first on another client"));
+        }
+        // find successful response, if any exists
         const successfulResult = results.find(res => res.status === "fulfilled");
         if (successfulResult) {
             return successfulResult.value;
