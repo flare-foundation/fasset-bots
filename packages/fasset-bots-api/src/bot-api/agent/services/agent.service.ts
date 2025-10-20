@@ -1026,8 +1026,8 @@ export class AgentService {
         let totalFXRPUSD = "0";
         let totalNATUSD = "0";
         let totalVaultCollateralUSD = "0";
+        let totalUSD = "0";
         const balances: AllBalances[] = [];
-        const vaultCollateralBalances: Map<string, string> = new Map();
         const ownerCollateralBalances: Map<string, string> = new Map();
         for (const f of fassets) {
             if (!f.includes("XRP")) {
@@ -1110,18 +1110,17 @@ export class AgentService {
                     prices.push({ symbol: vaultCollateralType.tokenFtsoSymbol, price: priceVaultUSD, decimals: Number(priceVault.decimals) });
                 }
                 totalVaultCollateralUSD = sumUsdStrings(totalVaultCollateralUSD, formatFixed(agentVaultBalanceUSD, 18, { decimals: 3, groupDigits: true, groupSeparator: "," }));
-                //const vaultColBalance = vaultCollateralBalances.get(vaultCollateralType.tokenFtsoSymbol);
-                //vaultCollateralBalances.set(vaultCollateralType.tokenFtsoSymbol, "1,200.25");
             }
-            /*for (const [key, value] of vaultCollateralBalances) {
-                balances.push({symbol: key, balance: value + " $"});
-            }*/
-            balances.push({symbol: cli.context.nativeChainInfo.tokenSymbol, balance: totalNATUSD});
-            balances.push({symbol: cli.context.chainInfo.symbol, balance: totalXRPUSD});
-            balances.push({symbol: f, balance: totalFXRPUSD});
-            balances.push({symbol: "Vault Collaterals", balance: totalVaultCollateralUSD});
+            balances.push({symbol: cli.context.nativeChainInfo.tokenSymbol + "(USD)", balance: "$" + totalNATUSD});
+            balances.push({symbol: cli.context.chainInfo.symbol + "(USD)", balance: "$" + totalXRPUSD});
+            balances.push({symbol: f + "(USD)", balance: "$" + totalFXRPUSD});
+            balances.push({symbol: "Vault Collaterals" + "(USD)", balance: "$" + totalVaultCollateralUSD});
+            totalUSD = sumUsdStrings(totalUSD, totalNATUSD);
+            totalUSD = sumUsdStrings(totalUSD, totalXRPUSD);
+            totalUSD = sumUsdStrings(totalUSD, totalFXRPUSD);
+            totalUSD = sumUsdStrings(totalUSD, totalVaultCollateralUSD);
         }
-        //balances.push({symbol: "Total", balance: "34,500.12 $"});
+        balances.push({symbol: "Total (USD)", balance: "$" + totalUSD});
         return balances;
     }
 }
