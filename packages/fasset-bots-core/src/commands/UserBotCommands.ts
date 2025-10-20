@@ -156,12 +156,12 @@ export class UserBotCommands {
      * @param executorAddress
      * @param executorFeeNatWei
      */
-    async reserveCollateral(agentVault: string, lots: BNish, executorAddress: string, executorFeeNatWei?: BNish): Promise<BN | null> {
+    async reserveCollateral(agentVault: string, lots: BNish, executorAddress: string, executorFeeNatWei?: BNish, crFeeBump?: number): Promise<BN | null> {
         logger.info(`User ${this.nativeAddress} started minting with agent ${agentVault}.`);
         const minter = new Minter(this.context, this.nativeAddress, this.underlyingAddress, this.context.wallet);
         console.log("Reserving collateral...");
         logger.info(`User ${this.nativeAddress} is reserving collateral with agent ${agentVault} and ${lots} lots.`);
-        const crt = await minter.reserveCollateral(agentVault, lots, executorAddress, executorFeeNatWei);
+        const crt = await minter.reserveCollateral(agentVault, lots, executorAddress, executorFeeNatWei, crFeeBump);
         logger.info(`User ${this.nativeAddress} reserved collateral ${formatArgs(crt)} with agent ${agentVault} and ${lots} lots.`);
         console.log(`Paying on the underlying chain for reservation ${crt.collateralReservationId} to address ${crt.paymentAddress}...`);
         logger.info(`User ${this.nativeAddress} is paying on underlying chain for reservation ${crt.collateralReservationId} to agent's ${agentVault} address ${crt.paymentAddress}.`);
@@ -187,8 +187,8 @@ export class UserBotCommands {
      * @param executorAddress optional address of the executor
      * @param executorFeeNatWei optional executor fee (required if executor is used)
      */
-    async mint(agentVault: string, lots: BNish, noWait: boolean, executorAddress: string = ZERO_ADDRESS, executorFeeNatWei?: BNish): Promise<void> {
-        const requestId = await this.reserveCollateral(agentVault, lots, executorAddress, executorFeeNatWei);
+    async mint(agentVault: string, lots: BNish, noWait: boolean, executorAddress: string = ZERO_ADDRESS, executorFeeNatWei?: BNish, crFeeBump?: number): Promise<void> {
+        const requestId = await this.reserveCollateral(agentVault, lots, executorAddress, executorFeeNatWei, crFeeBump);
         if (requestId == null) {
             logger.info(`User ${this.nativeAddress} minting was cancelled or rejected by agent ${agentVault}.`);
             return;

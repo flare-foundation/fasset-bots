@@ -744,16 +744,6 @@ export class AgentBotCommands {
         return String(free);
     }
 
-    /**
-     * Upgrades WNat contract
-     * @param agentVault agent's vault address
-     */
-    async upgradeWNatContract(agentVault: string): Promise<void> {
-        const { agentBot } = await this.getAgentBot(agentVault);
-        await agentBot.agent.upgradeWNatContract();
-        logger.info(`Agent ${agentVault} upgraded wnat contract.`);
-    }
-
     async validateCollateralPoolTokenSuffix(suffix: string) {
         const maxLength = 20;
         if (suffix.length >= maxLength) {

@@ -734,36 +734,29 @@
     },
     {
       "anonymous": false,
-      "inputs": [],
-      "name": "EmergencyPauseTransfersCanceled",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "pausedUntil",
-          "type": "uint256"
-        }
-      ],
-      "name": "EmergencyPauseTransfersTriggered",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
       "inputs": [
         {
           "indexed": false,
           "internalType": "enum EmergencyPause.Level",
-          "name": "level",
+          "name": "externalLevel",
           "type": "uint8"
         },
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "pausedUntil",
+          "name": "externalPausedUntil",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum EmergencyPause.Level",
+          "name": "governanceLevel",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "governancePausedUntil",
           "type": "uint256"
         }
       ],
@@ -3563,9 +3556,14 @@
           "type": "uint256"
         },
         {
-          "internalType": "bool",
-          "name": "_pausedByGovernance",
-          "type": "bool"
+          "internalType": "enum EmergencyPause.Level",
+          "name": "_governanceLevel",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_governancePausedUntil",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -6284,6 +6282,13 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "resetEmergencyPauseTotalDuration",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",
@@ -6924,7 +6929,7 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "_rewardNATWei",
+          "name": "_rewardUSD5",
           "type": "uint256"
         },
         {
@@ -7392,9 +7397,14 @@
     {
       "inputs": [
         {
-          "internalType": "address",
-          "name": "_agentVault",
-          "type": "address"
+          "internalType": "uint256",
+          "name": "_start",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_end",
+          "type": "uint256"
         }
       ],
       "name": "upgradeWNatContract",

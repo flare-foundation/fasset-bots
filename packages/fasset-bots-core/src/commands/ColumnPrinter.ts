@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import { isNotNull } from "../utils";
 
 export type ColumnType = [title: string, width: number, align: "l" | "r"];
@@ -21,14 +22,17 @@ export class ColumnPrinter {
         }
         const chunks = this.columns.map(([_, width, align], ind) => alignText(width, align, items[ind])).filter(isNotNull);
         return chunks.join(this.separator);
-
     }
 
     printHeader() {
-        this.printLine(...this.columns.map((it) => it[0]));
+        this.printLineColor(chalk.yellowBright, ...this.columns.map((it) => it[0]));
     }
 
     printLine(...items: string[]) {
         console.log(this.line(...items));
+    }
+
+    printLineColor(color: chalk.Chalk, ...items: string[]) {
+        console.log(color(this.line(...items)));
     }
 }

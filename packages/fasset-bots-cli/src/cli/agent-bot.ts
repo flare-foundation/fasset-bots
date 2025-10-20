@@ -430,17 +430,6 @@ function getContractByName(config: string, nameOrAddress: string) {
 }
 
 program
-    .command("upgradeWNat")
-    .description("upgrade WNat contract")
-    .argument("<agentVaultAddress>")
-    .action(async (agentVault: string) => {
-        const options: { config: string; secrets: string; fasset: string } = program.opts();
-        const secrets = await Secrets.load(options.secrets);
-        const cli = await AgentBotCommands.create(secrets, options.config, options.fasset, registerToplevelFinalizer);
-        await cli.upgradeWNatContract(agentVault);
-    });
-
-program
     .command("exportPrivateKeys")
     .description("export underlying agent vault private keys")
     .argument("<exportFile>")

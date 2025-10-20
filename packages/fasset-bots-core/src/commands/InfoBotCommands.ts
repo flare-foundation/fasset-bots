@@ -484,6 +484,59 @@ export class InfoBotCommands {
         }
     }
 
+    async printAgentCapacities(onlyPublic: boolean) {
+        const printer = new ColumnPrinter([
+            ["Agent", 30, "l"],
+            ["Free", 10, "r"],
+            ["%", 4, "r"],
+            ["Minted", 10, "r"],
+            ["%", 4, "r"],
+            ["Reserved", 10, "r"],
+            ["%", 4, "r"],
+            ["Redeeming", 10, "r"],
+            ["%", 4, "r"],
+            ["Capacity", 10, "r"],
+        ]);
+        printer.printHeader();
+        const allAgents = await this.getAllAgents();
+        const lotSize = await this.getLotSize();
+        const formatLots = (x: number) => x.toFixed(0);
+        const formatRatioPerc = (x: number, total: number) => (x > 0 ? x / total * 100 : 0).toFixed(0) + "%";
+        let totalFree = 0;
+        let totalMinted = 0;
+        let totalReserved = 0;
+        let totalRedeeming = 0;
+        for (const vaultAddr of allAgents) {
+            const info = await this.context.assetManager.getAgentInfo(vaultAddr);
+            if (onlyPublic && !info.publiclyAvailable) continue;
+            const ownerName = await this.context.agentOwnerRegistry.getAgentName(info.ownerManagementAddress);
+            const freeLots = Number(info.freeCollateralLots);
+            const mintedLots = Number(toBN(info.mintedUBA).divn(lotSize));
+            const reservedLots = Number(toBN(info.reservedUBA).divn(lotSize));
+            const redeemingLots = Number(toBN(info.redeemingUBA).divn(lotSize));
+            const capacity = freeLots + mintedLots + reservedLots + redeemingLots;
+            totalFree += freeLots;
+            totalMinted +=  mintedLots;
+            totalReserved += reservedLots;
+            totalRedeeming += redeemingLots;
+            printer.printLine(ownerName,
+                formatLots(freeLots), formatRatioPerc(freeLots, capacity),
+                formatLots(mintedLots), formatRatioPerc(mintedLots, capacity),
+                formatLots(reservedLots), formatRatioPerc(reservedLots, capacity),
+                formatLots(redeemingLots), formatRatioPerc(redeemingLots, capacity),
+                formatLots(capacity)
+            );
+        }
+        const totalCapacity = totalFree + totalMinted + totalReserved + totalRedeeming;
+        printer.printLineColor(chalk.greenBright, "TOTAL",
+            formatLots(totalFree), formatRatioPerc(totalFree, totalCapacity),
+            formatLots(totalMinted), formatRatioPerc(totalMinted, totalCapacity),
+            formatLots(totalReserved), formatRatioPerc(totalReserved, totalCapacity),
+            formatLots(totalRedeeming), formatRatioPerc(totalRedeeming, totalCapacity),
+            formatLots(totalCapacity)
+        );
+    }
+
     /**
      * Print the events for a contract for a range of blocks.
      * @param instance contract instance; only events from this contract will be listed

@@ -69,6 +69,7 @@ export interface AgentBotSettings {
     returnFromCVRatio: number;
     targetTransferToCVRatio: number;
     targetReturnFromCVRatio: number;
+    minimumTransferToCVSize: number;
     useAutomaticCoreVaultTransferAndReturn: boolean;
 }
 
@@ -242,6 +243,7 @@ function createAgentBotSettings(agentBotSettings: AgentBotSettingsJson, fassetSe
         returnFromCVRatio: Number(fassetSettings.returnFromCVRatio),
         targetTransferToCVRatio: Number(fassetSettings.targetTransferToCVRatio),
         targetReturnFromCVRatio: Number(fassetSettings.targetReturnFromCVRatio),
+        minimumTransferToCVSize: Number(fassetSettings.minimumTransferToCVSize),
         useAutomaticCoreVaultTransferAndReturn: fassetSettings.useAutomaticCoreVaultTransferAndReturn
     }
 }

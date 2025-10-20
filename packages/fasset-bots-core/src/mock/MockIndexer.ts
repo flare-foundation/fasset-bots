@@ -8,8 +8,8 @@ export class MockIndexer extends BlockchainIndexerHelper {
     static deepCopyWithObjectCreate = true;
 
     constructor(
-        public indexerWebServerUrls: string[],
-        public chainId: ChainId,
+        indexerWebServerUrls: string[],
+        chainId: ChainId,
         public chain: MockChain
     ) {
         super(indexerWebServerUrls, chainId, [""]);

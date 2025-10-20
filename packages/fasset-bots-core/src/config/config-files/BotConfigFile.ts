@@ -147,6 +147,11 @@ export interface AgentBotFassetSettingsJson {
     targetReturnFromCVRatio: number;
 
     /**
+     * Minimum transfer to CV amount (as share of the total minting capacity).
+     */
+    minimumTransferToCVSize: number;
+
+    /**
      * If true, the bot will automatically manage CoreVault transfers and returns
      * based on `targetTransferToCVRatio` and `targetReturnFromCVRatio`.
      * Otherwise, the automation will be turned off.

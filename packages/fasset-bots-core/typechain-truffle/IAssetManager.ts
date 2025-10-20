@@ -311,26 +311,17 @@ export interface EmergencyPauseCanceled {
   args: {};
 }
 
-export interface EmergencyPauseTransfersCanceled {
-  name: "EmergencyPauseTransfersCanceled";
-  args: {};
-}
-
-export interface EmergencyPauseTransfersTriggered {
-  name: "EmergencyPauseTransfersTriggered";
-  args: {
-    pausedUntil: BN;
-    0: BN;
-  };
-}
-
 export interface EmergencyPauseTriggered {
   name: "EmergencyPauseTriggered";
   args: {
-    level: BN;
-    pausedUntil: BN;
+    externalLevel: BN;
+    externalPausedUntil: BN;
+    governanceLevel: BN;
+    governancePausedUntil: BN;
     0: BN;
     1: BN;
+    2: BN;
+    3: BN;
   };
 }
 
@@ -850,8 +841,6 @@ export type AllEvents =
   | DuplicatePaymentConfirmed
   | DustChanged
   | EmergencyPauseCanceled
-  | EmergencyPauseTransfersCanceled
-  | EmergencyPauseTransfersTriggered
   | EmergencyPauseTriggered
   | FullLiquidationStarted
   | IllegalPaymentConfirmed
@@ -3935,24 +3924,6 @@ export interface IAssetManagerInstance extends Truffle.ContractInstance {
     ): Promise<number>;
   };
 
-  upgradeWNatContract: {
-    (_agentVault: string, txDetails?: Truffle.TransactionDetails): Promise<
-      Truffle.TransactionResponse<AllEvents>
-    >;
-    call(
-      _agentVault: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _agentVault: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _agentVault: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
   methods: {
     addAlwaysAllowedMinterForAgent: {
       (
@@ -6983,24 +6954,6 @@ export interface IAssetManagerInstance extends Truffle.ContractInstance {
     };
 
     upgradeAgentVaultAndPool: {
-      (_agentVault: string, txDetails?: Truffle.TransactionDetails): Promise<
-        Truffle.TransactionResponse<AllEvents>
-      >;
-      call(
-        _agentVault: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        _agentVault: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        _agentVault: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
-
-    upgradeWNatContract: {
       (_agentVault: string, txDetails?: Truffle.TransactionDetails): Promise<
         Truffle.TransactionResponse<AllEvents>
       >;

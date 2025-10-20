@@ -7,7 +7,8 @@ import { MiniTruffleContract, MiniTruffleContractInstance } from "./contracts";
 import { decodeRevertData, formatRevertMessage, TransactionRevertedError } from "./custom-errors";
 import { TransactionSubmitRevertedError, waitAfterError } from "./finalization";
 import { submitTransaction } from "./submit-transaction";
-import { ErrorWithCause, extractErrorMessage, transactionLogger } from "./transaction-logging";
+import { extractErrorMessage, transactionLogger } from "./transaction-logging";
+import { ErrorWithCause } from "../ErrorWithCause";
 import { ContractSettings } from "./types";
 
 export class InvalidMethodInvocationError extends Error {}

@@ -1,4 +1,4 @@
-import { createRateLimitedAxiosInstance, tryWithClients } from "@flarenetwork/fasset-bots-common";
+import { createRateLimitedAxiosInstance, defaultTimeoutSignal, tryWithClients } from "@flarenetwork/fasset-bots-common";
 import { AxiosInstance, AxiosResponse } from "axios";
 import type { AccountInfoRequest, AccountInfoResponse, ServerInfoResponse, SubmitResponse, TxResponse } from "xrpl";
 import { BaseWalletConfig } from "../interfaces/IWalletTransaction";
@@ -16,6 +16,8 @@ export class XRPBlockchainAPI {
         return tryWithClients(this.clients, (client: AxiosInstance) => client.post("", {
             method: "tx",
             params: [{ transaction: transactionHash }],
+        }, {
+            signal: defaultTimeoutSignal()
         }), "getTransaction");
     }
 
@@ -23,12 +25,16 @@ export class XRPBlockchainAPI {
         return tryWithClients(this.clients, (client: AxiosInstance) => client.post("", {
             method: "submit",
             params: [params],
+        }, {
+            signal: defaultTimeoutSignal()
         }), "submitTransaction");
     }
 
     async getAccountInfo(params: AccountInfoRequest): Promise<AxiosResponse<AccountInfoResponse>> {
         return tryWithClients(this.clients, (client: AxiosInstance) => client.post("", {
             method: "account_info", params: [params],
+        }, {
+            signal: defaultTimeoutSignal()
         }), "getAccountInfo");
     }
 
@@ -36,6 +42,8 @@ export class XRPBlockchainAPI {
         return tryWithClients(this.clients, (client: AxiosInstance) => client.post("", {
             method: "server_info",
             params: [],
+        }, {
+            signal: defaultTimeoutSignal()
         }), "getServerInfo");
     }
 }

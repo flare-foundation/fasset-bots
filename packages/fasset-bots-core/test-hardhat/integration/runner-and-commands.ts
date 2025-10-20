@@ -92,6 +92,7 @@ describe("Toplevel runner and commands integration test", () => {
         returnFromCVRatio: 0.3,
         targetTransferToCVRatio: 0.4,
         targetReturnFromCVRatio: 0.6,
+        minimumTransferToCVSize: 0.2,
         useAutomaticCoreVaultTransferAndReturn: true,
     };
 

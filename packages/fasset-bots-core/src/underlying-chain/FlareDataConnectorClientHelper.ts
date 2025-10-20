@@ -1,15 +1,15 @@
-import { createAxiosConfig, tryWithClients } from "@flarenetwork/fasset-bots-common";
 import {
     ARBase, ARESBase, AddressValidity, AttestationDefinitionStore, BalanceDecreasingTransaction,
     ConfirmedBlockHeightExists, Payment, ReferencedPaymentNonexistence, decodeAttestationName
 } from "@flarenetwork/state-connector-protocol";
-import axios, { AxiosError, AxiosInstance, AxiosResponse } from "axios";
 import { IFdcHubInstance, IFdcRequestFeeConfigurationsInstance, IFdcVerificationInstance, IRelayInstance } from "../../typechain-truffle";
 import { FspStatusResult } from "../utils/data-access-layer-types";
 import { findRequiredEvent } from "../utils/events/truffle";
 import { formatArgs } from "../utils/formatting";
 import { DEFAULT_RETRIES, ZERO_BYTES32, retry, retryCall, sleep } from "../utils/helpers";
+import { ApiServiceError, HttpApiClient } from "../utils/HttpApiClient";
 import { logger } from "../utils/logger";
+import { MultiApiClient, MultiApiClientError } from "../utils/MultiApiClient";
 import { artifacts } from "../utils/web3";
 import { blockTimestamp } from "../utils/web3helpers";
 import { web3DeepNormalize } from "../utils/web3normalize";
@@ -34,8 +34,8 @@ export interface VotingRoundResult<RES> {
 }
 
 export class FlareDataConnectorClientHelper implements IFlareDataConnectorClient {
-    dataAccessLayerClients: AxiosInstance[] = [];
-    verifierClients: AxiosInstance[] = [];
+    dataAccessLayerClients: HttpApiClient[] = [];
+    verifier: MultiApiClient;
     // initialized at initFlareDataConnector()
     relay!: IRelayInstance;
     fdcHub!: IFdcHubInstance;
@@ -54,10 +54,11 @@ export class FlareDataConnectorClientHelper implements IFlareDataConnectorClient
         public account: string,
     ) {
         for (const [index, url] of dataAccessLayerUrls.entries()) {
-            this.dataAccessLayerClients.push(axios.create(createAxiosConfig(url, dataAccessLayerApiKeys[index])));
+            this.dataAccessLayerClients.push(HttpApiClient.create("FDCHelperDAL", index, url, dataAccessLayerApiKeys[index]));
         }
+        this.verifier = MultiApiClient.create("FDCHelperVerifier");
         for (const [index, url] of verifierUrls.entries()) {
-            this.verifierClients.push(axios.create(createAxiosConfig(url, verifierUrlApiKeys[index])));
+            this.verifier.addClient(url, verifierUrlApiKeys[index], index);
         }
     }
 
@@ -119,18 +120,21 @@ export class FlareDataConnectorClientHelper implements IFlareDataConnectorClient
     /* istanbul ignore next */
     async submitRequestToFlareDataConnector(request: ARBase): Promise<AttestationRequestId> {
         const attestationName = decodeAttestationName(request.attestationType);
-        const response = await tryWithClients(
-            this.verifierClients,
-            (verifier: AxiosInstance) => verifier.post<PrepareRequestResult>(`/${encodeURIComponent(attestationName)}/prepareRequest`, request),
-            "submitRequestToFlareDataConnector"
-        ).catch((e: AxiosError) => {
-            const message = `Flare data connector error: cannot submit request ${formatArgs(request)}: ${e.response?.status}: ${(e.response?.data as any)?.error}`;
-            logger.error(message);
-            throw new FlareDataConnectorClientError(message);
-        });
-        const data = response.data?.abiEncodedRequest;
+        const respdata = await this.verifier.post<PrepareRequestResult>(`/${encodeURIComponent(attestationName)}/prepareRequest`, request, "prepareRequest")
+            .catch((e: unknown) => {
+                let message: string;
+                if (e instanceof MultiApiClientError) {
+                    const serviceErr = e.lastServiceError()?.response;
+                    message = `Flare data connector error: cannot submit request[${e.requestId}] ${formatArgs(request)}: ${serviceErr?.status}: ${(serviceErr?.data as any)?.error}`;
+                } else {
+                    message = `Flare data connector error: cannot submit request ${formatArgs(request)}: ${String(e)}`;
+                }
+                logger.error(message);
+                throw new FlareDataConnectorClientError(message);
+            });
+        const data = respdata?.abiEncodedRequest;
         if (data == null) {
-            logger.error(`Problem in prepare request: ${JSON.stringify(response.data)} for request ${formatArgs(request)}`);
+            logger.error(`Problem in prepare request: ${JSON.stringify(respdata)} for request ${formatArgs(request)}`);
             throw new FlareDataConnectorClientError(`Cannot submit proof request`);
         }
         const requestFee = await this.fdcRequestFeeConfigurations.getRequestFee(data);
@@ -153,24 +157,22 @@ export class FlareDataConnectorClientHelper implements IFlareDataConnectorClient
     }
 
     async latestFinalizedRoundOnDAL(): Promise<number> {
-        let latestRound = -1;
-        for (const client of this.dataAccessLayerClients) {
-            try {
-                const clientLatest = await this.latestFinalizedRoundOnClient(client);
-                latestRound = Math.max(latestRound, clientLatest);
-            } catch (error) {
-                logger.error(`Cannot obtain latest round from data access layer client ${client.getUri()}: ${error}`);
+        const requestId = HttpApiClient.newRequestId();
+        return await retryCall("latestRoundOnClient", async () => {
+            const responses = await Promise.allSettled(this.dataAccessLayerClients.map(
+                client => this.latestFinalizedRoundOnClient(client, requestId))
+            );
+            const latestRoundByClient = responses.filter(r => r.status === "fulfilled").map(r => r.value);
+            if (latestRoundByClient.length === 0) {
+                throw new Error(`No data access layer clients available for obtaining latest round`);
             }
-        }
-        if (latestRound < 0) {
-            throw new Error(`No data access layer clients available for obtaining latest round`);
-        }
-        return latestRound;
+            return Math.max(...latestRoundByClient);
+        });
     }
 
-    async latestFinalizedRoundOnClient(client: AxiosInstance): Promise<number> {
-        const response = await retryCall("latestRoundOnClient", () => client.get<FspStatusResult>(`/api/v0/fsp/status`));
-        return Number(response.data.latest_fdc.voting_round_id);
+    async latestFinalizedRoundOnClient(client: HttpApiClient, requestId: number): Promise<number> {
+        const response = await client.get<FspStatusResult>(`/api/v0/fsp/status`, "latestRoundOnClient", requestId);
+        return Number(response.latest_fdc.voting_round_id);
     }
 
     async obtainProof(round: number, requestData: string): Promise<OptionalAttestationProof> {
@@ -183,14 +185,15 @@ export class FlareDataConnectorClientHelper implements IFlareDataConnectorClient
         try {
             // check if round has been finalized
             // (it can happen that API returns proof finalized, but it is not finalized in flare data connector yet)
-            const roundFinalized = await this.roundFinalized(roundId);
+            const roundFinalized = await this.roundFinalizedOnChain(roundId);
             if (!roundFinalized) {
                 return AttestationNotProved.NOT_FINALIZED;
             }
             // obtain proof
             let disproved = 0;
+            const requestId = HttpApiClient.newRequestId();
             for (const client of this.dataAccessLayerClients) {
-                const proof = await this.obtainProofFromFlareDataConnectorForClient(client, roundId, requestBytes);
+                const proof = await this.obtainProofFromFlareDataConnectorForClient(client, roundId, requestBytes, requestId);
                 /* istanbul ignore next */
                 if (proof == null) {
                     continue; // client failure
@@ -215,25 +218,25 @@ export class FlareDataConnectorClientHelper implements IFlareDataConnectorClient
     }
 
     /* istanbul ignore next */
-    async obtainProofFromFlareDataConnectorForClient(client: AxiosInstance, roundId: number, requestBytes: string): Promise<OptionalAttestationProof | null> {
+    async obtainProofFromFlareDataConnectorForClient(client: HttpApiClient, roundId: number, requestBytes: string, requestId: number): Promise<OptionalAttestationProof | null> {
         // does the client have info about this round yet?
-        const latestRound = await this.latestFinalizedRoundOnClient(client).catch(() => 0);
+        const latestRound = await this.latestFinalizedRoundOnClient(client, requestId).catch(() => -1);
         if (latestRound < roundId) {
-            logger.info(`Client ${client.getUri()} does not yet have data for round ${roundId} (latest=${latestRound})`);
+            logger.info(`Client ${client.client.getUri()} does not yet have data for round ${roundId} (latest=${latestRound})`);
             return null;
         }
         // get response
-        let response: AxiosResponse<VotingRoundResult<ARESBase>>;
+        let result: VotingRoundResult<ARESBase>;
         try {
             const request: ProofRequest = { votingRoundId: roundId, requestBytes: requestBytes };
-            response = await client.post<VotingRoundResult<ARESBase>>(`/api/v0/fdc/get-proof-round-id-bytes`, request);
+            result = await client.post<VotingRoundResult<ARESBase>>(`/api/v0/fdc/get-proof-round-id-bytes`, request, "getProof", requestId);
         } catch (error) {
-            if (error instanceof AxiosError) {
+            if (error instanceof ApiServiceError) {
                 if (error.response?.status === 400) {
-                    logger.error(`Flare data connector request not proved: ${error.response?.data?.error}`);
+                    logger.error(`Flare data connector request not proved: ${(error.response?.data as any)?.error}`);
                     return AttestationNotProved.DISPROVED;
                 }
-                logger.error(`Flare data connector error (status=${error.response?.status}, message="${error.response?.data?.error}"):`, error);
+                logger.error(`Flare data connector error (status=${error.response?.status}, message="${(error.response?.data as any)?.error}"):`, error);
             } else {
                 logger.error(`Flare data connector unknown error:`, error);
             }
@@ -241,8 +244,8 @@ export class FlareDataConnectorClientHelper implements IFlareDataConnectorClient
         }
         // verify that valid proof was obtained
         const proof: AttestationProof = {
-            data: response.data.response,
-            merkleProof: response.data.proof,
+            data: result.response,
+            merkleProof: result.proof,
         };
         const verified = await this.verifyProof(proof)
             .catch(e => {
@@ -250,7 +253,7 @@ export class FlareDataConnectorClientHelper implements IFlareDataConnectorClient
             });
         /* istanbul ignore next */
         if (!verified) {
-            logger.error(`Flare data connector error: proof does not verify on ${client.getUri()}! Round=${roundId} request=${requestBytes} proof=${JSON.stringify(proof)}.`);
+            logger.error(`Flare data connector error: proof does not verify on ${client.client.getUri()}! Round=${roundId} request=${requestBytes} proof=${JSON.stringify(proof)}.`);
             return null; // since the round is finalized, the client apparently has invalid proof - skip it
         }
         return proof;

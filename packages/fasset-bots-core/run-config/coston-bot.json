@@ -57,7 +57,8 @@
                 "returnFromCVRatio": 0.3,
                 "targetTransferToCVRatio": 0.4,
                 "targetReturnFromCVRatio": 0.6,
-                "useAutomaticCoreVaultTransferAndReturn": false
+                "minimumTransferToCVSize": 0.2,
+                "useAutomaticCoreVaultTransferAndReturn": true
             },
             "FSimCoinX": {
                 "recommendedOwnerBalance": "50",
@@ -67,7 +68,8 @@
                 "returnFromCVRatio": 0.3,
                 "targetTransferToCVRatio": 0.4,
                 "targetReturnFromCVRatio": 0.6,
-                "useAutomaticCoreVaultTransferAndReturn": false
+                "minimumTransferToCVSize": 0.2,
+                "useAutomaticCoreVaultTransferAndReturn": true
             },
             "FTestBTC": {
                 "recommendedOwnerBalance": "0.01",
@@ -77,7 +79,8 @@
                 "returnFromCVRatio": 0.3,
                 "targetTransferToCVRatio": 0.4,
                 "targetReturnFromCVRatio": 0.6,
-                "useAutomaticCoreVaultTransferAndReturn": false
+                "minimumTransferToCVSize": 0.2,
+                "useAutomaticCoreVaultTransferAndReturn": true
             },
             "FTestDOGE": {
                 "recommendedOwnerBalance": "50",
@@ -87,7 +90,8 @@
                 "returnFromCVRatio": 0.3,
                 "targetTransferToCVRatio": 0.4,
                 "targetReturnFromCVRatio": 0.6,
-                "useAutomaticCoreVaultTransferAndReturn": false
+                "minimumTransferToCVSize": 0.2,
+                "useAutomaticCoreVaultTransferAndReturn": true
             }
         }
     },

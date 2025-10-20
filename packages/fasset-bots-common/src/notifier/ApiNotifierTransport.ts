@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosInstance } from "axios";
 import chalk from "chalk";
 import { logger } from "../logging/logger";
-import { createAxiosConfig } from "../utils/axios-utils";
+import { createAxiosConfig, defaultTimeoutSignal } from "../utils/axios-utils";
 import { BotType, NotificationLevel, NotifierTransport } from "./NotifierTransport";
 
 export interface ApiNotifierConfig {
@@ -41,7 +41,7 @@ export class ApiNotifierTransport implements NotifierTransport {
             description: message,
         };
         // run alert sending in the background
-        void this.client.post(`/api/agent/botAlert`, request)
+        void this.client.post(`/api/agent/botAlert`, request, { signal: defaultTimeoutSignal() })
             .catch((e: AxiosError) => {
                 const status = e.response?.status ?? "unknown status";
                 const errorMessage = (e.response?.data as any)?.error ?? "unknown error";
@@ -54,5 +54,4 @@ export class ApiNotifierTransport implements NotifierTransport {
         const vals = Object.values(NotificationLevel);
         return vals.indexOf(level1) < vals.indexOf(level2)
     }
-
 }

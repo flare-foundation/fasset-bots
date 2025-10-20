@@ -1,11 +1,15 @@
-export const TEST_FASSET_BOT_CONFIG = process.env.TEST_FASSET_BOT_CONFIG ?? "./run-config/coston-bot.json";
-export const FASSET_BOT_CONFIG = process.env.FASSET_BOT_CONFIG ?? "./run-config/coston-bot.json";
+// the following files must not be commited because they contain private RPC url
+// e2e-coston-bot.json extends coston-bot.json, replacing rpcUrl
+// e2e-coston-bot-simplified.json extends "../../test/test-utils/run-config-test/run-simplified-config-coston-with-contracts.json", replacing rpcUrl
+export const COSTON_RUN_CONFIG_CONTRACTS = "./test-data/run-config/e2e-coston-bot.json";
+export const COSTON_TEST_AGENT_SETTINGS = "./test-data/run-config/e2e-coston-bot-simplified.json";
+export const TEST_FASSET_BOT_CONFIG = process.env.TEST_FASSET_BOT_CONFIG ?? COSTON_RUN_CONFIG_CONTRACTS;
+export const FASSET_BOT_CONFIG = process.env.FASSET_BOT_CONFIG ?? COSTON_RUN_CONFIG_CONTRACTS;
+
 export const TEST_SECRETS = process.env.FASSET_BOT_SECRETS ?? "./secrets.json";
 
-export const OWNER_ADDRESS: string = "0xbaDC368bdCf8BB41FFF844bCF34a41968BdCe073";
-export const COSTON_RPC: string = "https://coston-api.flare.network/ext/C/rpc";
-export const COSTON_RUN_CONFIG_CONTRACTS = "./run-config/coston-bot.json";
-export const COSTON_TEST_AGENT_SETTINGS = "./test/test-utils/run-config-test/agent-settings-config-test.json";
+// just for testing config file loading
+export const COSTON_RUN_CONFIG_STANDARD = "./run-config/coston-bot.json";
 export const COSTON_RUN_CONFIG_ADDRESS_UPDATER = "./test/test-utils/run-config-test/run-config-coston-with-address-updater.json";
 export const COSTON_SIMPLIFIED_RUN_CONFIG_CONTRACTS = "./test/test-utils/run-config-test/run-simplified-config-coston-with-contracts.json";
 export const COSTON_SIMPLIFIED_RUN_CONFIG_ADDRESS_UPDATER = "./test/test-utils/run-config-test/run-simplified-config-coston-with-address-updater.json";
@@ -16,6 +20,9 @@ export const COSTON_CONFIG_EXTENDS_1 = "./test/test-utils/run-config-test/run-co
 export const COSTON_CONFIG_EXTENDS_2 = "./test/test-utils/run-config-test/run-config-extend-coston-2.json";
 export const COSTON_CONFIG_LOOP_1 = "./test/test-utils/run-config-test/run-config-extend-loop-1.json";
 export const COSTON_CONFIG_INVALID = "./test/test-utils/run-config-test/run-config-coston-invalid.json";
+
+export const OWNER_ADDRESS: string = "0xbaDC368bdCf8BB41FFF844bCF34a41968BdCe073";
+export const COSTON_RPC: string = "https://coston-api.flare.network/ext/C/rpc";
 
 export const INDEXER_URL_XRP: string[] = [
     "https://fdc-verifiers-testnet.flare.network/verifier/xrp",

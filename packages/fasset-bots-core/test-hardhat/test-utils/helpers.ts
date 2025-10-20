@@ -11,7 +11,7 @@ import { AgentVaultInitSettings, createAgentVaultInitSettings, loadAgentSettings
 import { AssetContractRetriever } from "../../src/config/AssetContractRetriever";
 import { ORM } from "../../src/config/orm";
 import { IAssetAgentContext, IChallengerContext, ILiquidatorContext } from "../../src/fasset-bots/IAssetBotContext";
-import { Agent } from "../../src/fasset/Agent";
+import { Agent, OwnerAddressPair } from "../../src/fasset/Agent";
 import { AgentStatus, AssetManagerSettings, CollateralType } from "../../src/fasset/AssetManagerTypes";
 import { Minter } from "../../src/mock/Minter";
 import { MockChain } from "../../src/mock/MockChain";
@@ -22,7 +22,7 @@ import { TrackedState } from "../../src/state/TrackedState";
 import { ScopedRunner } from "../../src/utils/events/ScopedRunner";
 import { BNish, ZERO_ADDRESS, checkedCast, requireNotNull, toBN, toBNExp } from "../../src/utils/helpers";
 import { NotifierTransport } from "@flarenetwork/fasset-bots-common";
-import { artifacts } from "../../src/utils/web3";
+import { artifacts, web3 } from "../../src/utils/web3";
 import { web3DeepNormalize } from "../../src/utils/web3normalize";
 import { testAgentBotSettings, testChainInfo, TestChainType } from "../../test/test-utils/TestChainInfo";
 import { fundUnderlying } from "../../test/test-utils/test-helpers";
@@ -55,16 +55,16 @@ export async function createTestAgentBot(
     context: TestAssetBotContext,
     governance: string,
     orm: ORM,
-    ownerManagementAddress: string,
+    ownerOrMgmtAddress: string | OwnerAddressPair,
     ownerUnderlyingAddress?: string,
     autoSetWorkAddress: boolean = true,
     notifiers: NotifierTransport[] = testNotifierTransports,
     options?: AgentVaultInitSettings,
     agentBotOptions?: Partial<AgentBotSettings>
 ): Promise<AgentBot> {
-    await automaticallySetWorkAddressAndWhitelistAgent(context, autoSetWorkAddress, ownerManagementAddress);
-    const owner = await Agent.getOwnerAddressPair(context, ownerManagementAddress);
-    ownerUnderlyingAddress ??= `underlying_${ownerManagementAddress}`;
+    await automaticallySetWorkAddressAndWhitelistAgent(context, autoSetWorkAddress, ownerOrMgmtAddress);
+    const owner = typeof ownerOrMgmtAddress === "string" ? await Agent.getOwnerAddressPair(context, ownerOrMgmtAddress) : ownerOrMgmtAddress;
+    ownerUnderlyingAddress ??= `underlying_${owner.managementAddress}`;
     await fundUnderlying(context, ownerUnderlyingAddress, depositUnderlying);
     const vaultUnderlyingAddress = await AgentBot.createUnderlyingAddress(context);
     const addressValidityProof = await AgentBot.initializeUnderlyingAddress(context, owner, ownerUnderlyingAddress, vaultUnderlyingAddress);
@@ -90,9 +90,11 @@ export function makeBotFAssetConfigMap<T extends BotFAssetConfig>(fassets: T[]) 
     return new Map(fassets.map(it => [it.fAssetSymbol, it]));
 }
 
-export async function mintVaultCollateralToOwner(amount: BNish, vaultCollateralTokenAddress: string, ownerAddress: string, governance?: string): Promise<void> {
+export async function mintVaultCollateralToOwner(context: TestAssetBotContext, amount: BNish, vaultCollateralTokenAddress: string, ownerAddress: string, governance?: string): Promise<void> {
+    let workAddress = await context.agentOwnerRegistry.getWorkAddress(ownerAddress);
+    if (workAddress === ZERO_ADDRESS) workAddress = ownerAddress;
     const vaultCollateralToken = await FakeERC20.at(vaultCollateralTokenAddress);
-    await vaultCollateralToken.mintAmount(ownerAddress, amount, governance ? { from: governance } : {});
+    await vaultCollateralToken.mintAmount(workAddress, amount, governance ? { from: governance } : {});
 }
 
 export async function createTestChallenger(context: IChallengerContext, address: string, state: TrackedState): Promise<Challenger> {
@@ -109,12 +111,12 @@ export async function createTestSystemKeeper(address: string, state: TrackedStat
 
 export async function createTestAgent(
     context: TestAssetBotContext,
-    ownerManagementAddress: string,
+    ownerOrMgmtAddress: string | OwnerAddressPair,
     underlyingAddress: string = agentUnderlyingAddress,
     autoSetWorkAddress: boolean = true,
 ): Promise<Agent> {
-    await automaticallySetWorkAddressAndWhitelistAgent(context, autoSetWorkAddress, ownerManagementAddress);
-    const owner = await Agent.getOwnerAddressPair(context, ownerManagementAddress);
+    await automaticallySetWorkAddressAndWhitelistAgent(context, autoSetWorkAddress, ownerOrMgmtAddress);
+    const owner = typeof ownerOrMgmtAddress === "string" ? await Agent.getOwnerAddressPair(context, ownerOrMgmtAddress) : ownerOrMgmtAddress;
     const agentBotSettings: AgentVaultInitSettings = await createAgentVaultInitSettings(context, loadAgentSettings(DEFAULT_AGENT_SETTINGS_PATH_HARDHAT));
     agentBotSettings.poolTokenSuffix = DEFAULT_POOL_TOKEN_SUFFIX();
     const addressValidityProof = await context.attestationProvider.proveAddressValidity(underlyingAddress);
@@ -123,12 +125,24 @@ export async function createTestAgent(
     return agent;
 }
 
-async function automaticallySetWorkAddressAndWhitelistAgent(context: TestAssetBotContext, autoSetWorkAddress: boolean, ownerManagementAddress: string) {
+let nextWorkAddressIndex = 60;
+const workAddressForMgmtAddress: Record<string, string> = {};
+
+async function automaticallySetWorkAddressAndWhitelistAgent(context: TestAssetBotContext, autoSetWorkAddress: boolean, ownerOrMgmtAddress: string | OwnerAddressPair) {
+    const ownerManagementAddress = typeof ownerOrMgmtAddress === "string" ? ownerOrMgmtAddress : ownerOrMgmtAddress.managementAddress;
     await context.agentOwnerRegistry.whitelistAndDescribeAgent(ownerManagementAddress, "Agent Name", "Agent Description", "Icon", "URL");
     if (autoSetWorkAddress) {
         const workAddress = await context.agentOwnerRegistry.getWorkAddress(ownerManagementAddress);
         if (workAddress === ZERO_ADDRESS) {
-            await context.agentOwnerRegistry.setWorkAddress(ownerManagementAddress, { from: ownerManagementAddress });
+            if (typeof ownerOrMgmtAddress === "string") {
+                if (!workAddressForMgmtAddress[ownerManagementAddress]) {
+                    const accounts = await web3.eth.getAccounts();
+                    workAddressForMgmtAddress[ownerManagementAddress] = accounts[nextWorkAddressIndex++];
+                }
+                await context.agentOwnerRegistry.setWorkAddress(workAddressForMgmtAddress[ownerManagementAddress], { from: ownerManagementAddress });
+            } else {
+                await context.agentOwnerRegistry.setWorkAddress(ownerOrMgmtAddress.workAddress, { from: ownerOrMgmtAddress.managementAddress });
+            }
         }
     }
 }
@@ -169,7 +183,7 @@ export async function createTestAgentAndMakeAvailable(
     governance?: string,
 ): Promise<Agent> {
     const agent = await createTestAgent(context, ownerAddress, underlyingAddress, autoSetWorkAddress);
-    await mintAndDepositVaultCollateralToOwner(agent, depositUSDC, ownerAddress, governance);
+    await mintAndDepositVaultCollateralToOwner(context, agent, depositUSDC, ownerAddress, governance);
     await agent.depositVaultCollateral(depositUSDC);
     await agent.buyCollateralPoolTokens(depositNat);
     await agent.makeAvailable();
@@ -187,7 +201,7 @@ export async function createTestAgentBotAndMakeAvailable(
     options?: AgentVaultInitSettings,
 ) {
     const agentBot = await createTestAgentBot(context, governance, orm, ownerAddress, ownerUnderlyingAddress, autoSetWorkAddress, notifier, options);
-    await mintAndDepositVaultCollateralToOwner(agentBot.agent, depositUSDC, agentBot.agent.owner.workAddress, governance);
+    await mintAndDepositVaultCollateralToOwner(context, agentBot.agent, depositUSDC, agentBot.agent.owner.workAddress, governance);
     await agentBot.agent.depositVaultCollateral(depositUSDC);
     await agentBot.agent.buyCollateralPoolTokens(depositNat);
     await agentBot.agent.makeAvailable();
@@ -195,6 +209,7 @@ export async function createTestAgentBotAndMakeAvailable(
 }
 
 export async function mintAndDepositVaultCollateralToOwner(
+    context: TestAssetBotContext,
     agent: Agent,
     depositAmount: BNish,
     ownerAddress: string,
@@ -202,7 +217,7 @@ export async function mintAndDepositVaultCollateralToOwner(
 ): Promise<IERC20Instance> {
     const vaultCollateralToken = await agent.getVaultCollateral();
     const vaultCollateralTokenContract = await IERC20.at(vaultCollateralToken.token);
-    await mintVaultCollateralToOwner(depositAmount, vaultCollateralToken!.token, ownerAddress, governance);
+    await mintVaultCollateralToOwner(context, depositAmount, vaultCollateralToken!.token, ownerAddress, governance);
     return vaultCollateralTokenContract;
 }
 

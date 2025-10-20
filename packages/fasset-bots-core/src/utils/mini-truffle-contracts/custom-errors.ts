@@ -1,6 +1,6 @@
 import coder from "web3-eth-abi";
 import { AbiItem } from "web3-utils";
-import { ErrorWithCause } from "./transaction-logging";
+import { ErrorWithCause } from "../ErrorWithCause";
 
 export interface RevertData {
     abi: AbiItem;

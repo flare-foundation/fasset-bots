@@ -22,6 +22,11 @@
       "inputs": [],
       "name": "OnlyAssetManagerController",
       "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "OnlyImmediateGovernanceOrExecutor",
+      "type": "error"
     }
   ],
   "bytecode": "0x",

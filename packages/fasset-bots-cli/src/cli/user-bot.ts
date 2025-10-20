@@ -3,7 +3,7 @@ import "source-map-support/register";
 
 import { InfoBotCommands, PoolUserBotCommands, UserBotCommands } from "@flarenetwork/fasset-bots-core";
 import { Secrets } from "@flarenetwork/fasset-bots-core/config";
-import { BN_ZERO, formatFixed, logger, toBN, toBNExp, TokenBalances } from "@flarenetwork/fasset-bots-core/utils";
+import { BN_ZERO, formatFixed, logger, sleep, toBN, toBNExp, TokenBalances } from "@flarenetwork/fasset-bots-core/utils";
 import BN from "bn.js";
 import os from "os";
 import path from "path";
@@ -49,6 +49,29 @@ program
     });
 
 program
+    .command("agentCapacities")
+    .description("Lists the available agents' capacity info")
+    .option("--all", "also show non-public agents")
+    .option("--repeat <seconds>")
+    .action(async (opts: { repeat: string, all: boolean }) => {
+        const options: { config: string; secrets: string; fasset: string } = program.opts();
+        const secrets = await Secrets.load(options.secrets);
+        const bot = await InfoBotCommands.create(secrets, options.config, options.fasset, registerToplevelFinalizer);
+        if (opts.repeat) {
+            validateInteger(opts.repeat, "repeat seconds", { min: 1 });
+            const waitMs = Number(opts.repeat) * 1000;
+            // eslint-disable-next-line no-constant-condition
+            while (true) {
+                console.log("\n----------------", new Date().toLocaleTimeString(), "----------------");
+                await bot.printAgentCapacities(!opts.all);
+                await sleep(waitMs);
+            }
+        } else {
+            await bot.printAgentCapacities(!opts.all);
+        }
+    });
+
+program
     .command("agentInfo")
     .description("info about an agent")
     .argument("<agentVaultAddress>", "the address of the agent vault")
@@ -79,24 +102,27 @@ program
     .option("--executor <executorAddress>", "optional executor's native address")
     .option("--executorFee <executorFee>", "optional executor's fee in NAT")
     .option("--noWait", "only reserve and pay for the minting, don't wait for payment finalization and proof; you have to execute the minting later")
-    .action(async (numberOfLots: string, cmdOptions: { agent?: string, updateBlock?: boolean, executor?: string, executorFee?: string, noWait?: boolean }) => {
+    .option("--crFeeBump <bips>", "percentage of the collateral reservation fee that gets added to mitigate price changes")
+    .action(async (numberOfLots: string, cmdOptions: { agent?: string, updateBlock?: boolean, executor?: string, executorFee?: string, noWait?: boolean, crFeeBump?: string }) => {
         const options: { config: string; secrets: string; fasset: string; dir: string } = program.opts();
         validateAddress(cmdOptions.agent, "Agent vault address");
         validateInteger(numberOfLots, "Number of lots", { min: 1 });
         validateAddress(cmdOptions.executor, "Executor address");
         validate(!cmdOptions.executor || !!cmdOptions.executorFee, "Option executorFee must be set when executor is set.");
         validate(!cmdOptions.executorFee || !!cmdOptions.executor, "Option executor must be set when executorFee is set.");
+        validateDecimal(cmdOptions.crFeeBump, "CR fee bump", { min: 0, max: 0.2 });
         const minterBot = await UserBotCommands.create(options.secrets, options.config, options.fasset, options.dir, registerToplevelFinalizer);
         const agentVault = cmdOptions.agent ?? (await minterBot.infoBot().findBestAgent(toBN(numberOfLots)));
+        const crFeeBump = (cmdOptions.crFeeBump != null) ? Number(cmdOptions.crFeeBump) : undefined
         validate(agentVault != null, "No agent with enough free lots available.");
         try {
             if (cmdOptions.updateBlock) {
                 await minterBot.updateUnderlyingTime();
             }
             if (cmdOptions.executor && cmdOptions.executorFee) {
-                await minterBot.mint(agentVault, numberOfLots, !!cmdOptions.noWait, cmdOptions.executor, cmdOptions.executorFee);
+                await minterBot.mint(agentVault, numberOfLots, !!cmdOptions.noWait, cmdOptions.executor, cmdOptions.executorFee, crFeeBump);
             } else {
-                await minterBot.mint(agentVault, numberOfLots, !!cmdOptions.noWait);
+                await minterBot.mint(agentVault, numberOfLots, !!cmdOptions.noWait, undefined, undefined, crFeeBump);
             }
         } catch (error) {
             translateError(error, {

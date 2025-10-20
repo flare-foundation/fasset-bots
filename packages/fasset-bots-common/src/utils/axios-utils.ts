@@ -73,6 +73,11 @@ export function createAxiosConfig(url: string, apiKey?: string, timeoutMs?: numb
     return createAxiosConfig;
 }
 
+export function defaultTimeoutSignal(timeoutMs?: number) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return AbortSignal.timeout(timeoutMs ?? DEFAULT_RATE_LIMIT_OPTIONS.timeoutMs!);
+}
+
 export function createRateLimitedAxiosInstance(url: string, apiKey?: string, rateLimitOptions?: RateLimitOptions): RateLimitedAxiosInstance {
     return axiosRateLimit(axios.create(createAxiosConfig(url, apiKey, rateLimitOptions?.timeoutMs)), {
         ...DEFAULT_RATE_LIMIT_OPTIONS,

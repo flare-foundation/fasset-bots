@@ -31,8 +31,7 @@ export const YEARS = 365 * DAYS;
 
 export const MAX_UINT256 = toBN(1).shln(256).subn(1);
 
-export const DEFAULT_TIMEOUT = 15000;
-export const DEFAULT_RETRIES = 3;
+export const DEFAULT_RETRIES = 2;
 export const DEFAULT_RETRY_DELAY_MS = 2000;
 
 export const TRANSACTION_FEE_FACTOR = 1.4; // used in the calculation of the required underlying balance
@@ -69,6 +68,13 @@ export function systemTimestamp() {
  */
 export function systemTimestampMS() {
     return Date.now();
+}
+
+/**
+ * Return time elapsed since `sinceTimestamp`, in seconds (with fraction). Useful for method/api timings.
+ */
+export function elapsedSec(sinceTimestamp: number): number {
+    return (Date.now() - sinceTimestamp) / 1000;
 }
 
 /**
@@ -319,18 +325,23 @@ export async function retry<T extends (...arg0: any[]) => any>(
 /**
  * Retries a function n number of times before giving up
  */
-export async function retryCall<R>(name: string, call: () => Promise<R>, maxRetries = DEFAULT_RETRIES, retryDelayMs = DEFAULT_RETRY_DELAY_MS): Promise<R> {
+export async function retryCall<R>(
+    name: string,
+    call: () => Promise<R>,
+    maxRetries = DEFAULT_RETRIES,
+    retryDelayMs = DEFAULT_RETRY_DELAY_MS
+): Promise<R> {
     for (let retry = 1; /* stopping condition in catch */; retry++) {
         try {
             const result = await call();
             return result;
         } catch (error) {
-            if (retry === maxRetries) {
+            if (retry >= maxRetries) {
                 console.log(`All ${maxRetries} retry attempts exhausted for function ${name}: ${error}`);
                 logger.error(`All ${maxRetries} retry attempts exhausted for function ${name}`, error);
                 throw error;
             }
-            logger.info(`Retry ${retry} failed for function ${name}. Retrying after delay of ${retry * retryDelayMs} ms. ${error}`);
+            logger.info(`Attempt ${retry} failed for function ${name}. Retrying after delay of ${retry * retryDelayMs} ms. ${error}`);
             await sleep(retry * retryDelayMs);
         }
     }
@@ -443,4 +454,28 @@ export function keccak256(data: string): string {
     // this is the value of empty string hash as returned by Solidity's keccak256
     const emptyStringHash = "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470";
     return Web3.utils.keccak256(data) ?? emptyStringHash;
+}
+
+/**
+ * Limit `text` length to `maxLength` and add `"..."` at the end if clipped (result together with `"..."` will be `maxLength` long).
+ */
+export function clipText(text: string, maxLength: number) {
+    return text.length <= maxLength ? text : text.slice(0, maxLength - 3) + "...";
+}
+
+/**
+ * Like sleep(delayMS) but stop immediatelly with error if `abortSignal` is triggered.
+ */
+export function abortableSleep(delayMS: number, abortSignal: AbortSignal) {
+    let timer: NodeJS.Timeout;
+    let abortHandler: () => void;
+    return new Promise<void>((resolve, reject) => {
+        abortSignal.throwIfAborted();
+        timer = setTimeout(() => resolve(), delayMS);
+        abortHandler = () => reject(abortSignal.reason);
+        abortSignal.addEventListener("abort", abortHandler);
+    }).finally(() => {
+        if (abortHandler) abortSignal.removeEventListener("abort", abortHandler);
+        if (timer) clearTimeout(timer);
+    });
 }

@@ -327,26 +327,17 @@ export interface EmergencyPauseCanceled {
   args: {};
 }
 
-export interface EmergencyPauseTransfersCanceled {
-  name: "EmergencyPauseTransfersCanceled";
-  args: {};
-}
-
-export interface EmergencyPauseTransfersTriggered {
-  name: "EmergencyPauseTransfersTriggered";
-  args: {
-    pausedUntil: BN;
-    0: BN;
-  };
-}
-
 export interface EmergencyPauseTriggered {
   name: "EmergencyPauseTriggered";
   args: {
-    level: BN;
-    pausedUntil: BN;
+    externalLevel: BN;
+    externalPausedUntil: BN;
+    governanceLevel: BN;
+    governancePausedUntil: BN;
     0: BN;
     1: BN;
+    2: BN;
+    3: BN;
   };
 }
 
@@ -911,8 +902,6 @@ export type AllEvents =
   | DuplicatePaymentConfirmed
   | DustChanged
   | EmergencyPauseCanceled
-  | EmergencyPauseTransfersCanceled
-  | EmergencyPauseTransfersTriggered
   | EmergencyPauseTriggered
   | FullLiquidationStarted
   | GovernanceCallTimelocked
@@ -2348,7 +2337,7 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
 
   emergencyPauseDetails(
     txDetails?: Truffle.TransactionDetails
-  ): Promise<{ 0: BN; 1: BN; 2: BN; 3: boolean }>;
+  ): Promise<{ 0: BN; 1: BN; 2: BN; 3: BN; 4: BN }>;
 
   emergencyPauseLevel(txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
@@ -3791,6 +3780,15 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
     ): Promise<number>;
   };
 
+  resetEmergencyPauseTotalDuration: {
+    (txDetails?: Truffle.TransactionDetails): Promise<
+      Truffle.TransactionResponse<AllEvents>
+    >;
+    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
+    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
+    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
+  };
+
   selfClose: {
     (
       _agentVault: string,
@@ -4588,22 +4586,22 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
 
   setPaymentChallengeReward: {
     (
-      _rewardNATWei: number | BN | string,
+      _rewardUSD5: number | BN | string,
       _rewardBIPS: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<Truffle.TransactionResponse<AllEvents>>;
     call(
-      _rewardNATWei: number | BN | string,
+      _rewardUSD5: number | BN | string,
       _rewardBIPS: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<void>;
     sendTransaction(
-      _rewardNATWei: number | BN | string,
+      _rewardUSD5: number | BN | string,
       _rewardBIPS: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
-      _rewardNATWei: number | BN | string,
+      _rewardUSD5: number | BN | string,
       _rewardBIPS: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
@@ -5122,19 +5120,24 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
   };
 
   upgradeWNatContract: {
-    (_agentVault: string, txDetails?: Truffle.TransactionDetails): Promise<
-      Truffle.TransactionResponse<AllEvents>
-    >;
+    (
+      _start: number | BN | string,
+      _end: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse<AllEvents>>;
     call(
-      _agentVault: string,
+      _start: number | BN | string,
+      _end: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<void>;
     sendTransaction(
-      _agentVault: string,
+      _start: number | BN | string,
+      _end: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
-      _agentVault: string,
+      _start: number | BN | string,
+      _end: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
@@ -6531,7 +6534,7 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
 
     emergencyPauseDetails(
       txDetails?: Truffle.TransactionDetails
-    ): Promise<{ 0: BN; 1: BN; 2: BN; 3: boolean }>;
+    ): Promise<{ 0: BN; 1: BN; 2: BN; 3: BN; 4: BN }>;
 
     emergencyPauseLevel(txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
@@ -7976,6 +7979,15 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
       ): Promise<number>;
     };
 
+    resetEmergencyPauseTotalDuration: {
+      (txDetails?: Truffle.TransactionDetails): Promise<
+        Truffle.TransactionResponse<AllEvents>
+      >;
+      call(txDetails?: Truffle.TransactionDetails): Promise<void>;
+      sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
+      estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
+    };
+
     selfClose: {
       (
         _agentVault: string,
@@ -8794,22 +8806,22 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
 
     setPaymentChallengeReward: {
       (
-        _rewardNATWei: number | BN | string,
+        _rewardUSD5: number | BN | string,
         _rewardBIPS: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<Truffle.TransactionResponse<AllEvents>>;
       call(
-        _rewardNATWei: number | BN | string,
+        _rewardUSD5: number | BN | string,
         _rewardBIPS: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<void>;
       sendTransaction(
-        _rewardNATWei: number | BN | string,
+        _rewardUSD5: number | BN | string,
         _rewardBIPS: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
       estimateGas(
-        _rewardNATWei: number | BN | string,
+        _rewardUSD5: number | BN | string,
         _rewardBIPS: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
@@ -9331,19 +9343,24 @@ export interface IIAssetManagerInstance extends Truffle.ContractInstance {
     };
 
     upgradeWNatContract: {
-      (_agentVault: string, txDetails?: Truffle.TransactionDetails): Promise<
-        Truffle.TransactionResponse<AllEvents>
-      >;
+      (
+        _start: number | BN | string,
+        _end: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
       call(
-        _agentVault: string,
+        _start: number | BN | string,
+        _end: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<void>;
       sendTransaction(
-        _agentVault: string,
+        _start: number | BN | string,
+        _end: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
       estimateGas(
-        _agentVault: string,
+        _start: number | BN | string,
+        _end: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };

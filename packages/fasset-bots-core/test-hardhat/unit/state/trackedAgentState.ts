@@ -55,7 +55,7 @@ describe("Tracked agent state tests", () => {
         // create agent bot
         agentBot = await createTestAgentBot(context, governance, orm, ownerAddress);
         const agentVaultCollateralToken = await agentBot.agent.getVaultCollateral();
-        await mintVaultCollateralToOwner(amount, agentVaultCollateralToken.token, ownerAddress);
+        await mintVaultCollateralToOwner(context, amount, agentVaultCollateralToken.token, ownerAddress);
         await agentBot.agent.depositVaultCollateral(amount);
         trackedState = new TrackedState(trackedStateContext);
         await trackedState.initialize();

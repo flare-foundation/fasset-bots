@@ -2,7 +2,8 @@ import Web3 from "web3";
 import { PromiEvent, TransactionReceipt } from "web3-core";
 import { sleep, systemTimestampMS } from "../helpers";
 import { CancelToken, CancelTokenRegistration, cancelableSleep } from "./cancelable-promises";
-import { ErrorWithCause, extractErrorMessage, transactionLogger } from "./transaction-logging";
+import { extractErrorMessage, transactionLogger } from "./transaction-logging";
+import { ErrorWithCause } from "../ErrorWithCause";
 import { TransactionWaitFor } from "./types";
 
 export class FinalizationTimeoutError extends Error {}
