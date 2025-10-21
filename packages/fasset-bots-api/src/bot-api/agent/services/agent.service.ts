@@ -1049,11 +1049,11 @@ export class AgentService {
             const xrpPrice = await priceReader.getPrice(cli.context.chainInfo.symbol, false, settings.maxTrustedPriceAgeSeconds);
             const xrpPriceUSD = xrpPrice.price.mul(toBNExp(1, 18));
             const ownerXRPBalanceUSD = ownerXRPBalance.mul(xrpPriceUSD).div(toBNExp(1, 18 + Number(xrpPrice.decimals)));
-            totalXRPUSD = sumUsdStrings(totalXRPUSD, formatFixed(ownerXRPBalanceUSD, xrpPrice.decimals.toNumber(), { decimals: 3, groupDigits: true, groupSeparator: "," }));
+            totalXRPUSD = sumUsdStrings(totalXRPUSD, formatFixed(ownerXRPBalanceUSD, cli.context.chainInfo.decimals, { decimals: 3, groupDigits: true, groupSeparator: "," }));
             //Owner FXRP balance
             const ownerFXRPBalance = await cli.context.fAsset.balanceOf(cli.owner.workAddress);
             const ownerFXRPBalanceUSD = ownerFXRPBalance.mul(xrpPriceUSD).div(toBNExp(1, 18 + Number(xrpPrice.decimals)));
-            totalFXRPUSD = sumUsdStrings(totalFXRPUSD, formatFixed(ownerFXRPBalanceUSD, xrpPrice.decimals.toNumber(), { decimals: 3, groupDigits: true, groupSeparator: "," }));
+            totalFXRPUSD = sumUsdStrings(totalFXRPUSD, formatFixed(ownerFXRPBalanceUSD, cli.context.chainInfo.decimals, { decimals: 3, groupDigits: true, groupSeparator: "," }));
             // Get agent vaults for fasset from database
             const agentVaults = await cli.getActiveAgentsForFAsset();
             if (agentVaults.length == 0) {
